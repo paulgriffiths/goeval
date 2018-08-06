@@ -1,0 +1,22 @@
+# Work-in-progress
+
+expr             -> term termrest
+
+termrest         -> '+' termrest
+                  | '-' termrest
+                  | {e}
+
+term             -> factor factorrest
+
+factorrest       -> '*' factorrest
+                  | '/' factorrest
+                  | {e}
+
+factor           -> number | '(' expr ')'
+
+functionName     -> 'cos' | 'sin' | 'tan' | 'log' | 'ln' | 'sqrt'
+number           -> digits optionalFraction optionalExponent | 'e' | 'pi'
+optionalFraction -> '.' digits | {e}
+optionalExponent -> ( ( 'E' | 'e' ) ( '+' | '-' | {e} ) digits ) | {e}
+digits           -> digit digit*
+digit            -> [0-9]

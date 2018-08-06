@@ -3,6 +3,7 @@ package eval
 import (
     "fmt"
     "io"
+    "unicode"
 )
 
 // Lookahead reader implements a single character lookahead reader.
@@ -48,9 +49,74 @@ func (r *LookaheadReader) Next() (byte, error) {
     return r.current, nil
 }
 
+func (r *LookaheadReader) NextSafe() byte {
+    n, err := r.Next()
+    if err != nil {
+        panic(fmt.Sprintf("NextSafe was not safe"))
+    }
+    return n
+}
+
 // Lookahead returns the lookahead character from a lookahead reader.
 // Function returns 0 when we're already at the last character and there
 // is no lookahead character.
 func (r LookaheadReader) Lookahead() byte {
     return r.lookahead
 }
+
+// LookaheadIs returns true if the lookahead character matches the
+// argument, otherwise it returns false.
+func (r LookaheadReader) LookaheadIs(b byte) bool {
+    return r.lookahead == b
+}
+
+func (r LookaheadReader) IsSpace() bool {
+    return unicode.IsSpace(rune(r.current))
+}
+
+func (r LookaheadReader) IsDigit() bool {
+    return unicode.IsDigit(rune(r.current))
+}
+
+func (r LookaheadReader) IsLetter() bool {
+    return unicode.IsLetter(rune(r.current))
+}
+
+func (r LookaheadReader) LookaheadIsSpace() bool {
+    return unicode.IsSpace(rune(r.lookahead))
+}
+
+func (r LookaheadReader) LookaheadIsDigit() bool {
+    return unicode.IsDigit(rune(r.lookahead))
+}
+
+func (r LookaheadReader) LookaheadIsLetter() bool {
+    return unicode.IsLetter(rune(r.lookahead))
+}
+
+func (r *LookaheadReader) GetLetters() []byte {
+    if !r.IsLetter() {
+        panic(fmt.Sprintf("current is not letter in GetLetters()"))
+    }
+
+    result := []byte{r.current}
+    for r.LookaheadIsLetter() {
+        r.Next()
+        result = append(result, r.current)
+    }
+    return result
+}
+
+func (r *LookaheadReader) GetDigits() []byte {
+    if !r.IsDigit() {
+        panic(fmt.Sprintf("current is not digit in GetDigits()"))
+    }
+
+    result := []byte{r.current}
+    for r.LookaheadIsDigit() {
+        r.Next()
+        result = append(result, r.current)
+    }
+    return result
+}
+
