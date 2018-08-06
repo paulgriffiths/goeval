@@ -18,6 +18,9 @@ func evaluate(expression string) (float64, error) {
         return 1, fmt.Errorf("Couldn't parse expression: %v", err)
     }
 
+    // TODO: Need to empty channel, in case of error, so that
+    // lexing goroutine can finish and return.
+
     v, err := e.Evaluate()
     if err != nil {
         return 1, fmt.Errorf("Couldn't evaluate expression: %v", err)
