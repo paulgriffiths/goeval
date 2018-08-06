@@ -174,7 +174,7 @@ func TestLexerExponentIntegerNumberTokenWithTrailing(t *testing.T) {
 }
 
 func TestLexerBadExponentIntegerNumberToken(t *testing.T) {
-    ch, err := NewLexer(strings.NewReader("1e+"))
+    ch, err := NewLexer(strings.NewReader("1e/"))
     if err != nil {
         t.Errorf("Couldn't create lexer: %v", err)
     }
@@ -182,8 +182,8 @@ func TestLexerBadExponentIntegerNumberToken(t *testing.T) {
         t.Errorf("Didn't get illegal token as expected")
         t.Errorf("Got value %s, want %s", token.Value(), "1e")
     }
-    if token := <-ch; token.Value() != "+" {
-        t.Errorf("Got value %s, want %s", token.Value(), "+")
+    if token := <-ch; token.Value() != "/" {
+        t.Errorf("Got value %s, want %s", token.Value(), "/")
     }
     if _, ok := <-ch; ok != false {
         t.Errorf("Got %v, want %v", ok, false)
@@ -239,6 +239,19 @@ func TestLexerRealNegativeExponentNumberToken(t *testing.T) {
     }
     if token := <-ch; token.Value() != "1.23e-45" {
         t.Errorf("Got value %s, want %s", token.Value(), "1.23e-45")
+    }
+    if _, ok := <-ch; ok != false {
+        t.Errorf("Got %v, want %v", ok, false)
+    }
+}
+
+func TestLexerRealExplicitPositiveExponentNumberToken(t *testing.T) {
+    ch, err := NewLexer(strings.NewReader("1.23e+45"))
+    if err != nil {
+        t.Errorf("Couldn't create lexer: %v", err)
+    }
+    if token := <-ch; token.Value() != "1.23e+45" {
+        t.Errorf("Got value %s, want %s", token.Value(), "1.23e+45")
     }
     if _, ok := <-ch; ok != false {
         t.Errorf("Got %v, want %v", ok, false)

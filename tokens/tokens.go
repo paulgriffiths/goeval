@@ -1,4 +1,4 @@
-package eval
+package tokens
 
 type Token struct {
     tokenType int

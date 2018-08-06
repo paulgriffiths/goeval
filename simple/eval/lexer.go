@@ -2,70 +2,56 @@ package eval
 
 import (
     "io"
-    "github.com/paulgriffiths/goeval"
+    "github.com/paulgriffiths/goeval/lar"
+    "github.com/paulgriffiths/goeval/tokens"
 )
 
-func NewLexer(input io.Reader) (chan eval.Token, error) {
-    reader, err := eval.NewLookaheadReader(input)
+func NewLexer(input io.Reader) (chan tokens.Token, error) {
+    reader, err := lar.NewLookaheadReader(input)
     if err != nil {
         return nil, err
     }
 
-    ch := make(chan eval.Token)
+    ch := make(chan tokens.Token)
 
     go func() {
         for {
-            c, err := reader.Next()
-            if err != nil {
+            switch {
+            case reader.EndOfInput():
                 close(ch)
                 return
-            }
-
-            switch {
-            case reader.IsSpace():
+            case reader.MatchSpaces():
                 continue
-            case c == '+':
-                ch <- eval.NewOperatorToken("+")
-            case c == '-':
-                ch <- eval.NewOperatorToken("-")
-            case c == '*':
-                ch <- eval.NewOperatorToken("*")
-            case c == '/':
-                ch <- eval.NewOperatorToken("/")
-            case c == '^':
-                ch <- eval.NewOperatorToken("^")
-            case c == '%':
-                ch <- eval.NewOperatorToken("%")
-            case c == '(':
-                ch <- eval.LeftParenToken()
-            case c == ')':
-                ch <- eval.RightParenToken()
-            case reader.IsLetter():
-                ch <- eval.NewFunctionToken(string(reader.GetLetters()))
-            case reader.IsDigit():
-                value := reader.GetDigits()
-                if reader.LookaheadIs('.') {
-                    value = append(value, reader.NextSafe())
-                    if !reader.LookaheadIsDigit() {
-                        ch <- eval.NewIllegalToken(string(value))
+            case reader.MatchOneOf('+', '-', '*', '/', '^'):
+                ch <- tokens.NewOperatorToken(string(reader.Result()))
+            case reader.MatchOneOf('('):
+                ch <- tokens.LeftParenToken()
+            case reader.MatchOneOf(')'):
+                ch <- tokens.RightParenToken()
+            case reader.MatchLetters():
+                ch <- tokens.NewFunctionToken(string(reader.Result()))
+            case reader.MatchDigits():
+                value := reader.Result()
+                if reader.MatchOneOf('.') {
+                    value = append(value, reader.Result()...)
+                    if !reader.MatchDigits() {
+                        ch <- tokens.NewIllegalToken(string(value))
                         continue
                     }
-                    reader.Next()
-                    value = append(value, reader.GetDigits()...)
+                    value = append(value, reader.Result()...)
                 }
-                if reader.LookaheadIs('e') || reader.LookaheadIs('E') {
-                    value = append(value, reader.NextSafe())
-                    if reader.LookaheadIs('-')  {
-                        value = append(value, reader.NextSafe())
+                if reader.MatchOneOf('e', 'E') {
+                    value = append(value, reader.Result()...)
+                    if reader.MatchOneOf('-', '+')  {
+                        value = append(value, reader.Result()...)
                     }
-                    if !reader.LookaheadIsDigit() {
-                        ch <- eval.NewIllegalToken(string(value))
+                    if !reader.MatchDigits() {
+                        ch <- tokens.NewIllegalToken(string(value))
                         continue
                     }
-                    reader.Next()
-                    value = append(value, reader.GetDigits()...)
+                    value = append(value, reader.Result()...)
                 }
-                ch <- eval.NewNumberToken(string(value))
+                ch <- tokens.NewNumberToken(string(value))
             }
         }
     } ()
