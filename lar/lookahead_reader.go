@@ -67,17 +67,22 @@ func (r *LookaheadReader) MatchOneOf(vals ...byte) bool {
     return false
 }
 
+// matchSingleIsFunc packages up the matching logic for MatchLetter,
+// MatchDigit, and MatchSpace, which otherwise differ only in the
+// function used to test the byte.
 func (r *LookaheadReader) matchSingleIsFunc(isFunc func (rune) bool) bool {
     r.result = []byte{}
-    found := false
     if isFunc(rune(r.lookahead)) {
-        found = true
         current, _ := r.Next()
         r.result = append(r.result, current)
+        return true
     }
-    return found
+    return false
 }
 
+// matchMultipleIsFunc packages up the matching logic for MatchLetters,
+// MatchDigits, and MatchSpaces, which otherwise differ only in the
+// function used to test the byte.
 func (r *LookaheadReader) matchMultipleIsFunc(isFunc func (rune) bool) bool {
     r.result = []byte{}
     found := false
