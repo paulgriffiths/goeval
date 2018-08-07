@@ -29,51 +29,61 @@ func Evaluate(expression string) (float64, error) {
 }
 
 func getExpr(ltchan *tokens.LTChan) (expr, error) {
-    firstTerm, err := getTerm(ltchan)
+    var left expr
+    left, err := getTerm(ltchan)
     if err != nil {
         return nil, err
     }
 
-    switch {
-    case ltchan.Match(tokens.OperatorToken("+")):
-        secondTerm, err := getTerm(ltchan)
-        if err != nil {
-            return nil, err
+    loop:
+    for {
+        switch {
+        case ltchan.Match(tokens.OperatorToken("+")):
+            right, err := getTerm(ltchan)
+            if err != nil {
+                return nil, err
+            }
+            left = add{left, right}
+        case ltchan.Match(tokens.OperatorToken("-")):
+            right, err := getTerm(ltchan)
+            if err != nil {
+                return nil, err
+            }
+            left = subtract{left, right}
+        default:
+            break loop
         }
-        return add{firstTerm, secondTerm}, nil
-    case ltchan.Match(tokens.OperatorToken("-")):
-        secondTerm, err := getTerm(ltchan)
-        if err != nil {
-            return nil, err
-        }
-        return subtract{firstTerm, secondTerm}, nil
-    default:
-        return firstTerm, nil
     }
+    return left, nil
 }
 
 func getTerm(ltchan *tokens.LTChan) (expr, error) {
-    firstFact, err := getFactor(ltchan)
+    var left expr
+    left, err := getFactor(ltchan)
     if err != nil {
         return nil, err
     }
 
-    switch {
-    case ltchan.Match(tokens.OperatorToken("*")):
-        secondFact, err := getFactor(ltchan)
-        if err != nil {
-            return nil, err
+    loop:
+    for {
+        switch {
+        case ltchan.Match(tokens.OperatorToken("*")):
+            right, err := getFactor(ltchan)
+            if err != nil {
+                return nil, err
+            }
+            left = multiply{left, right}
+        case ltchan.Match(tokens.OperatorToken("/")):
+            right, err := getFactor(ltchan)
+            if err != nil {
+                return nil, err
+            }
+            left = divide{left, right}
+        default:
+            break loop
         }
-        return multiply{firstFact, secondFact}, nil
-    case ltchan.Match(tokens.OperatorToken("/")):
-        secondFact, err := getFactor(ltchan)
-        if err != nil {
-            return nil, err
-        }
-        return divide{firstFact, secondFact}, nil
-    default:
-        return firstFact, nil
     }
+    return left, nil
 }
 
 func getFactor(ltchan *tokens.LTChan) (expr, error) {
