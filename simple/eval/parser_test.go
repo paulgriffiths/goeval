@@ -5,7 +5,7 @@ import (
 )
 
 func TestParseNumber(t *testing.T) {
-    v, err := evaluate("2")
+    v, err := Evaluate("2")
     if err != nil {
         t.Errorf("Got %v, want %v", err, nil)
     }
@@ -15,7 +15,7 @@ func TestParseNumber(t *testing.T) {
 }
 
 func TestParseParenthesizedNumber(t *testing.T) {
-    v, err := evaluate("(2)")
+    v, err := Evaluate("(2)")
     if err != nil {
         t.Errorf("Got %v, want %v", err, nil)
     }
@@ -25,7 +25,7 @@ func TestParseParenthesizedNumber(t *testing.T) {
 }
 
 func TestParseDoubleParenthesizedNumber(t *testing.T) {
-    v, err := evaluate("((2))")
+    v, err := Evaluate("((2))")
     if err != nil {
         t.Errorf("Got %v, want %v", err, nil)
     }
@@ -35,21 +35,21 @@ func TestParseDoubleParenthesizedNumber(t *testing.T) {
 }
 
 func TestParseNumberMissingRightParenthesis(t *testing.T) {
-    _, err := evaluate("(2")
-    if err == nil || err.Error() == "mismatched parentheses" {
-        t.Errorf("Got %v, want %v", err, "mismatched parentheses")
+    _, err := Evaluate("(2")
+    if err != UnbalancedParenthesesError {
+        t.Errorf("Got %v, want %v", err, UnbalancedParenthesesError)
     }
 }
 
 func TestParseRightParenthesis(t *testing.T) {
-    _, err := evaluate(")")
-    if err == nil || err.Error() == "mismatched parentheses" {
-        t.Errorf("Got %v, want %v", err, "mismatched parentheses")
+    _, err := Evaluate(")")
+    if err != UnbalancedParenthesesError {
+        t.Errorf("Got %v, want %v", err, UnbalancedParenthesesError)
     }
 }
 
 func TestParseMultiply(t *testing.T) {
-    v, err := evaluate("2*3")
+    v, err := Evaluate("2*3")
     if err != nil {
         t.Errorf("Got %v, want %v", err, nil)
     }
@@ -59,7 +59,7 @@ func TestParseMultiply(t *testing.T) {
 }
 
 func TestParseDivide(t *testing.T) {
-    v, err := evaluate("3/2")
+    v, err := Evaluate("3/2")
     if err != nil {
         t.Errorf("Got %v, want %v", err, nil)
     }
@@ -68,8 +68,15 @@ func TestParseDivide(t *testing.T) {
     }
 }
 
+func TestParseDivideByZero(t *testing.T) {
+    _, err := Evaluate("3/0")
+    if err != DivideByZeroError {
+        t.Errorf("Got %v, want %v", err, DivideByZeroError)
+    }
+}
+
 func TestParseAdd(t *testing.T) {
-    v, err := evaluate("6+9")
+    v, err := Evaluate("6+9")
     if err != nil {
         t.Errorf("Got %v, want %v", err, nil)
     }
@@ -79,7 +86,7 @@ func TestParseAdd(t *testing.T) {
 }
 
 func TestParseSubtract(t *testing.T) {
-    v, err := evaluate("11-5")
+    v, err := Evaluate("11-5")
     if err != nil {
         t.Errorf("Got %v, want %v", err, nil)
     }
@@ -89,7 +96,7 @@ func TestParseSubtract(t *testing.T) {
 }
 
 func TestParseAddAndMultiply(t *testing.T) {
-    v, err := evaluate("2+3*4")
+    v, err := Evaluate("2+3*4")
     if err != nil {
         t.Errorf("Got %v, want %v", err, nil)
     }
@@ -99,7 +106,7 @@ func TestParseAddAndMultiply(t *testing.T) {
 }
 
 func TestParseParenthesizedAddAndMultiply(t *testing.T) {
-    v, err := evaluate("(2+3)*4")
+    v, err := Evaluate("(2+3)*4")
     if err != nil {
         t.Errorf("Got %v, want %v", err, nil)
     }

@@ -15,6 +15,23 @@ func TestLexerEmptyInput(t *testing.T) {
     }
 }
 
+func TestLexerIllegalToken(t *testing.T) {
+    ch, err := NewLexer(strings.NewReader("~"))
+    if err != nil {
+        t.Errorf("Couldn't create lexer: %v", err)
+    }
+    token := <-ch
+    if token.Value() != "~" {
+        t.Errorf("Got value %s, want %s", token.Value(), "~")
+    }
+    if !token.IsIllegal() {
+        t.Errorf("Got other than illegal token")
+    }
+    if _, ok := <-ch; ok != false {
+        t.Errorf("Got %v, want %v", ok, false)
+    }
+}
+
 func TestLexerLeftParenToken(t *testing.T) {
     ch, err := NewLexer(strings.NewReader("("))
     if err != nil {

@@ -7,7 +7,7 @@ import (
     "github.com/paulgriffiths/goeval/tokens"
 )
 
-func evaluate(expression string) (float64, error) {
+func Evaluate(expression string) (float64, error) {
     ch, err := NewLexer(strings.NewReader(expression))
     if err != nil {
         return 1, fmt.Errorf("Couldn't create lexer: %v", err)
@@ -15,7 +15,7 @@ func evaluate(expression string) (float64, error) {
 
     expr, err := getExpr(tokens.NewLTChan(ch))
     if err != nil {
-        return 1, fmt.Errorf("Couldn't parse expression: %v", err)
+        return 1, err
     }
 
     // TODO: Need to empty channel, in case of error, so that
@@ -23,7 +23,7 @@ func evaluate(expression string) (float64, error) {
 
     value, err := expr.Evaluate()
     if err != nil {
-        return 1, fmt.Errorf("Couldn't evaluate expression: %v", err)
+        return 1, err
     }
     return value, nil
 }
@@ -35,13 +35,13 @@ func getExpr(ltchan *tokens.LTChan) (expr, error) {
     }
 
     switch {
-    case ltchan.Match(tokens.NewOperatorToken("+")):
+    case ltchan.Match(tokens.OperatorToken("+")):
         secondTerm, err := getTerm(ltchan)
         if err != nil {
             return nil, err
         }
         return add{firstTerm, secondTerm}, nil
-    case ltchan.Match(tokens.NewOperatorToken("-")):
+    case ltchan.Match(tokens.OperatorToken("-")):
         secondTerm, err := getTerm(ltchan)
         if err != nil {
             return nil, err
@@ -59,13 +59,13 @@ func getTerm(ltchan *tokens.LTChan) (expr, error) {
     }
 
     switch {
-    case ltchan.Match(tokens.NewOperatorToken("*")):
+    case ltchan.Match(tokens.OperatorToken("*")):
         secondFact, err := getFactor(ltchan)
         if err != nil {
             return nil, err
         }
         return multiply{firstFact, secondFact}, nil
-    case ltchan.Match(tokens.NewOperatorToken("/")):
+    case ltchan.Match(tokens.OperatorToken("/")):
         secondFact, err := getFactor(ltchan)
         if err != nil {
             return nil, err
@@ -77,27 +77,22 @@ func getTerm(ltchan *tokens.LTChan) (expr, error) {
 }
 
 func getFactor(ltchan *tokens.LTChan) (expr, error) {
-    token, err := ltchan.Next()
-    if err != nil {
-        return nil, err
-    }
-
     switch {
-    case token.IsRightParen():
-        return nil, fmt.Errorf("mismatched parentheses")
-    case token.IsLeftParen():
-        expr, err := getExpr(ltchan)
+    case ltchan.Match(tokens.RightParenToken()):
+        return nil, UnbalancedParenthesesError
+    case ltchan.Match(tokens.LeftParenToken()):
+        ex, err := getExpr(ltchan)
         if err != nil {
             return nil, err
         }
         if !ltchan.Match(tokens.RightParenToken()) {
-            return nil, fmt.Errorf("mismatched parentheses")
+            return nil, UnbalancedParenthesesError
         }
-        return expr, nil
-    case token.IsNumber():
-        value, err := strconv.ParseFloat(token.Value(), 64)
+        return ex, nil
+    case ltchan.MatchType(tokens.ZeroNumberToken()):
+        value, err := strconv.ParseFloat(ltchan.Value(), 64)
         if err != nil {
-            panic(fmt.Sprintf("Couldn't convert to float: %s", token.Value()))
+            panic(fmt.Sprintf("Couldn't convert to float: %s", ltchan.Value()))
         }
         return number{value}, nil
     default:

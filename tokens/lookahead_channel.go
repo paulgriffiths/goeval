@@ -50,3 +50,17 @@ func (l *LTChan) Match(t Token) bool {
     return true
 }
 
+func (l *LTChan) MatchType(t Token) bool {
+    if l.lookahead.tokenType != t.tokenType {
+        return false
+    }
+    l.current = l.lookahead
+    next, ok := <-l.ch
+    if !ok {
+        l.lookahead = NullToken()
+    } else {
+        l.lookahead = next
+    }
+    return true
+}
+

@@ -23,19 +23,19 @@ func NewLexer(input io.Reader) (chan tokens.Token, error) {
             case reader.MatchSpaces():
                 continue
             case reader.MatchOneOf('+', '-', '*', '/', '^'):
-                ch <- tokens.NewOperatorToken(string(reader.Result()))
+                ch <- tokens.OperatorToken(string(reader.Result()))
             case reader.MatchOneOf('('):
                 ch <- tokens.LeftParenToken()
             case reader.MatchOneOf(')'):
                 ch <- tokens.RightParenToken()
             case reader.MatchLetters():
-                ch <- tokens.NewFunctionToken(string(reader.Result()))
+                ch <- tokens.WordToken(string(reader.Result()))
             case reader.MatchDigits():
                 value := reader.Result()
                 if reader.MatchOneOf('.') {
                     value = append(value, reader.Result()...)
                     if !reader.MatchDigits() {
-                        ch <- tokens.NewIllegalToken(string(value))
+                        ch <- tokens.IllegalToken(string(value))
                         continue
                     }
                     value = append(value, reader.Result()...)
@@ -46,12 +46,15 @@ func NewLexer(input io.Reader) (chan tokens.Token, error) {
                         value = append(value, reader.Result()...)
                     }
                     if !reader.MatchDigits() {
-                        ch <- tokens.NewIllegalToken(string(value))
+                        ch <- tokens.IllegalToken(string(value))
                         continue
                     }
                     value = append(value, reader.Result()...)
                 }
-                ch <- tokens.NewNumberToken(string(value))
+                ch <- tokens.NumberToken(string(value))
+            default:
+                n, _ := reader.Next()
+                ch <- tokens.IllegalToken(string(n))
             }
         }
     } ()

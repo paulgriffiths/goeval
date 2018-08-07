@@ -1,9 +1,5 @@
 package eval
 
-import (
-    "fmt"
-)
-
 type expr interface {
     Evaluate() (float64, error)
 }
@@ -78,7 +74,7 @@ func (d divide) Evaluate() (float64, error) {
         return 1, err
     }
     if r == 0 {
-        return 1, fmt.Errorf("divide by zero")
+        return 1, DivideByZeroError
     }
     return l / r, nil
 }
