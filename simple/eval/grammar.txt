@@ -6,16 +6,22 @@ termrest         -> '+' termrest
                   | '-' termrest
                   | {e}
 
-term             -> factor factorrest
+term             -> subterm subtermrest
 
-factorrest       -> '*' factorrest
-                  | '/' factorrest
+subtermrest      -> '*' subtermrest
+                  | '/' subtermrest
                   | {e}
 
-factor           -> number | '(' expr ')'
+subterm          -> factor factorrest
+
+factorrest       -> '^' factorrest
+                  | {e}
+
+factor           -> optionalNegation number | '(' expr ')'
 
 functionName     -> 'cos' | 'sin' | 'tan' | 'log' | 'ln' | 'sqrt'
 number           -> digits optionalFraction optionalExponent | 'e' | 'pi'
+optionalNegation -> - | {e}
 optionalFraction -> '.' digits | {e}
 optionalExponent -> ( ( 'E' | 'e' ) ( '+' | '-' | {e} ) digits ) | {e}
 digits           -> digit digit*

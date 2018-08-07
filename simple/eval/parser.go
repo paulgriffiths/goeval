@@ -59,7 +59,7 @@ func getExpr(ltchan *tokens.LTChan) (expr, error) {
 
 func getTerm(ltchan *tokens.LTChan) (expr, error) {
     var left expr
-    left, err := getFactor(ltchan)
+    left, err := getSubTerm(ltchan)
     if err != nil {
         return nil, err
     }
@@ -68,7 +68,7 @@ func getTerm(ltchan *tokens.LTChan) (expr, error) {
     for {
         switch {
         case ltchan.Match(tokens.OperatorToken("*")):
-            right, err := getFactor(ltchan)
+            right, err := getSubTerm(ltchan)
             if err != nil {
                 return nil, err
             }
@@ -86,7 +86,39 @@ func getTerm(ltchan *tokens.LTChan) (expr, error) {
     return left, nil
 }
 
+func getSubTerm(ltchan *tokens.LTChan) (expr, error) {
+    var left expr
+    left, err := getFactor(ltchan)
+    if err != nil {
+        return nil, err
+    }
+
+    loop:
+    for {
+        switch {
+        case ltchan.Match(tokens.OperatorToken("^")):
+            right, err := getFactor(ltchan)
+            if err != nil {
+                return nil, err
+            }
+
+            // Note that we make the power operator left-associative, here
+
+            left = power{left, right}
+        default:
+            break loop
+        }
+    }
+    return left, nil
+}
+
 func getFactor(ltchan *tokens.LTChan) (expr, error) {
+    neg := false
+    if ltchan.Match(tokens.OperatorToken("-")) {
+        neg = true
+    }
+    var result expr
+
     switch {
     case ltchan.Match(tokens.RightParenToken()):
         return nil, UnbalancedParenthesesError
@@ -98,15 +130,20 @@ func getFactor(ltchan *tokens.LTChan) (expr, error) {
         if !ltchan.Match(tokens.RightParenToken()) {
             return nil, UnbalancedParenthesesError
         }
-        return ex, nil
+        result = ex
     case ltchan.MatchType(tokens.ZeroNumberToken()):
         value, err := strconv.ParseFloat(ltchan.Value(), 64)
         if err != nil {
             panic(fmt.Sprintf("Couldn't convert to float: %s", ltchan.Value()))
         }
-        return number{value}, nil
+        result = number{value}
     default:
-        return nil, fmt.Errorf("bad factor")
+        return nil, MissingFactorError
     }
-    panic(fmt.Errorf("unknown parser error getting factor"))
+
+    if neg {
+        return negate{result}, nil
+    } else {
+        return result, nil
+    }
 }

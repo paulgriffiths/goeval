@@ -1,5 +1,7 @@
 package eval
 
+import "math"
+
 type expr interface {
     Evaluate() (float64, error)
 }
@@ -77,5 +79,33 @@ func (d divide) Evaluate() (float64, error) {
         return 1, DivideByZeroError
     }
     return l / r, nil
+}
+
+type negate struct {
+    operand expr
+}
+
+func (n negate) Evaluate() (float64, error) {
+    o, err := n.operand.Evaluate()
+    if err != nil {
+        return 1, err
+    }
+    return -o, nil
+}
+
+type power struct {
+    base, exponent expr
+}
+
+func (p power) Evaluate() (float64, error) {
+    l, err := p.base.Evaluate()
+    if err != nil {
+        return 1, err
+    }
+    r, err := p.exponent.Evaluate()
+    if err != nil {
+        return 1, err
+    }
+    return math.Pow(l, r), nil
 }
 

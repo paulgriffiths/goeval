@@ -12,6 +12,8 @@ func (e evalError) Error() string {
         return "unbalanced parentheses"
     case dbz:
         return "divide by zero"
+    case mso:
+        return "missing factor"
     default:
         return "unspecified error"
     }
@@ -20,7 +22,9 @@ func (e evalError) Error() string {
 const (
     ubp evalErrorType = iota
     dbz
+    mso
 )
 
 var UnbalancedParenthesesError evalError = evalError{ubp}
 var DivideByZeroError evalError = evalError{dbz}
+var MissingFactorError evalError = evalError{mso}
