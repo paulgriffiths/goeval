@@ -18,6 +18,10 @@ func NewLTChan(ch chan Token) *LTChan {
     return &l
 }
 
+func (l *LTChan) Value() string {
+    return l.current.Value()
+}
+
 func (l *LTChan) Next() (Token, error) {
     l.current = l.lookahead
     if l.current == NullToken() {
@@ -32,18 +36,7 @@ func (l *LTChan) Next() (Token, error) {
     return l.current, nil
 }
 
-func (l *LTChan) Lookahead() Token {
-    return l.lookahead
-}
-
-func (l *LTChan) MatchToken(t Token) {
-    next, err := l.Next()
-    if err != nil || next != t {
-        panic(fmt.Sprintf("failed to match as expected"))
-    }
-}
-
-func (l *LTChan) MatchIfEqual(t Token) bool {
+func (l *LTChan) Match(t Token) bool {
     if l.lookahead != t {
         return false
     }

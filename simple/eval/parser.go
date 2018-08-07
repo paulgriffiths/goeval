@@ -13,7 +13,7 @@ func evaluate(expression string) (float64, error) {
         return 1, fmt.Errorf("Couldn't create lexer: %v", err)
     }
 
-    e, err := getExpr(tokens.NewLTChan(ch))
+    expr, err := getExpr(tokens.NewLTChan(ch))
     if err != nil {
         return 1, fmt.Errorf("Couldn't parse expression: %v", err)
     }
@@ -21,85 +21,85 @@ func evaluate(expression string) (float64, error) {
     // TODO: Need to empty channel, in case of error, so that
     // lexing goroutine can finish and return.
 
-    v, err := e.Evaluate()
+    value, err := expr.Evaluate()
     if err != nil {
         return 1, fmt.Errorf("Couldn't evaluate expression: %v", err)
     }
-    return v, nil
+    return value, nil
 }
 
 func getExpr(ltchan *tokens.LTChan) (expr, error) {
-    f, err := getTerm(ltchan)
+    firstTerm, err := getTerm(ltchan)
     if err != nil {
         return nil, err
     }
 
     switch {
-    case ltchan.MatchIfEqual(tokens.NewOperatorToken("+")):
-        v, err := getTerm(ltchan)
+    case ltchan.Match(tokens.NewOperatorToken("+")):
+        secondTerm, err := getTerm(ltchan)
         if err != nil {
             return nil, err
         }
-        return add{f, v}, nil
-    case ltchan.MatchIfEqual(tokens.NewOperatorToken("-")):
-        v, err := getTerm(ltchan)
+        return add{firstTerm, secondTerm}, nil
+    case ltchan.Match(tokens.NewOperatorToken("-")):
+        secondTerm, err := getTerm(ltchan)
         if err != nil {
             return nil, err
         }
-        return subtract{f, v}, nil
+        return subtract{firstTerm, secondTerm}, nil
     default:
-        return f, nil
+        return firstTerm, nil
     }
 }
 
 func getTerm(ltchan *tokens.LTChan) (expr, error) {
-    f, err := getFactor(ltchan)
+    firstFact, err := getFactor(ltchan)
     if err != nil {
         return nil, err
     }
 
     switch {
-    case ltchan.MatchIfEqual(tokens.NewOperatorToken("*")):
-        v, err := getFactor(ltchan)
+    case ltchan.Match(tokens.NewOperatorToken("*")):
+        secondFact, err := getFactor(ltchan)
         if err != nil {
             return nil, err
         }
-        return multiply{f, v}, nil
-    case ltchan.MatchIfEqual(tokens.NewOperatorToken("/")):
-        v, err := getFactor(ltchan)
+        return multiply{firstFact, secondFact}, nil
+    case ltchan.Match(tokens.NewOperatorToken("/")):
+        secondFact, err := getFactor(ltchan)
         if err != nil {
             return nil, err
         }
-        return divide{f, v}, nil
+        return divide{firstFact, secondFact}, nil
     default:
-        return f, nil
+        return firstFact, nil
     }
 }
 
 func getFactor(ltchan *tokens.LTChan) (expr, error) {
-    t, err := ltchan.Next()
+    token, err := ltchan.Next()
     if err != nil {
         return nil, err
     }
 
     switch {
-    case t.IsRightParen():
+    case token.IsRightParen():
         return nil, fmt.Errorf("mismatched parentheses")
-    case t.IsLeftParen():
-        e, err := getExpr(ltchan)
+    case token.IsLeftParen():
+        expr, err := getExpr(ltchan)
         if err != nil {
             return nil, err
         }
-        if !ltchan.MatchIfEqual(tokens.RightParenToken()) {
+        if !ltchan.Match(tokens.RightParenToken()) {
             return nil, fmt.Errorf("mismatched parentheses")
         }
-        return e, nil
-    case t.IsNumber():
-        v, err := strconv.ParseFloat(t.Value(), 64)
+        return expr, nil
+    case token.IsNumber():
+        value, err := strconv.ParseFloat(token.Value(), 64)
         if err != nil {
-            panic(fmt.Sprintf("Couldn't convert to float: %s", t.Value()))
+            panic(fmt.Sprintf("Couldn't convert to float: %s", token.Value()))
         }
-        return number{v}, nil
+        return number{value}, nil
     default:
         return nil, fmt.Errorf("bad factor")
     }
