@@ -69,9 +69,19 @@ func (t Token) IsOperatorWithValue(value string) bool {
     return t.tokenType == operatorToken && t.value == value
 }
 
+// IsOperator returns true if the token is an operator token.
+func (t Token) IsOperator() bool {
+    return t.tokenType == operatorToken
+}
+
 // IsNumber returns true if the token is a number token.
 func (t Token) IsNumber() bool {
     return t.tokenType == numberToken
+}
+
+// IsWord returns true if the token is a word token.
+func (t Token) IsWord() bool {
+    return t.tokenType == wordToken
 }
 
 // IsLeftParen returns true if the token is a left parenthesis token.

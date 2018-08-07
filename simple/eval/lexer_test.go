@@ -3,315 +3,107 @@ package eval
 import (
     "strings"
     "testing"
+    "github.com/paulgriffiths/goeval/tokens"
 )
 
-func TestLexerEmptyInput(t *testing.T) {
-    ch, err := NewLexer(strings.NewReader(""))
-    if err != nil {
-        t.Errorf("Couldn't create lexer: %v", err)
+func TestLexerTokenValues(t *testing.T) {
+    cases := []struct {
+        input string
+        values []string
+    }{
+        {"", []string{}},
+        {"~", []string{"~"}},
+        {"(", []string{"("}},
+        {")", []string{")"}},
+        {"+", []string{"+"}},
+        {"-", []string{"-"}},
+        {"*", []string{"*"}},
+        {"/", []string{"/"}},
+        {"+-", []string{"+", "-"}},
+        {"   +  -     ", []string{"+", "-"}},
+        {"cos", []string{"cos"}},
+        {"  cos   sin   ", []string{"cos", "sin"}},
+        {"123", []string{"123"}},
+        {"123+", []string{"123", "+"}},
+        {"1e6", []string{"1e6"}},
+        {"1e6+", []string{"1e6", "+"}},
+        {"1.23", []string{"1.23"}},
+        {"1.23+", []string{"1.23", "+"}},
+        {"1.23e45", []string{"1.23e45"}},
+        {"1.23e45+", []string{"1.23e45", "+"}},
+        {"1.23e-45", []string{"1.23e-45"}},
+        {"1.23e+45", []string{"1.23e+45"}},
+        {" (  1.2e-3*(cos(45  ) +sin8.7)  )~?  ",
+            []string{"(", "1.2e-3", "*", "(", "cos", "(", "45",
+            ")", "+", "sin", "8.7", ")", ")", "~", "?"}},
     }
-    if _, ok := <-ch; ok != false {
-        t.Errorf("Got %v, want %v", ok, false)
+
+    for n, c:= range cases {
+        ch, err := NewLexer(strings.NewReader(c.input))
+        if err != nil {
+            t.Errorf("Couldn't create lexer: %v", err)
+        }
+
+        for _, v := range c.values {
+            if token := <-ch; token.Value() != v {
+                t.Errorf("Input '%s', got %v, want %v", c.input, c.values, v)
+            }
+        }
+
+        if _, ok := <-ch; ok != false {
+            t.Errorf("Case %d, end of channel not encountered when expected", n)
+        }
     }
+
 }
 
-func TestLexerIllegalToken(t *testing.T) {
-    ch, err := NewLexer(strings.NewReader("~"))
-    if err != nil {
-        t.Errorf("Couldn't create lexer: %v", err)
+func TestLexerTokenTypes(t *testing.T) {
+    cases := []struct {
+        input string
+        values []func(*tokens.Token) bool
+    }{
+        {"0", []func(*tokens.Token) bool {(*tokens.Token).IsNumber}},
+        {"1", []func(*tokens.Token) bool {(*tokens.Token).IsNumber}},
+        {"123", []func(*tokens.Token) bool {(*tokens.Token).IsNumber}},
+        {"1.23", []func(*tokens.Token) bool {(*tokens.Token).IsNumber}},
+        {"1e6", []func(*tokens.Token) bool {(*tokens.Token).IsNumber}},
+        {"1.23e6", []func(*tokens.Token) bool {(*tokens.Token).IsNumber}},
+        {"1e-6", []func(*tokens.Token) bool {(*tokens.Token).IsNumber}},
+        {"1.23e-6", []func(*tokens.Token) bool {(*tokens.Token).IsNumber}},
+        {"cos", []func(*tokens.Token) bool {(*tokens.Token).IsWord}},
+        {"+", []func(*tokens.Token) bool {(*tokens.Token).IsOperator}},
+        {"-", []func(*tokens.Token) bool {(*tokens.Token).IsOperator}},
+        {"*", []func(*tokens.Token) bool {(*tokens.Token).IsOperator}},
+        {"/", []func(*tokens.Token) bool {(*tokens.Token).IsOperator}},
+        {"^", []func(*tokens.Token) bool {(*tokens.Token).IsOperator}},
+        {"(", []func(*tokens.Token) bool {(*tokens.Token).IsLeftParen}},
+        {")", []func(*tokens.Token) bool {(*tokens.Token).IsRightParen}},
+        {"~", []func(*tokens.Token) bool {(*tokens.Token).IsIllegal}},
+        {"?", []func(*tokens.Token) bool {(*tokens.Token).IsIllegal}},
+        {"$", []func(*tokens.Token) bool {(*tokens.Token).IsIllegal}},
+        {"&", []func(*tokens.Token) bool {(*tokens.Token).IsIllegal}},
+        {"1e", []func(*tokens.Token) bool {(*tokens.Token).IsIllegal}},
+        {"1.", []func(*tokens.Token) bool {(*tokens.Token).IsIllegal}},
+        {"1e.", []func(*tokens.Token) bool {
+            (*tokens.Token).IsIllegal,
+            (*tokens.Token).IsIllegal,
+        }},
     }
-    token := <-ch
-    if token.Value() != "~" {
-        t.Errorf("Got value %s, want %s", token.Value(), "~")
-    }
-    if !token.IsIllegal() {
-        t.Errorf("Got other than illegal token")
-    }
-    if _, ok := <-ch; ok != false {
-        t.Errorf("Got %v, want %v", ok, false)
+
+    for n, c:= range cases {
+        ch, err := NewLexer(strings.NewReader(c.input))
+        if err != nil {
+            t.Errorf("Couldn't create lexer: %v", err)
+        }
+
+        for _, v := range c.values {
+            if token := <-ch; !v(&token) {
+                t.Errorf("Input '%s', unexpected type", c.input)
+            }
+        }
+
+        if _, ok := <-ch; ok != false {
+            t.Errorf("Case %d, end of channel not encountered when expected", n)
+        }
     }
 }
-
-func TestLexerLeftParenToken(t *testing.T) {
-    ch, err := NewLexer(strings.NewReader("("))
-    if err != nil {
-        t.Errorf("Couldn't create lexer: %v", err)
-    }
-    if token := <-ch; token.Value() != "(" {
-        t.Errorf("Got value %s, want %s", token.Value(), ")")
-    }
-    if _, ok := <-ch; ok != false {
-        t.Errorf("Got %v, want %v", ok, false)
-    }
-}
-
-func TestLexerRightParenToken(t *testing.T) {
-    ch, err := NewLexer(strings.NewReader(")"))
-    if err != nil {
-        t.Errorf("Couldn't create lexer: %v", err)
-    }
-    if token := <-ch; token.Value() != ")" {
-        t.Errorf("Got value %s, want %s", token.Value(), ")")
-    }
-    if _, ok := <-ch; ok != false {
-        t.Errorf("Got %v, want %v", ok, false)
-    }
-}
-
-func TestLexerOperatorToken(t *testing.T) {
-    ch, err := NewLexer(strings.NewReader("+"))
-    if err != nil {
-        t.Errorf("Couldn't create lexer: %v", err)
-    }
-    if token := <-ch; token.Value() != "+" {
-        t.Errorf("Got value %s, want %s", token.Value(), "+")
-    }
-    if _, ok := <-ch; ok != false {
-        t.Errorf("Got %v, want %v", ok, false)
-    }
-}
-
-func TestLexerTwoOperatorTokens(t *testing.T) {
-    ch, err := NewLexer(strings.NewReader("+-"))
-    if err != nil {
-        t.Errorf("Couldn't create lexer: %v", err)
-    }
-    if token := <-ch; token.Value() != "+" {
-        t.Errorf("Got value %s, want %s", token.Value(), "+")
-    }
-    if token := <-ch; token.Value() != "-" {
-        t.Errorf("Got value %s, want %s", token.Value(), "-")
-    }
-    if _, ok := <-ch; ok != false {
-        t.Errorf("Got %v, want %v", ok, false)
-    }
-}
-
-func TestLexerTwoOperatorTokensWithWhitespace(t *testing.T) {
-    ch, err := NewLexer(strings.NewReader("     +  -        "))
-    if err != nil {
-        t.Errorf("Couldn't create lexer: %v", err)
-    }
-    if token := <-ch; token.Value() != "+" {
-        t.Errorf("Got value %s, want %s", token.Value(), "+")
-    }
-    if token := <-ch; token.Value() != "-" {
-        t.Errorf("Got value %s, want %s", token.Value(), "-")
-    }
-    if _, ok := <-ch; ok != false {
-        t.Errorf("Got %v, want %v", ok, false)
-    }
-}
-
-func TestLexerFunctionToken(t *testing.T) {
-    ch, err := NewLexer(strings.NewReader("cos"))
-    if err != nil {
-        t.Errorf("Couldn't create lexer: %v", err)
-    }
-    if token := <-ch; token.Value() != "cos" {
-        t.Errorf("Got value %s, want %s", token.Value(), "cos")
-    }
-    if _, ok := <-ch; ok != false {
-        t.Errorf("Got %v, want %v", ok, false)
-    }
-}
-
-func TestLexerTwoFunctionTokens(t *testing.T) {
-    ch, err := NewLexer(strings.NewReader("  cos  sin  "))
-    if err != nil {
-        t.Errorf("Couldn't create lexer: %v", err)
-    }
-    if token := <-ch; token.Value() != "cos" {
-        t.Errorf("Got value %s, want %s", token.Value(), "cos")
-    }
-    if token := <-ch; token.Value() != "sin" {
-        t.Errorf("Got value %s, want %s", token.Value(), "sin")
-    }
-    if _, ok := <-ch; ok != false {
-        t.Errorf("Got %v, want %v", ok, false)
-    }
-}
-
-func TestLexerSimpleIntegerNumberToken(t *testing.T) {
-    ch, err := NewLexer(strings.NewReader("123"))
-    if err != nil {
-        t.Errorf("Couldn't create lexer: %v", err)
-    }
-    if token := <-ch; token.Value() != "123" {
-        t.Errorf("Got value %s, want %s", token.Value(), "123")
-    }
-    if _, ok := <-ch; ok != false {
-        t.Errorf("Got %v, want %v", ok, false)
-    }
-}
-
-func TestLexerSimpleIntegerNumberTokenWithTrailing(t *testing.T) {
-    ch, err := NewLexer(strings.NewReader("123+"))
-    if err != nil {
-        t.Errorf("Couldn't create lexer: %v", err)
-    }
-    if token := <-ch; token.Value() != "123" {
-        t.Errorf("Got value %s, want %s", token.Value(), "123")
-    }
-    if token := <-ch; token.Value() != "+" {
-        t.Errorf("Got value %s, want %s", token.Value(), "+")
-    }
-    if _, ok := <-ch; ok != false {
-        t.Errorf("Got %v, want %v", ok, false)
-    }
-}
-
-func TestLexerExponentIntegerNumberToken(t *testing.T) {
-    ch, err := NewLexer(strings.NewReader("1e6"))
-    if err != nil {
-        t.Errorf("Couldn't create lexer: %v", err)
-    }
-    if token := <-ch; token.Value() != "1e6" {
-        t.Errorf("Got value %s, want %s", token.Value(), "1e6")
-    }
-    if _, ok := <-ch; ok != false {
-        t.Errorf("Got %v, want %v", ok, false)
-    }
-}
-
-func TestLexerExponentIntegerNumberTokenWithTrailing(t *testing.T) {
-    ch, err := NewLexer(strings.NewReader("1e6+"))
-    if err != nil {
-        t.Errorf("Couldn't create lexer: %v", err)
-    }
-    if token := <-ch; token.Value() != "1e6" {
-        t.Errorf("Got value %s, want %s", token.Value(), "1e6")
-    }
-    if token := <-ch; token.Value() != "+" {
-        t.Errorf("Got value %s, want %s", token.Value(), "+")
-    }
-    if _, ok := <-ch; ok != false {
-        t.Errorf("Got %v, want %v", ok, false)
-    }
-}
-
-func TestLexerBadExponentIntegerNumberToken(t *testing.T) {
-    ch, err := NewLexer(strings.NewReader("1e/"))
-    if err != nil {
-        t.Errorf("Couldn't create lexer: %v", err)
-    }
-    if token := <-ch; !token.IsIllegal() || token.Value() != "1e" {
-        t.Errorf("Didn't get illegal token as expected")
-        t.Errorf("Got value %s, want %s", token.Value(), "1e")
-    }
-    if token := <-ch; token.Value() != "/" {
-        t.Errorf("Got value %s, want %s", token.Value(), "/")
-    }
-    if _, ok := <-ch; ok != false {
-        t.Errorf("Got %v, want %v", ok, false)
-    }
-}
-
-func TestLexerRealNumberToken(t *testing.T) {
-    ch, err := NewLexer(strings.NewReader("1.23"))
-    if err != nil {
-        t.Errorf("Couldn't create lexer: %v", err)
-    }
-    if token := <-ch; token.Value() != "1.23" {
-        t.Errorf("Got value %s, want %s", token.Value(), "1.23")
-    }
-    if _, ok := <-ch; ok != false {
-        t.Errorf("Got %v, want %v", ok, false)
-    }
-}
-
-func TestLexerRealNumberTokenWithTrailing(t *testing.T) {
-    ch, err := NewLexer(strings.NewReader("1.23+"))
-    if err != nil {
-        t.Errorf("Couldn't create lexer: %v", err)
-    }
-    if token := <-ch; token.Value() != "1.23" {
-        t.Errorf("Got value %s, want %s", token.Value(), "1.23")
-    }
-    if token := <-ch; token.Value() != "+" {
-        t.Errorf("Got value %s, want %s", token.Value(), "+")
-    }
-    if _, ok := <-ch; ok != false {
-        t.Errorf("Got %v, want %v", ok, false)
-    }
-}
-
-func TestLexerRealExponentNumberToken(t *testing.T) {
-    ch, err := NewLexer(strings.NewReader("1.23e72"))
-    if err != nil {
-        t.Errorf("Couldn't create lexer: %v", err)
-    }
-    if token := <-ch; token.Value() != "1.23e72" {
-        t.Errorf("Got value %s, want %s", token.Value(), "1.23e72")
-    }
-    if _, ok := <-ch; ok != false {
-        t.Errorf("Got %v, want %v", ok, false)
-    }
-}
-
-func TestLexerRealNegativeExponentNumberToken(t *testing.T) {
-    ch, err := NewLexer(strings.NewReader("1.23e-45"))
-    if err != nil {
-        t.Errorf("Couldn't create lexer: %v", err)
-    }
-    if token := <-ch; token.Value() != "1.23e-45" {
-        t.Errorf("Got value %s, want %s", token.Value(), "1.23e-45")
-    }
-    if _, ok := <-ch; ok != false {
-        t.Errorf("Got %v, want %v", ok, false)
-    }
-}
-
-func TestLexerRealExplicitPositiveExponentNumberToken(t *testing.T) {
-    ch, err := NewLexer(strings.NewReader("1.23e+45"))
-    if err != nil {
-        t.Errorf("Couldn't create lexer: %v", err)
-    }
-    if token := <-ch; token.Value() != "1.23e+45" {
-        t.Errorf("Got value %s, want %s", token.Value(), "1.23e+45")
-    }
-    if _, ok := <-ch; ok != false {
-        t.Errorf("Got %v, want %v", ok, false)
-    }
-}
-
-func TestLexerComplexExpression(t *testing.T) {
-    ch, err := NewLexer(strings.NewReader("(1.2e-3*(cos45+8.7))"))
-    if err != nil {
-        t.Errorf("Couldn't create lexer: %v", err)
-    }
-    if token := <-ch; token.Value() != "(" {
-        t.Errorf("Got value %s, want %s", token.Value(), "(")
-    }
-    if token := <-ch; token.Value() != "1.2e-3" {
-        t.Errorf("Got value %s, want %s", token.Value(), "1.2e-3")
-    }
-    if token := <-ch; token.Value() != "*" {
-        t.Errorf("Got value %s, want %s", token.Value(), "*")
-    }
-    if token := <-ch; token.Value() != "(" {
-        t.Errorf("Got value %s, want %s", token.Value(), "(")
-    }
-    if token := <-ch; token.Value() != "cos" {
-        t.Errorf("Got value %s, want %s", token.Value(), "cos")
-    }
-    if token := <-ch; token.Value() != "45" {
-        t.Errorf("Got value %s, want %s", token.Value(), "45")
-    }
-    if token := <-ch; token.Value() != "+" {
-        t.Errorf("Got value %s, want %s", token.Value(), "+")
-    }
-    if token := <-ch; token.Value() != "8.7" {
-        t.Errorf("Got value %s, want %s", token.Value(), "8.7")
-    }
-    if token := <-ch; token.Value() != ")" {
-        t.Errorf("Got value %s, want %s", token.Value(), ")")
-    }
-    if token := <-ch; token.Value() != ")" {
-        t.Errorf("Got value %s, want %s", token.Value(), ")")
-    }
-    if _, ok := <-ch; ok != false {
-        t.Errorf("Got %v, want %v", ok, false)
-    }
-}
-
