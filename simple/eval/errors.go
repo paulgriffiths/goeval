@@ -14,6 +14,8 @@ func (e evalError) Error() string {
         return "divide by zero"
     case mso:
         return "missing factor"
+    case dom:
+        return "domain error"
     default:
         return "unspecified error"
     }
@@ -23,8 +25,10 @@ const (
     ubp evalErrorType = iota
     dbz
     mso
+    dom
 )
 
 var UnbalancedParenthesesError evalError = evalError{ubp}
 var DivideByZeroError evalError = evalError{dbz}
 var MissingFactorError evalError = evalError{mso}
+var DomainError evalError = evalError{dom}

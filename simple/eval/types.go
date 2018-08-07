@@ -106,6 +106,10 @@ func (p power) Evaluate() (float64, error) {
     if err != nil {
         return 1, err
     }
-    return math.Pow(l, r), nil
+    result := math.Pow(l, r)
+    if math.IsNaN(result) {
+        return 1, DomainError
+    }
+    return result, nil
 }
 
