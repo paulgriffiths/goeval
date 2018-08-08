@@ -1,27 +1,31 @@
-# Work-in-progress
+# Grammar for simple expression evaluator.
+#
+# Eliminates left recursion to faciliate predictive parsing.
 
-expr             -> term termrest
+expr             -> term restExpr
 
-termrest         -> '+' termrest
-                  | '-' termrest
+restExpr         -> '+' term restExpr
+                  | '-' term restExpr
                   | {e}
 
-term             -> subterm subtermrest
+term             -> subTerm restTerm
 
-subtermrest      -> '*' subtermrest
-                  | '/' subtermrest
+restTerm         -> '*' subTerm restTerm
+                  | '/' subTerm restTerm
                   | {e}
 
-subterm          -> factor factorrest
+subTerm          -> factor restSubTerm
 
-factorrest       -> '^' factorrest
+restSubTerm      -> '^' factor restSubTerm
                   | {e}
 
-factor           -> optionalNegation number | '(' expr ')'
+factor           -> optionalNegation ( number | parenExpr | func parenExpr )
 
-functionName     -> 'cos' | 'sin' | 'tan' | 'log' | 'ln' | 'sqrt'
-number           -> digits optionalFraction optionalExponent | 'e' | 'pi'
-optionalNegation -> - | {e}
+parenExpr        -> '(' expr ')'
+func             -> 'cos' | 'sin' | 'tan' | 'acos' | 'asin' | 'atan' |
+                    'round' | 'ceil' | 'floor' | 'log' | 'ln' | 'sqrt'
+number           -> (digits optionalFraction optionalExponent) | 'e' | 'pi'
+optionalNegation -> '-' | {e}
 optionalFraction -> '.' digits | {e}
 optionalExponent -> ( ( 'E' | 'e' ) ( '+' | '-' | {e} ) digits ) | {e}
 digits           -> digit digit*
