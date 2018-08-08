@@ -1,34 +1,25 @@
 package eval
 
-type evalErrorType int
+// evalError is the internal error value type.
+type evalError int
 
-type evalError struct {
-    id evalErrorType
-}
-
-func (e evalError) Error() string {
-    switch e.id {
-    case ubp:
-        return "unbalanced parentheses"
-    case dbz:
-        return "divide by zero"
-    case mso:
-        return "missing factor"
-    case dom:
-        return "domain error"
-    default:
-        return "unspecified error"
-    }
-}
-
+// Error values
 const (
-    ubp evalErrorType = iota
-    dbz
-    mso
-    dom
+    UnbalancedParenthesesError evalError = iota
+    DivideByZeroError
+    MissingFactorError
+    DomainError
 )
 
-var UnbalancedParenthesesError evalError = evalError{ubp}
-var DivideByZeroError evalError = evalError{dbz}
-var MissingFactorError evalError = evalError{mso}
-var DomainError evalError = evalError{dom}
+// descs contains string descriptions of each error value
+var descs = [...]string {
+    UnbalancedParenthesesError: "unbalanced parentheses",
+    DivideByZeroError: "divide by zero",
+    MissingFactorError: "missing factor",
+    DomainError: "domain error",
+}
+
+// Error returns a string description of an error
+func (e evalError) Error() string {
+    return descs[e]
+}
