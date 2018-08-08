@@ -2,6 +2,7 @@ package eval
 
 import (
     "fmt"
+    "math"
     "strconv"
     "strings"
     "github.com/paulgriffiths/goeval/tokens"
@@ -13,13 +14,16 @@ func Evaluate(expression string) (float64, error) {
         return 1, fmt.Errorf("Couldn't create lexer: %v", err)
     }
 
-    expr, err := getExpr(tokens.NewLTChan(ch))
+	ltc := tokens.NewLTChan(ch)
+    expr, err := getExpr(ltc)
     if err != nil {
         return 1, err
     }
 
-    // TODO: Need to empty channel, in case of error, so that
-    // lexing goroutine can finish and return.
+	if !ltc.IsEmpty() {
+        ltc.Flush()
+	    return 1, TrailingTokensError
+	}
 
     value, err := expr.Evaluate()
     if err != nil {
@@ -137,6 +141,55 @@ func getFactor(ltchan *tokens.LTChan) (expr, error) {
             panic(fmt.Sprintf("Couldn't convert to float: %s", ltchan.Value()))
         }
         result = number{value}
+    case ltchan.MatchType(tokens.EmptyWordToken()):
+        word := string(ltchan.Value())
+
+        if word == "e" {
+            result = number{math.E}
+            break
+        } else if word == "pi" {
+            result = number{math.Pi}
+            break
+        }
+
+        if !ltchan.Match(tokens.LeftParenToken()) {
+            return nil, MissingArgumentError
+        }
+        ex, err := getExpr(ltchan)
+        if err != nil {
+            return nil, err
+        }
+        if !ltchan.Match(tokens.RightParenToken()) {
+            return nil, UnbalancedParenthesesError
+        }
+        switch word {
+        case "cos":
+            result = cos{ex}
+        case "sin":
+            result = sin{ex}
+        case "tan":
+            result = tan{ex}
+        case "acos":
+            result = acos{ex}
+        case "asin":
+            result = asin{ex}
+        case "atan":
+            result = atan{ex}
+        case "round":
+            result = round{ex}
+        case "ceil":
+            result = ceil{ex}
+        case "floor":
+            result = floor{ex}
+        case "sqrt":
+            result = sqrt{ex}
+        case "log":
+            result = log{ex}
+        case "ln":
+            result = ln{ex}
+        default:
+            return nil, UnknownFunctionError
+        }
     default:
         return nil, MissingFactorError
     }

@@ -113,3 +113,202 @@ func (p power) Evaluate() (float64, error) {
     return result, nil
 }
 
+type cos struct {
+    operand expr
+}
+
+func (c cos) Evaluate() (float64, error) {
+    o, err := c.operand.Evaluate()
+    if err != nil {
+        return 1, err
+    }
+    result := math.Cos(toRadians(o))
+    if math.IsNaN(result) {
+        return 1, DomainError
+    }
+    return result, nil
+}
+
+type sin struct {
+    operand expr
+}
+
+func (s sin) Evaluate() (float64, error) {
+    o, err := s.operand.Evaluate()
+    if err != nil {
+        return 1, err
+    }
+    result := math.Sin(toRadians(o))
+    if math.IsNaN(result) {
+        return 1, DomainError
+    }
+    return result, nil
+}
+
+type tan struct {
+    operand expr
+}
+
+func (t tan) Evaluate() (float64, error) {
+    o, err := t.operand.Evaluate()
+    if err != nil {
+        return 1, err
+    }
+    result := math.Tan(toRadians(o))
+    if math.IsNaN(result) {
+        return 1, DomainError
+    }
+    return result, nil
+}
+
+type acos struct {
+    operand expr
+}
+
+func (a acos) Evaluate() (float64, error) {
+    o, err := a.operand.Evaluate()
+    if err != nil {
+        return 1, err
+    }
+    result := toDegrees(math.Acos(o))
+    if math.IsNaN(result) {
+        return 1, DomainError
+    }
+    return result, nil
+}
+
+type asin struct {
+    operand expr
+}
+
+func (a asin) Evaluate() (float64, error) {
+    o, err := a.operand.Evaluate()
+    if err != nil {
+        return 1, err
+    }
+    result := toDegrees(math.Asin(o))
+    if math.IsNaN(result) {
+        return 1, DomainError
+    }
+    return result, nil
+}
+
+type atan struct {
+    operand expr
+}
+
+func (a atan) Evaluate() (float64, error) {
+    o, err := a.operand.Evaluate()
+    if err != nil {
+        return 1, err
+    }
+    result := toDegrees(math.Atan(o))
+    if math.IsNaN(result) {
+        return 1, DomainError
+    }
+    return result, nil
+}
+
+type round struct {
+    operand expr
+}
+
+func (r round) Evaluate() (float64, error) {
+    o, err := r.operand.Evaluate()
+    if err != nil {
+        return 1, err
+    }
+    result := math.Round(o)
+    if math.IsNaN(result) {
+        return 1, DomainError
+    }
+    return result, nil
+}
+
+type ceil struct {
+    operand expr
+}
+
+func (c ceil) Evaluate() (float64, error) {
+    o, err := c.operand.Evaluate()
+    if err != nil {
+        return 1, err
+    }
+    result := math.Ceil(o)
+    if math.IsNaN(result) {
+        return 1, DomainError
+    }
+    return result, nil
+}
+
+type floor struct {
+    operand expr
+}
+
+func (f floor) Evaluate() (float64, error) {
+    o, err := f.operand.Evaluate()
+    if err != nil {
+        return 1, err
+    }
+    result := math.Floor(o)
+    if math.IsNaN(result) {
+        return 1, DomainError
+    }
+    return result, nil
+}
+
+type sqrt struct {
+    operand expr
+}
+
+func (s sqrt) Evaluate() (float64, error) {
+    o, err := s.operand.Evaluate()
+    if err != nil {
+        return 1, err
+    }
+    result := math.Sqrt(o)
+    if math.IsNaN(result) {
+        return 1, DomainError
+    }
+    return result, nil
+}
+
+type log struct {
+    operand expr
+}
+
+func (l log) Evaluate() (float64, error) {
+    o, err := l.operand.Evaluate()
+    if err != nil {
+        return 1, err
+    }
+    result := math.Log10(o)
+    if math.IsNaN(result) {
+        return 1, DomainError
+    }
+    return result, nil
+}
+
+type ln struct {
+    operand expr
+}
+
+func (l ln) Evaluate() (float64, error) {
+    o, err := l.operand.Evaluate()
+    if err != nil {
+        return 1, err
+    }
+    result := math.Log(o)
+    if math.IsNaN(result) {
+        return 1, DomainError
+    }
+    return result, nil
+}
+
+func toRadians(degrees float64) float64 {
+    return degrees * math.Pi / 180
+}
+
+func toDegrees(radians float64) float64 {
+    return radians * 180 / math.Pi
+}

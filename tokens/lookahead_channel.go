@@ -64,3 +64,12 @@ func (l *LTChan) MatchType(t Token) bool {
     return true
 }
 
+func (l *LTChan) IsEmpty() bool {
+    return l.lookahead == NullToken()
+}
+
+func (l *LTChan) Flush() {
+    for !l.IsEmpty() {
+        l.Next()
+    }
+}

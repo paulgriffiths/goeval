@@ -38,6 +38,11 @@ func ZeroNumberToken() Token {
     return Token{numberToken, "0"}
 }
 
+// ZeroNumberToken returns a token representing the number zero.
+func EmptyWordToken() Token {
+    return Token{wordToken, ""}
+}
+
 // OperatorToken returns an operator token with the specified value.
 func OperatorToken(value string) Token {
     return Token{operatorToken, value}

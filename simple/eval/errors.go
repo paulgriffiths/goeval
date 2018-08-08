@@ -8,6 +8,9 @@ const (
     UnbalancedParenthesesError evalError = iota
     DivideByZeroError
     MissingFactorError
+    MissingArgumentError
+    UnknownFunctionError
+	TrailingTokensError
     DomainError
 )
 
@@ -16,6 +19,9 @@ var descs = [...]string {
     UnbalancedParenthesesError: "unbalanced parentheses",
     DivideByZeroError: "divide by zero",
     MissingFactorError: "missing factor",
+    MissingArgumentError: "missing function argument",
+    UnknownFunctionError: "unknown function",
+    TrailingTokensError: "trailing tokens",
     DomainError: "domain error",
 }
 
