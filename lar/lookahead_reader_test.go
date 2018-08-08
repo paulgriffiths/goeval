@@ -6,7 +6,7 @@ import (
 )
 
 type match struct {
-    matchFunc func (*LookaheadReader) bool
+    matchFunc func (*lookaheadReader) bool
     result string
 }
 
@@ -16,50 +16,50 @@ func TestMatching(t *testing.T) {
         terms []match
     }{
         {"", []match {}},
-        {"a", []match {{(*LookaheadReader).MatchLetter, "a"}}},
+        {"a", []match {{(*lookaheadReader).MatchLetter, "a"}}},
         {"ab", []match {
-            {(*LookaheadReader).MatchLetter, "a"},
-            {(*LookaheadReader).MatchLetter, "b"},
+            {(*lookaheadReader).MatchLetter, "a"},
+            {(*lookaheadReader).MatchLetter, "b"},
         }},
-        {"a", []match {{(*LookaheadReader).MatchLetters, "a"}}},
-        {"ab", []match {{(*LookaheadReader).MatchLetters, "ab"}}},
-        {"1", []match {{(*LookaheadReader).MatchDigit, "1"}}},
+        {"a", []match {{(*lookaheadReader).MatchLetters, "a"}}},
+        {"ab", []match {{(*lookaheadReader).MatchLetters, "ab"}}},
+        {"1", []match {{(*lookaheadReader).MatchDigit, "1"}}},
         {"12", []match {
-            {(*LookaheadReader).MatchDigit, "1"},
-            {(*LookaheadReader).MatchDigit, "2"},
+            {(*lookaheadReader).MatchDigit, "1"},
+            {(*lookaheadReader).MatchDigit, "2"},
         }},
-        {"1", []match {{(*LookaheadReader).MatchDigits, "1"}}},
-        {"12", []match {{(*LookaheadReader).MatchDigits, "12"}}},
-        {" ", []match {{(*LookaheadReader).MatchSpace, " "}}},
+        {"1", []match {{(*lookaheadReader).MatchDigits, "1"}}},
+        {"12", []match {{(*lookaheadReader).MatchDigits, "12"}}},
+        {" ", []match {{(*lookaheadReader).MatchSpace, " "}}},
         {" \t", []match {
-            {(*LookaheadReader).MatchSpace, " "},
-            {(*LookaheadReader).MatchSpace, "\t"},
+            {(*lookaheadReader).MatchSpace, " "},
+            {(*lookaheadReader).MatchSpace, "\t"},
         }},
-        {" ", []match {{(*LookaheadReader).MatchSpaces, " "}}},
-        {" \t", []match {{(*LookaheadReader).MatchSpaces, " \t"}}},
+        {" ", []match {{(*lookaheadReader).MatchSpaces, " "}}},
+        {" \t", []match {{(*lookaheadReader).MatchSpaces, " \t"}}},
         {"a1", []match {
-            {(*LookaheadReader).MatchLetter, "a"},
-            {(*LookaheadReader).MatchDigit, "1"},
+            {(*lookaheadReader).MatchLetter, "a"},
+            {(*lookaheadReader).MatchDigit, "1"},
         }},
         {"1 ", []match {
-            {(*LookaheadReader).MatchDigit, "1"},
-            {(*LookaheadReader).MatchSpace, " "},
+            {(*lookaheadReader).MatchDigit, "1"},
+            {(*lookaheadReader).MatchSpace, " "},
         }},
         {" a", []match {
-            {(*LookaheadReader).MatchSpace, " "},
-            {(*LookaheadReader).MatchLetter, "a"},
+            {(*lookaheadReader).MatchSpace, " "},
+            {(*lookaheadReader).MatchLetter, "a"},
         }},
         {"abc123", []match {
-            {(*LookaheadReader).MatchLetters, "abc"},
-            {(*LookaheadReader).MatchDigits, "123"},
+            {(*lookaheadReader).MatchLetters, "abc"},
+            {(*lookaheadReader).MatchDigits, "123"},
         }},
         {"123 \t\r", []match {
-            {(*LookaheadReader).MatchDigits, "123"},
-            {(*LookaheadReader).MatchSpaces, " \t\r"},
+            {(*lookaheadReader).MatchDigits, "123"},
+            {(*lookaheadReader).MatchSpaces, " \t\r"},
         }},
         {" \t\rabc", []match {
-            {(*LookaheadReader).MatchSpaces, " \t\r"},
-            {(*LookaheadReader).MatchLetters, "abc"},
+            {(*lookaheadReader).MatchSpaces, " \t\r"},
+            {(*lookaheadReader).MatchLetters, "abc"},
         }},
     }
 
@@ -88,33 +88,33 @@ func TestMatching(t *testing.T) {
 func TestNonMatching(t *testing.T) {
     cases := []struct {
         input string
-        terms []func (*LookaheadReader) bool
+        terms []func (*lookaheadReader) bool
     }{
-        {"a", []func (*LookaheadReader) bool {
-            (*LookaheadReader).MatchDigit,
-            (*LookaheadReader).MatchDigits,
-            (*LookaheadReader).MatchSpace,
-            (*LookaheadReader).MatchSpaces,
+        {"a", []func (*lookaheadReader) bool {
+            (*lookaheadReader).MatchDigit,
+            (*lookaheadReader).MatchDigits,
+            (*lookaheadReader).MatchSpace,
+            (*lookaheadReader).MatchSpaces,
         }},
-        {"1", []func (*LookaheadReader) bool {
-            (*LookaheadReader).MatchLetter,
-            (*LookaheadReader).MatchLetters,
-            (*LookaheadReader).MatchSpace,
-            (*LookaheadReader).MatchSpaces,
+        {"1", []func (*lookaheadReader) bool {
+            (*lookaheadReader).MatchLetter,
+            (*lookaheadReader).MatchLetters,
+            (*lookaheadReader).MatchSpace,
+            (*lookaheadReader).MatchSpaces,
         }},
-        {" ", []func (*LookaheadReader) bool {
-            (*LookaheadReader).MatchLetter,
-            (*LookaheadReader).MatchLetters,
-            (*LookaheadReader).MatchDigit,
-            (*LookaheadReader).MatchDigits,
+        {" ", []func (*lookaheadReader) bool {
+            (*lookaheadReader).MatchLetter,
+            (*lookaheadReader).MatchLetters,
+            (*lookaheadReader).MatchDigit,
+            (*lookaheadReader).MatchDigits,
         }},
-        {"", []func (*LookaheadReader) bool {
-            (*LookaheadReader).MatchLetter,
-            (*LookaheadReader).MatchLetters,
-            (*LookaheadReader).MatchDigit,
-            (*LookaheadReader).MatchDigits,
-            (*LookaheadReader).MatchSpace,
-            (*LookaheadReader).MatchSpaces,
+        {"", []func (*lookaheadReader) bool {
+            (*lookaheadReader).MatchLetter,
+            (*lookaheadReader).MatchLetters,
+            (*lookaheadReader).MatchDigit,
+            (*lookaheadReader).MatchDigits,
+            (*lookaheadReader).MatchSpace,
+            (*lookaheadReader).MatchSpaces,
         }},
     }
 
