@@ -18,9 +18,11 @@ Sample session:
 	  = 1024
 	> ((ln(e^2) * log(1000)) * sin(90)) ^ 2 + sqrt(36)
 	  = 42
+	> 2 * pi
+	  = 6.283185307179586
 	> 4 / 0
 	error: divide by zero
-	> (3 +
+	> 3 +
 	error: missing factor
 	> (8 * 7
 	error: unbalanced parentheses
