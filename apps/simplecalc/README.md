@@ -16,7 +16,7 @@ Sample session:
 	  = 77
 	> 2 ^ 10
 	  = 1024
-	> ((ln(e^2) * log(1000)) * sin(90)) ^ 2 +sqrt(36)
+	> ((ln(e^2) * log(1000)) * sin(90)) ^ 2 + sqrt(36)
 	  = 42
 	> 4 / 0
 	error: divide by zero
