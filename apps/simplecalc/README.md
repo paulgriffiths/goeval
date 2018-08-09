@@ -6,25 +6,25 @@ evaluation package.
 
 Sample session:
 
-	paul@horus:$ ./simplecalc
+	paul@horus:~$ ./simplecalc
 	Enter simple mathematical expressions, 'q' to quit
-	> 1+2
+	> 1 + 2
 	  = 3
-	> 5-3
-	  = 2
-	> 2 * 7
-	  = 14
-	> 4^5
+	> 3 * 4
+	  = 12
+	> (5 + 6) * 7
+	  = 77
+	> 2 ^ 10
 	  = 1024
-	> (4+5) * 6
-	  = 54
-	> 4/0
+	> ((ln(e^2) * log(1000)) * sin(90)) ^ 2 +sqrt(36)
+	  = 42
+	> 4 / 0
 	error: divide by zero
-	> 3+
+	> (3 +
 	error: missing factor
-	> -1 ^ 0.5
-	error: domain error
 	> (8 * 7
 	error: unbalanced parentheses
+	> 4 ^ 3 with some extraneous text
+	error: trailing tokens
 	> q
-	paul@horus:$
+	paul@horus:~$ 
