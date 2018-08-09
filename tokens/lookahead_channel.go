@@ -24,17 +24,23 @@ func (l *LTChan) Value() string {
     return l.current.Value()
 }
 
+// readNext reads the next token from the channel.
+func (l *LTChan) readNext() {
+    l.current = l.lookahead
+    if next, ok := <-l.ch; !ok {
+        l.lookahead = nullToken()
+    } else {
+        l.lookahead = next
+    }
+}
+
 // Next reads and returns the next token.
 func (l *LTChan) Next() (Token, error) {
     l.current = l.lookahead
     if l.current == nullToken() {
         return l.current, fmt.Errorf("no more tokens")
     }
-    if t, ok := <-l.ch; !ok {
-        l.lookahead = nullToken()
-    } else {
-        l.lookahead = t
-    }
+    l.readNext()
     return l.current, nil
 }
 
@@ -42,16 +48,11 @@ func (l *LTChan) Next() (Token, error) {
 // read would match the provided token. Otherwise it returns false
 // and doesn't read the next token.
 func (l *LTChan) Match(t Token) bool {
-    if l.lookahead != t {
-        return false
+    if l.lookahead == t {
+        l.readNext()
+        return true
     }
-    l.current = l.lookahead
-    if next, ok := <-l.ch; !ok {
-        l.lookahead = nullToken()
-    } else {
-        l.lookahead = next
-    }
-    return true
+    return false
 }
 
 // MatchType returns true and reads the next token if the type of the
@@ -59,16 +60,11 @@ func (l *LTChan) Match(t Token) bool {
 // of their values. Otherwise it returns false and doesn't read the next
 // token.
 func (l *LTChan) MatchType(t Token) bool {
-    if l.lookahead.tokenType != t.tokenType {
-        return false
+    if l.lookahead.tokenType == t.tokenType {
+        l.readNext()
+        return true
     }
-    l.current = l.lookahead
-    if next, ok := <-l.ch; !ok {
-        l.lookahead = nullToken()
-    } else {
-        l.lookahead = next
-    }
-    return true
+    return false
 }
 
 // IsEmpty() returns true if there are no more tokens to read in the channel.
