@@ -38,14 +38,14 @@ func Example() {
 		fmt.Printf("Didn't match a character.\n")
 	}
 
-    if lar.EndOfInput() {
-        fmt.Printf("All input has been matched.\n")
-    }
+	if lar.EndOfInput() {
+		fmt.Printf("All input has been matched.\n")
+	}
 
 	// Output: Didn't match any digits.
 	// Matched letters 'abc'.
 	// Matched digits '123'.
 	// Didn't match a character.
 	// Matched character '?'.
-    // All input has been matched.
+	// All input has been matched.
 }
