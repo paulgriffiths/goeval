@@ -2,16 +2,16 @@ package tokens
 
 import "testing"
 
-func TestLTChanNext(t *testing.T) {
-    var cases = []Token {
-        WordToken("foobar"),
-        NumberToken("67.89"),
-        OperatorToken("+"),
-        LeftParenToken(),
-        RightParenToken(),
-        IllegalToken("dracula"),
-    }
+var cases = []Token {
+    WordToken("foobar"),
+    NumberToken("67.89"),
+    OperatorToken("+"),
+    LeftParenToken(),
+    RightParenToken(),
+    IllegalToken("dracula"),
+}
 
+func makeTestChannel() chan Token {
     ch := make(chan Token)
 
     go func() {
@@ -21,7 +21,11 @@ func TestLTChanNext(t *testing.T) {
         close(ch)
     } ()
 
-    ltc := NewLTChan(ch)
+    return ch
+}
+
+func TestLTChanNext(t *testing.T) {
+    ltc := NewLTChan(makeTestChannel())
 
     for _, token := range cases {
         result, err := ltc.Next()
@@ -38,25 +42,7 @@ func TestLTChanNext(t *testing.T) {
 }
 
 func TestLTMatch(t *testing.T) {
-    var cases = []Token {
-        WordToken("foobar"),
-        NumberToken("67.89"),
-        OperatorToken("+"),
-        LeftParenToken(),
-        RightParenToken(),
-        IllegalToken("dracula"),
-    }
-
-    ch := make(chan Token)
-
-    go func() {
-        for _, token := range cases {
-            ch <- token
-        }
-        close(ch)
-    } ()
-
-    ltc := NewLTChan(ch)
+    ltc := NewLTChan(makeTestChannel())
 
     for _, token := range cases {
         result := ltc.Match(token)
@@ -71,25 +57,7 @@ func TestLTMatch(t *testing.T) {
 }
 
 func TestLTDontMatch(t *testing.T) {
-    var cases = []Token {
-        WordToken("foobar"),
-        NumberToken("67.89"),
-        OperatorToken("+"),
-        LeftParenToken(),
-        RightParenToken(),
-        IllegalToken("dracula"),
-    }
-
-    ch := make(chan Token)
-
-    go func() {
-        for _, token := range cases {
-            ch <- token
-        }
-        close(ch)
-    } ()
-
-    ltc := NewLTChan(ch)
+    ltc := NewLTChan(makeTestChannel())
 
     for _, token := range cases {
         result := ltc.Match(nullToken())
@@ -101,24 +69,9 @@ func TestLTDontMatch(t *testing.T) {
     if ltc.IsEmpty() {
         t.Errorf("ltchan empty when not expected")
     }
-
-    ltc.Flush()
-
-    if !ltc.IsEmpty() {
-        t.Errorf("ltchan not empty when expected")
-    }
 }
 
 func TestLTMatchType(t *testing.T) {
-    var cases = []Token {
-        WordToken("foobar"),
-        NumberToken("67.89"),
-        OperatorToken("+"),
-        LeftParenToken(),
-        RightParenToken(),
-        IllegalToken("dracula"),
-    }
-
     var matches = []Token {
         WordToken("sausage"),
         NumberToken("2.42"),
@@ -128,16 +81,7 @@ func TestLTMatchType(t *testing.T) {
         IllegalToken("chips"),
     }
 
-    ch := make(chan Token)
-
-    go func() {
-        for _, token := range cases {
-            ch <- token
-        }
-        close(ch)
-    } ()
-
-    ltc := NewLTChan(ch)
+    ltc := NewLTChan(makeTestChannel())
 
     for _, token := range matches {
         result := ltc.MatchType(token)
@@ -152,25 +96,7 @@ func TestLTMatchType(t *testing.T) {
 }
 
 func TestLTDontMatchType(t *testing.T) {
-    var cases = []Token {
-        WordToken("foobar"),
-        NumberToken("67.89"),
-        OperatorToken("+"),
-        LeftParenToken(),
-        RightParenToken(),
-        IllegalToken("dracula"),
-    }
-
-    ch := make(chan Token)
-
-    go func() {
-        for _, token := range cases {
-            ch <- token
-        }
-        close(ch)
-    } ()
-
-    ltc := NewLTChan(ch)
+    ltc := NewLTChan(makeTestChannel())
 
     for _, token := range cases {
         result := ltc.MatchType(nullToken())
@@ -178,6 +104,14 @@ func TestLTDontMatchType(t *testing.T) {
             t.Errorf("matched %v when not expected", token)
         }
     }
+
+    if ltc.IsEmpty() {
+        t.Errorf("ltchan empty when not expected")
+    }
+}
+
+func TestFlush(t *testing.T) {
+    ltc := NewLTChan(makeTestChannel())
 
     if ltc.IsEmpty() {
         t.Errorf("ltchan empty when not expected")
