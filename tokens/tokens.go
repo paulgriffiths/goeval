@@ -15,12 +15,16 @@ const (
     leftParenToken
     rightParenToken
     illegalToken
-    nullToken
+    nullTokenId
 )
 
 // NullToken returns a token representing a null token.
-func NullToken() Token {
-    return Token{nullToken, ""}
+// This function is not exported, because the lookahead token
+// channel uses this as it's "no token" value, and behaves strangely
+// if the null token is actually passed to it as input, so we
+// don't export the symbol to avoid that.
+func nullToken() Token {
+    return Token{nullTokenId, ""}
 }
 
 // LeftParenToken returns a left parenthesis token.
@@ -34,11 +38,15 @@ func RightParenToken() Token {
 }
 
 // ZeroNumberToken returns a token representing the number zero.
+// It can be passed to a function which compares the types of tokens,
+// but which doesn't care about the values.
 func ZeroNumberToken() Token {
     return Token{numberToken, "0"}
 }
 
-// ZeroNumberToken returns a token representing the number zero.
+// EmptyWordToken returns a word token containing the empty string.
+// It can be passed to a function which compares the types of tokens,
+// but which doesn't care about the values.
 func EmptyWordToken() Token {
     return Token{wordToken, ""}
 }
