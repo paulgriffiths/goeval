@@ -9,43 +9,43 @@ import (
 // ReaderResult encapsulates a result buffer and its position
 // and line in the input
 type ReaderResult struct {
-    Value []byte
-    Pos int
-    Line int
+	Value []byte
+	Pos   int
+	Line  int
 }
 
 // clear clears all the fields in a ReaderResult
 func (r *ReaderResult) clear() {
-    r.Value = []byte{}
-    r.Pos = 0
-    r.Line = 0
+	r.Value = []byte{}
+	r.Pos = 0
+	r.Line = 0
 }
 
 // appendByte appends a byte to a ReaderResult's value buffer
 func (r *ReaderResult) appendByte(b byte) {
-    r.Value = append(r.Value, b)
+	r.Value = append(r.Value, b)
 }
 
 // setPos sets the ReaderResult's position and line
 func (r *ReaderResult) setPos(pos, line int) {
-    r.Pos, r.Line = pos, line
+	r.Pos, r.Line = pos, line
 }
 
 // LookaheadReader implements a single character lookahead reader.
 type LookaheadReader struct {
-	reader io.Reader
-	buffer []byte
-    current byte
-    pos int
-    line int
-    Result ReaderResult
+	reader  io.Reader
+	buffer  []byte
+	current byte
+	pos     int
+	line    int
+	Result  ReaderResult
 }
 
 // NewLookaheadReader returns a single character lookahead reader from
 // an io.Reader
 func NewLookaheadReader(reader io.Reader) (LookaheadReader, error) {
 	r := LookaheadReader{reader, []byte{0}, 0, -1, 1,
-        ReaderResult{[]byte{}, 0, 0}}
+		ReaderResult{[]byte{}, 0, 0}}
 	if _, err := r.reader.Read(r.buffer); err != nil && err != io.EOF {
 		return r, fmt.Errorf("couldn't create lookahead reader: %v", err)
 	}
@@ -60,15 +60,15 @@ func (r *LookaheadReader) Next() (byte, error) {
 		return 0, io.EOF
 	}
 
-    if r.current == '\n' {
-        r.line++
-        r.pos = 0
-    } else {
-        r.pos++
-    }
+	if r.current == '\n' {
+		r.line++
+		r.pos = 0
+	} else {
+		r.pos++
+	}
 
 	current := r.buffer[0]
-    r.current = current
+	r.current = current
 
 	if _, err := r.reader.Read(r.buffer); err != nil {
 		r.buffer[0] = 0
@@ -88,7 +88,7 @@ func (r *LookaheadReader) MatchOneOf(vals ...byte) bool {
 	for _, b := range vals {
 		if r.buffer[0] == b {
 			r.Next()
-            r.Result.setPos(r.pos, r.line)
+			r.Result.setPos(r.pos, r.line)
 			r.Result.appendByte(b)
 			return true
 		}
@@ -100,7 +100,7 @@ func (r *LookaheadReader) MatchOneOf(vals ...byte) bool {
 // a newline character and stores that character in the result,
 // otherwise it returns false and clears the result
 func (r *LookaheadReader) MatchNewline() bool {
-    return r.MatchOneOf('\n')
+	return r.MatchOneOf('\n')
 }
 
 // MatchLetter returns true if the next character to be read is a letter
@@ -158,9 +158,9 @@ func (r *LookaheadReader) matchSingleIsFunc(isFunc func(rune) bool) bool {
 	r.Result.clear()
 	if r.buffer[0] != '\n' && isFunc(rune(r.buffer[0])) {
 		current, _ := r.Next()
-        r.Result.setPos(r.pos, r.line)
-        r.Result.appendByte(current)
-        return true
+		r.Result.setPos(r.pos, r.line)
+		r.Result.appendByte(current)
+		return true
 	}
 	return false
 }
@@ -173,10 +173,10 @@ func (r *LookaheadReader) matchMultipleIsFunc(isFunc func(rune) bool) bool {
 	found := false
 	for r.buffer[0] != '\n' && isFunc(rune(r.buffer[0])) {
 		current, _ := r.Next()
-        if !found {
-            r.Result.setPos(r.pos, r.line)
-            found = true
-        }
+		if !found {
+			r.Result.setPos(r.pos, r.line)
+			found = true
+		}
 		r.Result.appendByte(current)
 	}
 	return found
