@@ -9,31 +9,31 @@ func Example() {
 	lar, _ := NewLookaheadReader(strings.NewReader("abc123?"))
 
 	if lar.MatchDigits() {
-		fmt.Printf("Matched digits '%s'.\n", lar.Result())
+		fmt.Printf("Matched digits '%s'.\n", lar.Result.Value)
 	} else {
 		fmt.Printf("Didn't match any digits.\n")
 	}
 
 	if lar.MatchLetters() {
-		fmt.Printf("Matched letters '%s'.\n", lar.Result())
+		fmt.Printf("Matched letters '%s'.\n", lar.Result.Value)
 	} else {
 		fmt.Printf("Didn't match any digits.\n")
 	}
 
 	if lar.MatchDigits() {
-		fmt.Printf("Matched digits '%s'.\n", lar.Result())
+		fmt.Printf("Matched digits '%s'.\n", lar.Result.Value)
 	} else {
 		fmt.Printf("Didn't match any digits.\n")
 	}
 
 	if lar.MatchOneOf('!', '$', '%') {
-		fmt.Printf("Matched character '%s'.\n", lar.Result())
+		fmt.Printf("Matched character '%s'.\n", lar.Result.Value)
 	} else {
 		fmt.Printf("Didn't match a character.\n")
 	}
 
 	if lar.MatchOneOf('{', '?', '#', '@') {
-		fmt.Printf("Matched character '%s'.\n", lar.Result())
+		fmt.Printf("Matched character '%s'.\n", lar.Result.Value)
 	} else {
 		fmt.Printf("Didn't match a character.\n")
 	}

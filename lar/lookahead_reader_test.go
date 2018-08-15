@@ -66,16 +66,16 @@ func TestMatching(t *testing.T) {
 	for i, c := range cases {
 		lar, err := NewLookaheadReader(strings.NewReader(c.input))
 		if err != nil {
-			t.Errorf("couldn't create lookahead reader: %v", err)
+			t.Errorf("couldn't create lookahead reader: %s", err)
 		}
 
 		for j, v := range c.terms {
 			if !v.matchFunc(&lar) {
 				t.Errorf("case %d, %d, matching method failed", i, j)
 			}
-			if string(lar.result) != v.result {
+			if string(lar.Result.Value) != v.result {
 				t.Errorf("case %d, %d, got %s, want %s", i, j,
-					string(lar.result), v.result)
+					string(lar.Result.Value), v.result)
 			}
 		}
 
@@ -121,7 +121,7 @@ func TestNonMatching(t *testing.T) {
 	for i, c := range cases {
 		lar, err := NewLookaheadReader(strings.NewReader(c.input))
 		if err != nil {
-			t.Errorf("couldn't create lookahead reader: %v", err)
+			t.Errorf("couldn't create lookahead reader: %s", err)
 		}
 
 		for j, v := range c.terms {
@@ -135,7 +135,7 @@ func TestNonMatching(t *testing.T) {
 func TestMatchOneOfPresent(t *testing.T) {
 	lar, err := NewLookaheadReader(strings.NewReader(":"))
 	if err != nil {
-		t.Errorf("couldn't create lookahead reader: %v", err)
+		t.Errorf("couldn't create lookahead reader: %s", err)
 	}
 
 	expectedStatus := true
@@ -144,7 +144,7 @@ func TestMatchOneOfPresent(t *testing.T) {
 	}
 
 	expectedResult := ":"
-	if result := lar.Result(); string(result) != expectedResult {
+	if result := lar.Result.Value; string(result) != expectedResult {
 		t.Errorf("got %v, want %v", string(result), expectedResult)
 	}
 
@@ -156,7 +156,7 @@ func TestMatchOneOfPresent(t *testing.T) {
 func TestMatchOneOfNotPresent(t *testing.T) {
 	lar, err := NewLookaheadReader(strings.NewReader("?"))
 	if err != nil {
-		t.Errorf("couldn't create lookahead reader: %v", err)
+		t.Errorf("couldn't create lookahead reader: %s", err)
 	}
 
 	expectedStatus := false
@@ -173,7 +173,7 @@ func TestNext(t *testing.T) {
 	input := "a1\t?"
 	lar, err := NewLookaheadReader(strings.NewReader(input))
 	if err != nil {
-		t.Errorf("couldn't create lookahead reader: %v", err)
+		t.Errorf("couldn't create lookahead reader: %s", err)
 	}
 
 	for n, c := range input {
@@ -182,11 +182,123 @@ func TestNext(t *testing.T) {
 			t.Errorf("index %d, got %v, want %v", n, err, nil)
 		}
 		if string(result) != string(c) {
-			t.Errorf("got %v, want %v", string(result), c)
+			t.Errorf("got %s, want %s", string(result), string(c))
 		}
 	}
 
 	if !lar.EndOfInput() {
 		t.Errorf("end of input not found when expected")
 	}
+}
+
+func TestPosNext(t *testing.T) {
+    input := "ab\n123\n?!*:\n"
+    results := []struct {
+        value byte
+        pos int
+        line int
+    } {
+        {'a', 0, 1},
+        {'b', 1, 1},
+        {'\n', 2, 1},
+        {'1', 0, 2},
+        {'2', 1, 2},
+        {'3', 2, 2},
+        {'\n', 3, 2},
+        {'?', 0, 3},
+        {'!', 1, 3},
+        {'*', 2, 3},
+        {':', 3, 3},
+        {'\n', 4, 3},
+    }
+
+	lar, err := NewLookaheadReader(strings.NewReader(input))
+	if err != nil {
+		t.Errorf("couldn't create lookahead reader: %s", err)
+    }
+
+    for n, r := range results {
+        b, err := lar.Next()
+        if err != nil {
+            t.Errorf("case %d, couldn't get next byte: %s", n, err)
+        }
+
+        if b != r.value {
+            t.Errorf("case %d, unexpected character, got %q, want %q",
+                n, b, r.value)
+        }
+
+        line, pos := lar.line, lar.pos
+        if line != r.line {
+            t.Errorf("case %d, unexpected line, got %d, want %d",
+                n, line, r.line)
+        }
+        if pos != r.pos {
+            t.Errorf("case %d, unexpected position, got %d, want %d",
+                n, pos, r.pos)
+        }
+    }
+}
+
+type lineMatch struct {
+    m match
+    pos, line int
+}
+
+func TestPosMatch(t *testing.T) {
+    input := "ab12\n456 \t\r\n def\n?!"
+	results := []lineMatch {
+		{match{(*LookaheadReader).MatchLetters, "ab"}, 0, 1},
+		{match{(*LookaheadReader).MatchDigits, "12"}, 2, 1},
+		{match{(*LookaheadReader).MatchNewline, "\n"}, 4, 1},
+		{match{(*LookaheadReader).MatchDigits, "456"}, 0, 2},
+		{match{(*LookaheadReader).MatchSpaces, " \t\r"}, 3, 2},
+		{match{(*LookaheadReader).MatchNewline, "\n"}, 6, 2},
+		{match{(*LookaheadReader).MatchSpaces, " "}, 0, 3},
+		{match{(*LookaheadReader).MatchLetters, "def"}, 1, 3},
+		{match{(*LookaheadReader).MatchNewline, "\n"}, 4, 3},
+    }
+
+	lar, err := NewLookaheadReader(strings.NewReader(input))
+	if err != nil {
+		t.Errorf("couldn't create lookahead reader: %s", err)
+    }
+
+    for n, r := range results {
+        if !r.m.matchFunc(&lar) {
+            t.Errorf("case %d, matching method failed", n)
+        }
+
+        line, pos := lar.Result.Line, lar.Result.Pos
+        if line != r.line {
+            t.Errorf("case %d, unexpected line, got %d, want %d",
+                n, line, r.line)
+        }
+        if pos != r.pos {
+            t.Errorf("case %d, unexpected position, got %d, want %d",
+                n, pos, r.pos)
+        }
+    }
+
+    if !lar.MatchOneOf('?') {
+        t.Errorf("matching method failed")
+    }
+    line, pos := lar.Result.Line, lar.Result.Pos
+    if line != 4 {
+        t.Errorf("unexpected line, got %d, want %d", line, 4)
+    }
+    if pos != 0 {
+        t.Errorf("unexpected position, got %d, want %d", pos, 0)
+    }
+
+    if !lar.MatchOneOf('!') {
+        t.Errorf("matching method failed")
+    }
+    line, pos = lar.Result.Line, lar.Result.Pos
+    if line != 4 {
+        t.Errorf("unexpected line, got %d, want %d", line, 4)
+    }
+    if pos != 1 {
+        t.Errorf("unexpected position, got %d, want %d", pos, 1)
+    }
 }
