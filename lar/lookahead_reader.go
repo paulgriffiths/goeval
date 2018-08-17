@@ -11,7 +11,7 @@ type LookaheadReader struct {
 	reader  io.Reader
 	buffer  []byte
 	current byte
-    pos FilePos
+	pos     FilePos
 	Result  ReaderResult
 }
 
@@ -35,7 +35,7 @@ func (r *LookaheadReader) Next() (byte, error) {
 	}
 
 	if r.current == '\n' {
-        r.pos.incLine()
+		r.pos.incLine()
 	} else {
 		r.pos.inc()
 	}
