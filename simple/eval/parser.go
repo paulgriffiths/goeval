@@ -141,7 +141,8 @@ func getFactor(ltchan *tokens.LTChan) (expr, error) {
 	case ltchan.MatchType(tokens.ZeroNumberToken()):
 		value, err := strconv.ParseFloat(ltchan.Value(), 64)
 		if err != nil {
-			panic(fmt.Sprintf("Couldn't convert to float: %s", ltchan.Value()))
+			panic(fmt.Sprintf("Couldn't convert to float: %s",
+                ltchan.Value()))
 		}
 		result = number{value}
 	case ltchan.MatchType(tokens.EmptyWordToken()):
