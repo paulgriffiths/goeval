@@ -1,0 +1,32 @@
+# Grammar for simple expression evaluator.
+#
+# Eliminates left recursion to faciliate predictive parsing.
+
+expr             -> term restExpr
+
+restExpr         -> '+' term restExpr
+                  | '-' term restExpr
+                  | {e}
+
+term             -> subTerm restTerm
+
+restTerm         -> '*' subTerm restTerm
+                  | '/' subTerm restTerm
+                  | {e}
+
+subTerm          -> factor restSubTerm
+
+restSubTerm      -> '^' factor restSubTerm
+                  | {e}
+
+factor           -> optionalNegation ( number | parenExpr | func parenExpr )
+
+parenExpr        -> '(' expr ')'
+func             -> 'cos' | 'sin' | 'tan' | 'acos' | 'asin' | 'atan' |
+                    'round' | 'ceil' | 'floor' | 'log' | 'ln' | 'sqrt'
+number           -> (digits optionalFraction optionalExponent) | 'e' | 'pi'
+optionalNegation -> '-' | {e}
+optionalFraction -> '.' digits | {e}
+optionalExponent -> ( ( 'E' | 'e' ) ( '+' | '-' | {e} ) digits ) | {e}
+digits           -> digit digit*
+digit            -> [0-9]
