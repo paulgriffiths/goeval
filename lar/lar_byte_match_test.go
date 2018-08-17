@@ -5,8 +5,8 @@ import (
 	"testing"
 )
 
-func TestSuccessfulByteMatch(t *testing.T) {
-	for i, testCase := range byteMatchGoodCases {
+func TestSuccessfulRuneMatch(t *testing.T) {
+	for i, testCase := range runeMatchGoodCases {
 		lar, err := NewLookaheadReader(strings.NewReader(testCase.input))
 		if err != nil {
 			t.Errorf("couldn't create lookahead reader: %s", err)
@@ -21,8 +21,8 @@ func TestSuccessfulByteMatch(t *testing.T) {
 	}
 }
 
-func TestSuccessfulByteMatchResultValue(t *testing.T) {
-	for i, testCase := range byteMatchGoodCases {
+func TestSuccessfulRuneMatchResultValue(t *testing.T) {
+	for i, testCase := range runeMatchGoodCases {
 		lar, err := NewLookaheadReader(strings.NewReader(testCase.input))
 		if err != nil {
 			t.Errorf("couldn't create lookahead reader: %s", err)
@@ -39,8 +39,8 @@ func TestSuccessfulByteMatchResultValue(t *testing.T) {
 	}
 }
 
-func TestSuccessfulByteMatchResultPosition(t *testing.T) {
-	for i, testCase := range byteMatchGoodCases {
+func TestSuccessfulRuneMatchResultPosition(t *testing.T) {
+	for i, testCase := range runeMatchGoodCases {
 		lar, err := NewLookaheadReader(strings.NewReader(testCase.input))
 		if err != nil {
 			t.Errorf("couldn't create lookahead reader: %s", err)
@@ -57,8 +57,8 @@ func TestSuccessfulByteMatchResultPosition(t *testing.T) {
 	}
 }
 
-func TestSuccessfulByteMatchEndOfInputReached(t *testing.T) {
-	for i, testCase := range byteMatchGoodCases {
+func TestSuccessfulRuneMatchEndOfInputReached(t *testing.T) {
+	for i, testCase := range runeMatchGoodCases {
 		lar, err := NewLookaheadReader(strings.NewReader(testCase.input))
 		if err != nil {
 			t.Errorf("couldn't create lookahead reader: %s", err)
@@ -75,8 +75,8 @@ func TestSuccessfulByteMatchEndOfInputReached(t *testing.T) {
 	}
 }
 
-func TestUnsuccessfulByteMatch(t *testing.T) {
-	for i, testCase := range byteMatchBadCases {
+func TestUnsuccessfulRuneMatch(t *testing.T) {
+	for i, testCase := range runeMatchBadCases {
 		lar, err := NewLookaheadReader(strings.NewReader(testCase.input))
 		if err != nil {
 			t.Errorf("couldn't create lookahead reader: %s", err)

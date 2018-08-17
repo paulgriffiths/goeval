@@ -1,6 +1,7 @@
 package lar
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"unicode"
@@ -8,20 +9,22 @@ import (
 
 // LookaheadReader implements a single character lookahead reader.
 type LookaheadReader struct {
-	reader  io.Reader
-	buffer  []byte
-	current byte
-	pos     FilePos
-	Result  ReaderResult
+	reader    *bufio.Reader
+	lookahead rune
+	current   rune
+	pos       FilePos
+	Result    ReaderResult
 }
 
 // NewLookaheadReader returns a single character lookahead reader from
 // an io.Reader
 func NewLookaheadReader(reader io.Reader) (LookaheadReader, error) {
-	r := LookaheadReader{reader, []byte{0}, 0, FilePos{-1, 1},
-		ReaderResult{[]byte{}, FilePos{0, 0}}}
-	if _, err := r.reader.Read(r.buffer); err != nil && err != io.EOF {
+	r := LookaheadReader{bufio.NewReader(reader), 0, 0,
+		FilePos{-1, 1}, ReaderResult{[]rune{}, FilePos{0, 0}}}
+	if peek, _, err := r.reader.ReadRune(); err != nil && err != io.EOF {
 		return r, fmt.Errorf("couldn't create lookahead reader: %v", err)
+	} else {
+		r.lookahead = peek
 	}
 	return r, nil
 }
@@ -29,8 +32,8 @@ func NewLookaheadReader(reader io.Reader) (LookaheadReader, error) {
 // Next returns the next character from a lookahead reader.
 // If there are no more characters, the function returns 0 and io.EOF.
 // On any other error, the function returns 0 and that error.
-func (r *LookaheadReader) Next() (byte, error) {
-	if r.buffer[0] == 0 {
+func (r *LookaheadReader) Next() (rune, error) {
+	if r.lookahead == 0 {
 		return 0, io.EOF
 	}
 
@@ -40,13 +43,15 @@ func (r *LookaheadReader) Next() (byte, error) {
 		r.pos.inc()
 	}
 
-	r.current = r.buffer[0]
+	r.current = r.lookahead
 
-	if _, err := r.reader.Read(r.buffer); err != nil {
-		r.buffer[0] = 0
+	if lookahead, _, err := r.reader.ReadRune(); err != nil {
+		r.lookahead = 0
 		if err != io.EOF {
 			return 0, err
 		}
+	} else {
+		r.lookahead = lookahead
 	}
 
 	return r.current, nil
@@ -55,13 +60,13 @@ func (r *LookaheadReader) Next() (byte, error) {
 // MatchOneOf returns true if the next character to be read is among
 // the characters passed to the function and stores that character in
 // the result, otherwise it returns false and clears the result.
-func (r *LookaheadReader) MatchOneOf(vals ...byte) bool {
+func (r *LookaheadReader) MatchOneOf(vals ...rune) bool {
 	r.Result.clear()
 	for _, b := range vals {
-		if r.buffer[0] == b {
+		if r.lookahead == b {
 			r.Next()
 			r.Result.setPos(r.pos)
-			r.Result.appendByte(b)
+			r.Result.appendRune(b)
 			return true
 		}
 	}
@@ -120,18 +125,18 @@ func (r *LookaheadReader) MatchDigits() bool {
 // EndOfInput returns true if end of input has been reached,
 // otherwise it returns false.
 func (r LookaheadReader) EndOfInput() bool {
-	return r.buffer[0] == 0
+	return r.lookahead == 0
 }
 
 // matchSingleIsFunc packages up the matching logic for MatchLetter,
 // MatchDigit, and MatchSpace, which otherwise differ only in the
-// function used to test the byte.
+// function used to test the rune.
 func (r *LookaheadReader) matchSingleIsFunc(isFunc func(rune) bool) bool {
 	r.Result.clear()
-	if r.buffer[0] != '\n' && isFunc(rune(r.buffer[0])) {
+	if r.lookahead != '\n' && isFunc(r.lookahead) {
 		current, _ := r.Next()
 		r.Result.setPos(r.pos)
-		r.Result.appendByte(current)
+		r.Result.appendRune(current)
 		return true
 	}
 	return false
@@ -139,17 +144,17 @@ func (r *LookaheadReader) matchSingleIsFunc(isFunc func(rune) bool) bool {
 
 // matchMultipleIsFunc packages up the matching logic for MatchLetters,
 // MatchDigits, and MatchSpaces, which otherwise differ only in the
-// function used to test the byte.
+// function used to test the rune.
 func (r *LookaheadReader) matchMultipleIsFunc(isFunc func(rune) bool) bool {
 	r.Result.clear()
 	found := false
-	for r.buffer[0] != '\n' && isFunc(rune(r.buffer[0])) {
+	for r.lookahead != '\n' && isFunc(r.lookahead) {
 		current, _ := r.Next()
 		if !found {
 			r.Result.setPos(r.pos)
 			found = true
 		}
-		r.Result.appendByte(current)
+		r.Result.appendRune(current)
 	}
 	return found
 }
