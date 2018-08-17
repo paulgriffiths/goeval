@@ -27,7 +27,7 @@ var nextTestCases = []struct {
 func TestNextValue(t *testing.T) {
 	lar, err := NewLookaheadReader(strings.NewReader(nextTestInput))
 	if err != nil {
-		t.Errorf("couldn't create lookahead reader: %s", err)
+		t.Errorf("couldn't create lookahead reader: %v", err)
 		return
 	}
 
@@ -47,13 +47,13 @@ func TestNextValue(t *testing.T) {
 func TestNextPos(t *testing.T) {
 	lar, err := NewLookaheadReader(strings.NewReader(nextTestInput))
 	if err != nil {
-		t.Errorf("couldn't create lookahead reader: %s", err)
+		t.Errorf("couldn't create lookahead reader: %v", err)
 		return
 	}
 
 	for n, r := range nextTestCases {
 		if _, err := lar.Next(); err != nil {
-			t.Errorf("case %d, couldn't get next byte: %s", n, err)
+			t.Errorf("case %d, couldn't get next byte: %v", n, err)
 			continue
 		}
 
@@ -67,13 +67,13 @@ func TestNextPos(t *testing.T) {
 func TestNextEndOfInput(t *testing.T) {
 	lar, err := NewLookaheadReader(strings.NewReader(nextTestInput))
 	if err != nil {
-		t.Errorf("couldn't create lookahead reader: %s", err)
+		t.Errorf("couldn't create lookahead reader: %v", err)
 		return
 	}
 
 	for n, _ := range nextTestCases {
 		if _, err := lar.Next(); err != nil {
-			t.Errorf("case %d, couldn't get next byte: %s", n, err)
+			t.Errorf("case %d, couldn't get next byte: %v", n, err)
 		}
 	}
 

@@ -9,7 +9,7 @@ func TestSuccessfulClassMatch(t *testing.T) {
 	for i, testCase := range classMatchGoodCases {
 		lar, err := NewLookaheadReader(strings.NewReader(testCase.input))
 		if err != nil {
-			t.Errorf("couldn't create lookahead reader: %s", err)
+			t.Errorf("couldn't create lookahead reader: %v", err)
 			continue
 		}
 
@@ -25,7 +25,7 @@ func TestSuccessfulClassMatchResultValue(t *testing.T) {
 	for i, testCase := range classMatchGoodCases {
 		lar, err := NewLookaheadReader(strings.NewReader(testCase.input))
 		if err != nil {
-			t.Errorf("couldn't create lookahead reader: %s", err)
+			t.Errorf("couldn't create lookahead reader: %v", err)
 			continue
 		}
 
@@ -43,7 +43,7 @@ func TestSuccessfulClassMatchResultPosition(t *testing.T) {
 	for i, testCase := range classMatchGoodCases {
 		lar, err := NewLookaheadReader(strings.NewReader(testCase.input))
 		if err != nil {
-			t.Errorf("couldn't create lookahead reader: %s", err)
+			t.Errorf("couldn't create lookahead reader: %v", err)
 			continue
 		}
 
@@ -61,7 +61,7 @@ func TestSuccessfulClassMatchEndOfInputReached(t *testing.T) {
 	for i, testCase := range classMatchGoodCases {
 		lar, err := NewLookaheadReader(strings.NewReader(testCase.input))
 		if err != nil {
-			t.Errorf("couldn't create lookahead reader: %s", err)
+			t.Errorf("couldn't create lookahead reader: %v", err)
 			continue
 		}
 
@@ -76,15 +76,15 @@ func TestSuccessfulClassMatchEndOfInputReached(t *testing.T) {
 }
 
 func TestUnsuccessfulClassMatch(t *testing.T) {
-	for i, c := range classMatchBadCases {
-		lar, err := NewLookaheadReader(strings.NewReader(c.input))
+	for i, testCase := range classMatchBadCases {
+		lar, err := NewLookaheadReader(strings.NewReader(testCase.input))
 		if err != nil {
-			t.Errorf("couldn't create lookahead reader: %s", err)
+			t.Errorf("couldn't create lookahead reader: %v", err)
 			continue
 		}
 
-		for j, v := range c.terms {
-			if v(&lar) {
+		for j, match := range testCase.terms {
+			if match(&lar) {
 				t.Errorf("case %d, %d, matching method succeeded", i, j)
 			}
 		}

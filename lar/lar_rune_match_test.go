@@ -9,7 +9,7 @@ func TestSuccessfulRuneMatch(t *testing.T) {
 	for i, testCase := range runeMatchGoodCases {
 		lar, err := NewLookaheadReader(strings.NewReader(testCase.input))
 		if err != nil {
-			t.Errorf("couldn't create lookahead reader: %s", err)
+			t.Errorf("couldn't create lookahead reader: %v", err)
 			continue
 		}
 
@@ -25,7 +25,7 @@ func TestSuccessfulRuneMatchResultValue(t *testing.T) {
 	for i, testCase := range runeMatchGoodCases {
 		lar, err := NewLookaheadReader(strings.NewReader(testCase.input))
 		if err != nil {
-			t.Errorf("couldn't create lookahead reader: %s", err)
+			t.Errorf("couldn't create lookahead reader: %v", err)
 			continue
 		}
 
@@ -43,7 +43,7 @@ func TestSuccessfulRuneMatchResultPosition(t *testing.T) {
 	for i, testCase := range runeMatchGoodCases {
 		lar, err := NewLookaheadReader(strings.NewReader(testCase.input))
 		if err != nil {
-			t.Errorf("couldn't create lookahead reader: %s", err)
+			t.Errorf("couldn't create lookahead reader: %v", err)
 			continue
 		}
 
@@ -61,7 +61,7 @@ func TestSuccessfulRuneMatchEndOfInputReached(t *testing.T) {
 	for i, testCase := range runeMatchGoodCases {
 		lar, err := NewLookaheadReader(strings.NewReader(testCase.input))
 		if err != nil {
-			t.Errorf("couldn't create lookahead reader: %s", err)
+			t.Errorf("couldn't create lookahead reader: %v", err)
 			continue
 		}
 
@@ -79,7 +79,7 @@ func TestUnsuccessfulRuneMatch(t *testing.T) {
 	for i, testCase := range runeMatchBadCases {
 		lar, err := NewLookaheadReader(strings.NewReader(testCase.input))
 		if err != nil {
-			t.Errorf("couldn't create lookahead reader: %s", err)
+			t.Errorf("couldn't create lookahead reader: %v", err)
 			continue
 		}
 
