@@ -228,14 +228,14 @@ func TestPosNext(t *testing.T) {
 				n, b, r.value)
 		}
 
-		line, pos := lar.line, lar.pos
-		if line != r.line {
+		pos := lar.pos
+		if pos.line != r.line {
 			t.Errorf("case %d, unexpected line, got %d, want %d",
-				n, line, r.line)
+				n, pos.line, r.line)
 		}
-		if pos != r.pos {
+		if pos.ch != r.pos {
 			t.Errorf("case %d, unexpected position, got %d, want %d",
-				n, pos, r.pos)
+				n, pos.ch, r.pos)
 		}
 	}
 }
@@ -269,36 +269,36 @@ func TestPosMatch(t *testing.T) {
 			t.Errorf("case %d, matching method failed", n)
 		}
 
-		line, pos := lar.Result.Line, lar.Result.Pos
-		if line != r.line {
+		pos := lar.Result.Pos
+		if pos.line != r.line {
 			t.Errorf("case %d, unexpected line, got %d, want %d",
-				n, line, r.line)
+				n, pos.line, r.line)
 		}
-		if pos != r.pos {
+		if pos.ch != r.pos {
 			t.Errorf("case %d, unexpected position, got %d, want %d",
-				n, pos, r.pos)
+				n, pos.ch, r.pos)
 		}
 	}
 
 	if !lar.MatchOneOf('?') {
 		t.Errorf("matching method failed")
 	}
-	line, pos := lar.Result.Line, lar.Result.Pos
-	if line != 4 {
-		t.Errorf("unexpected line, got %d, want %d", line, 4)
+	pos := lar.Result.Pos
+	if pos.line != 4 {
+		t.Errorf("unexpected line, got %d, want %d", pos.line, 4)
 	}
-	if pos != 0 {
-		t.Errorf("unexpected position, got %d, want %d", pos, 0)
+	if pos.ch != 0 {
+		t.Errorf("unexpected position, got %d, want %d", pos.ch, 0)
 	}
 
 	if !lar.MatchOneOf('!') {
 		t.Errorf("matching method failed")
 	}
-	line, pos = lar.Result.Line, lar.Result.Pos
-	if line != 4 {
-		t.Errorf("unexpected line, got %d, want %d", line, 4)
+	pos = lar.Result.Pos
+	if pos.line != 4 {
+		t.Errorf("unexpected line, got %d, want %d", pos.line, 4)
 	}
-	if pos != 1 {
-		t.Errorf("unexpected position, got %d, want %d", pos, 1)
+	if pos.ch != 1 {
+		t.Errorf("unexpected position, got %d, want %d", pos.ch, 1)
 	}
 }
