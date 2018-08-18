@@ -26,3 +26,93 @@ func (op addOp) evaluate(table *symTab) (expr, error) {
 	sum := mustRealValue(left) + mustRealValue(right)
 	return realValue{sum}, nil
 }
+
+type subOp struct {
+	left, right expr
+}
+
+func (op subOp) evaluate(table *symTab) (expr, error) {
+	left, err := op.left.evaluate(table)
+	if err != nil {
+		return nil, err
+	}
+	right, err := op.right.evaluate(table)
+	if err != nil {
+		return nil, err
+	}
+
+	if !areNumeric(left, right) {
+		return nil, TypeError
+	}
+
+	if areInteger(left, right) {
+		diff := mustIntegerValue(left) - mustIntegerValue(right)
+		return intValue{diff}, nil
+	}
+
+	diff := mustRealValue(left) - mustRealValue(right)
+	return realValue{diff}, nil
+}
+
+type mulOp struct {
+	left, right expr
+}
+
+func (op mulOp) evaluate(table *symTab) (expr, error) {
+	left, err := op.left.evaluate(table)
+	if err != nil {
+		return nil, err
+	}
+	right, err := op.right.evaluate(table)
+	if err != nil {
+		return nil, err
+	}
+
+	if !areNumeric(left, right) {
+		return nil, TypeError
+	}
+
+	if areInteger(left, right) {
+		prod := mustIntegerValue(left) * mustIntegerValue(right)
+		return intValue{prod}, nil
+	}
+
+	prod := mustRealValue(left) * mustRealValue(right)
+	return realValue{prod}, nil
+}
+
+type divOp struct {
+	left, right expr
+}
+
+func (op divOp) evaluate(table *symTab) (expr, error) {
+	left, err := op.left.evaluate(table)
+	if err != nil {
+		return nil, err
+	}
+	right, err := op.right.evaluate(table)
+	if err != nil {
+		return nil, err
+	}
+
+	if !areNumeric(left, right) {
+		return nil, TypeError
+	}
+
+	if areInteger(left, right) {
+		rVal := mustIntegerValue(right)
+		if rVal == 0 {
+			return nil, DivideByZeroError
+		}
+		lVal := mustIntegerValue(left)
+		if lVal%rVal == 0 {
+			return intValue{lVal / rVal}, nil
+		}
+	}
+
+	rVal := mustRealValue(right)
+	if rVal == 0.0 || rVal == -0.0 {
+		return nil, DivideByZeroError
+	}
+	return realValue{mustRealValue(left) / rVal}, nil
+}
