@@ -1,6 +1,8 @@
-# Grammar for simple expression evaluator.
+# Grammar for variable expression evaluator.
 #
 # Eliminates left recursion to faciliate predictive parsing.
+#
+# Currently a work-in-process.
 
 expr             -> term restExpr
 
