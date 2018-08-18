@@ -128,3 +128,13 @@ func TestUnsuccessfulVariableAddOperation(t *testing.T) {
 		}
 	}
 }
+
+func TestUndefinedVariableAddOperation(t *testing.T) {
+	table := newTable()
+	op := addOp{intValue{42}, variableValue{"foobar"}}
+
+	_, err := op.evaluate(table)
+	if err != UnknownIdentifierError {
+		t.Errorf("got %v, want %v", err, UnknownIdentifierError)
+	}
+}

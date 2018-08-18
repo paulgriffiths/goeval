@@ -103,7 +103,7 @@ func (v variableValue) evaluate(table *symTab) (expr, error) {
 
 	val, ok := table.retrieve(v.key)
 	if !ok {
-		return nil, UnknownIdentifier
+		return nil, UnknownIdentifierError
 	}
 	return val, nil
 }

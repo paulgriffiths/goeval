@@ -128,3 +128,13 @@ func TestUnsuccessfulVariableMulOperation(t *testing.T) {
 		}
 	}
 }
+
+func TestUndefinedVariableMulOperation(t *testing.T) {
+	table := newTable()
+	op := mulOp{intValue{42}, variableValue{"foobar"}}
+
+	_, err := op.evaluate(table)
+	if err != UnknownIdentifierError {
+		t.Errorf("got %v, want %v", err, UnknownIdentifierError)
+	}
+}

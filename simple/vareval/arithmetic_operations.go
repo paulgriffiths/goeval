@@ -1,5 +1,7 @@
 package vareval
 
+import "math"
+
 type addOp struct {
 	left, right expr
 }
@@ -115,4 +117,29 @@ func (op divOp) evaluate(table *symTab) (expr, error) {
 		return nil, DivideByZeroError
 	}
 	return realValue{mustRealValue(left) / rVal}, nil
+}
+
+type powOp struct {
+	base, exponent expr
+}
+
+func (op powOp) evaluate(table *symTab) (expr, error) {
+	base, err := op.base.evaluate(table)
+	if err != nil {
+		return nil, err
+	}
+	exponent, err := op.exponent.evaluate(table)
+	if err != nil {
+		return nil, err
+	}
+
+	if !areNumeric(base, exponent) {
+		return nil, TypeError
+	}
+
+	prod := math.Pow(mustRealValue(base), mustRealValue(exponent))
+	if math.IsNaN(prod) {
+		return nil, DomainError
+	}
+	return realValue{prod}, nil
 }

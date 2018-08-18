@@ -13,7 +13,8 @@ const (
 	TrailingTokensError
 	DomainError
 	TypeError
-	UnknownIdentifier
+	UnknownIdentifierError
+	RangeError
 )
 
 // descs contains string descriptions of each error value
@@ -26,7 +27,8 @@ var descs = [...]string{
 	TrailingTokensError:        "trailing tokens",
 	DomainError:                "domain error",
 	TypeError:                  "type error",
-	UnknownIdentifier:          "unknown identifier",
+	UnknownIdentifierError:     "unknown identifier",
+	RangeError:                 "range error",
 }
 
 // Error returns a string description of an error

@@ -140,3 +140,13 @@ func TestUnsuccessfulVariableDivOperation(t *testing.T) {
 		}
 	}
 }
+
+func TestUndefinedVariableDivOperation(t *testing.T) {
+	table := newTable()
+	op := divOp{intValue{42}, variableValue{"foobar"}}
+
+	_, err := op.evaluate(table)
+	if err != UnknownIdentifierError {
+		t.Errorf("got %v, want %v", err, UnknownIdentifierError)
+	}
+}
