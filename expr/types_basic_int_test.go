@@ -164,7 +164,9 @@ func TestIntValuePow(t *testing.T) {
 	testCases := []struct {
 		base, exp, prod arithmeticValue
 	}{
-		{intValue{2}, intValue{3}, realValue{8.0}},
+		{intValue{2}, intValue{0}, intValue{1}},
+		{intValue{2}, intValue{1}, intValue{2}},
+		{intValue{2}, intValue{3}, intValue{8}},
 		{intValue{2}, realValue{3.0}, realValue{8.0}},
 		{intValue{16}, realValue{1.0}, realValue{16.0}},
 		{intValue{16}, realValue{0.5}, realValue{4.0}},

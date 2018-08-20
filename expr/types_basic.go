@@ -5,6 +5,13 @@ import (
 	"math"
 )
 
+func IntValueIfPossible(expr Expr) (int64, bool) {
+	if !isInteger(expr) {
+		return 0, false
+	}
+	return expr.(intValue).value, true
+}
+
 func FloatValueIfPossible(expr Expr) (float64, bool) {
 	if !isNumeric(expr) {
 		return 0, false
@@ -104,7 +111,17 @@ func (n intValue) div(other arithmeticValue) (arithmeticValue, error) {
 }
 
 func (n intValue) pow(other arithmeticValue) (arithmeticValue, error) {
-	return n.toReal().pow(other)
+	if isReal(other) || other.(intValue).value < 0 {
+		return n.toReal().pow(other)
+	}
+	if other.(intValue).value == 0 {
+		return intValue{1}, nil
+	}
+	retval := n.value
+	for i := int64(1); i < other.(intValue).value; i++ {
+		retval *= n.value
+	}
+	return intValue{retval}, nil
 }
 
 func (n intValue) negate() arithmeticValue {

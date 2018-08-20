@@ -10,11 +10,11 @@ var powNumberGoodCases = []struct {
 }{
 	{[]value{intValue{2}}, intValue{2}},
 	{[]value{realValue{3.5}}, realValue{3.5}},
-	{[]value{intValue{2}, intValue{3}}, realValue{8.0}},
+	{[]value{intValue{2}, intValue{3}}, intValue{8}},
 	{[]value{intValue{2}, realValue{3.0}}, realValue{8.0}},
 	{[]value{realValue{2.0}, intValue{3}}, realValue{8.0}},
 	{[]value{realValue{16.0}, realValue{0.5}}, realValue{4.0}},
-	{[]value{intValue{2}, intValue{3}, intValue{4}}, realValue{4096.0}},
+	{[]value{intValue{2}, intValue{3}, intValue{4}}, intValue{4096.0}},
 }
 
 func TestSuccessfulNumericPowOperation(t *testing.T) {
@@ -46,7 +46,9 @@ var powVariableGoodCases = []struct {
 	variable value
 	result   value
 }{
-	{intValue{2}, intValue{3}, realValue{8.0}},
+	{intValue{2}, intValue{0}, intValue{1}},
+	{intValue{2}, intValue{1}, intValue{2}},
+	{intValue{2}, intValue{3}, intValue{8}},
 	{intValue{2}, realValue{3.0}, realValue{8.0}},
 	{realValue{2.0}, intValue{3}, realValue{8.0}},
 	{realValue{16.0}, realValue{0.5}, realValue{4.0}},
