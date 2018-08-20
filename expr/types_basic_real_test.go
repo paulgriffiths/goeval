@@ -4,7 +4,7 @@ import "testing"
 
 func TestRealValueEqual(t *testing.T) {
 	testCases := []struct {
-		left, right value
+		left, right Value
 		result      bool
 	}{
 		{realValue{3.0}, realValue{3.0}, true},
@@ -18,7 +18,7 @@ func TestRealValueEqual(t *testing.T) {
 	}
 
 	for n, testCase := range testCases {
-		if testCase.left.equals(testCase.right) != testCase.result {
+		if testCase.left.Equals(testCase.right) != testCase.result {
 			t.Errorf("case %d, got %v, want %v", n+1, !testCase.result,
 				testCase.result)
 		}
@@ -72,7 +72,7 @@ func TestRealValueAdd(t *testing.T) {
 	}
 
 	for n, testCase := range testCases {
-		if !testCase.result.equals(testCase.check) {
+		if !testCase.result.Equals(testCase.check) {
 			t.Errorf("case %d, got %v, want %v", n+1, testCase.result,
 				testCase.check)
 		}
@@ -94,7 +94,7 @@ func TestRealValueSub(t *testing.T) {
 	}
 
 	for n, testCase := range testCases {
-		if !testCase.result.equals(testCase.check) {
+		if !testCase.result.Equals(testCase.check) {
 			t.Errorf("case %d, got %v, want %v", n+1, testCase.result,
 				testCase.check)
 		}
@@ -116,7 +116,7 @@ func TestRealValueMul(t *testing.T) {
 	}
 
 	for n, testCase := range testCases {
-		if !testCase.result.equals(testCase.check) {
+		if !testCase.result.Equals(testCase.check) {
 			t.Errorf("case %d, got %v, want %v", n+1, testCase.result,
 				testCase.check)
 		}
@@ -143,7 +143,7 @@ func TestRealValueDiv(t *testing.T) {
 			t.Errorf("case %d, couldn't calculate quotient: %v", n+1, err)
 			continue
 		}
-		if !quot.equals(testCase.quot) {
+		if !quot.Equals(testCase.quot) {
 			t.Errorf("case %d, got %v, want %v", n+1, quot, testCase.quot)
 		}
 	}
@@ -185,7 +185,7 @@ func TestRealValuePow(t *testing.T) {
 			t.Errorf("case %d, couldn't calculate product: %v", n+1, err)
 			continue
 		}
-		if !prod.equals(testCase.prod) {
+		if !prod.Equals(testCase.prod) {
 			t.Errorf("case %d, got %v, want %v", n+1, prod, testCase.prod)
 		}
 	}
@@ -217,7 +217,7 @@ func TestRealValueNegate(t *testing.T) {
 	}
 
 	for n, testCase := range testCases {
-		if !testCase.result.equals(testCase.check) {
+		if !testCase.result.Equals(testCase.check) {
 			t.Errorf("case %d, got %v, want %v", n+1, testCase.result,
 				testCase.check)
 		}

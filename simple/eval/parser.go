@@ -12,33 +12,34 @@ import (
 )
 
 // Evaluates the provided simple mathematical expression.
-func Evaluate(expression string) (float64, error) {
+func Evaluate(expression string) (expr.Value, error) {
 	ch, err := NewLexer(strings.NewReader(expression))
 	if err != nil {
-		return 1, fmt.Errorf("Couldn't create lexer: %v", err)
+		return nil, fmt.Errorf("Couldn't create lexer: %v", err)
 	}
 
 	ltc := tokens.NewLTChan(ch)
 	exp, err := getExpr(ltc)
 	if err != nil {
-		return 1, err
+		return nil, err
 	}
 
 	if !ltc.IsEmpty() {
 		ltc.Flush()
-		return 1, TrailingTokensError
+		return nil, TrailingTokensError
 	}
 
-	value, err := exp.Evaluate(nil)
+	result, err := exp.Evaluate(nil)
 	if err != nil {
-		return 1, err
+		return nil, err
 	}
 
-	retval, ok := expr.FloatValueIfPossible(value)
+	value, ok := result.(expr.Value)
 	if !ok {
-		return 0, UnknownError
+		return nil, UnknownError
 	}
-	return retval, nil
+
+	return value, nil
 }
 
 func getExpr(ltchan *tokens.LTChan) (expr.Expr, error) {
@@ -145,12 +146,17 @@ func getFactor(ltchan *tokens.LTChan) (expr.Expr, error) {
 		}
 		result = ex
 	case ltchan.MatchType(tokens.ZeroNumberToken()):
-		value, err := strconv.ParseFloat(ltchan.Value(), 64)
+		nval, err := strconv.ParseInt(ltchan.Value(), 10, 64)
+		if err == nil {
+			result = expr.NewInt(nval)
+			break
+		}
+		rval, err := strconv.ParseFloat(ltchan.Value(), 64)
 		if err != nil {
 			panic(fmt.Sprintf("Couldn't convert to float: %s",
 				ltchan.Value()))
 		}
-		result = expr.NewReal(value)
+		result = expr.NewReal(rval)
 	case ltchan.MatchType(tokens.EmptyWordToken()):
 		word := string(ltchan.Value())
 

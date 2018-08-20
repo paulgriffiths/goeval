@@ -5,23 +5,23 @@ import (
 )
 
 var mulNumberGoodCases = []struct {
-	values []value
-	result value
+	values []Value
+	result Value
 }{
-	{[]value{intValue{2}}, intValue{2}},
-	{[]value{realValue{3.5}}, realValue{3.5}},
-	{[]value{intValue{4}, intValue{5}}, intValue{20}},
-	{[]value{intValue{6}, realValue{7.5}}, realValue{45.0}},
-	{[]value{realValue{8.5}, realValue{9}}, realValue{76.5}},
-	{[]value{realValue{10.5}, realValue{11}}, realValue{115.5}},
-	{[]value{intValue{1}, intValue{2}, intValue{3}}, intValue{6}},
-	{[]value{realValue{1.5}, intValue{2}, intValue{3}}, realValue{9.0}},
-	{[]value{intValue{1}, realValue{2.5}, intValue{3}}, realValue{7.5}},
-	{[]value{intValue{1}, intValue{2}, realValue{3.5}}, realValue{7.0}},
-	{[]value{intValue{1}, realValue{2.5}, realValue{3.5}}, realValue{8.75}},
-	{[]value{realValue{1.5}, intValue{2}, realValue{3.5}}, realValue{10.5}},
-	{[]value{realValue{1.5}, realValue{2.5}, intValue{3}}, realValue{11.25}},
-	{[]value{
+	{[]Value{intValue{2}}, intValue{2}},
+	{[]Value{realValue{3.5}}, realValue{3.5}},
+	{[]Value{intValue{4}, intValue{5}}, intValue{20}},
+	{[]Value{intValue{6}, realValue{7.5}}, realValue{45.0}},
+	{[]Value{realValue{8.5}, realValue{9}}, realValue{76.5}},
+	{[]Value{realValue{10.5}, realValue{11}}, realValue{115.5}},
+	{[]Value{intValue{1}, intValue{2}, intValue{3}}, intValue{6}},
+	{[]Value{realValue{1.5}, intValue{2}, intValue{3}}, realValue{9.0}},
+	{[]Value{intValue{1}, realValue{2.5}, intValue{3}}, realValue{7.5}},
+	{[]Value{intValue{1}, intValue{2}, realValue{3.5}}, realValue{7.0}},
+	{[]Value{intValue{1}, realValue{2.5}, realValue{3.5}}, realValue{8.75}},
+	{[]Value{realValue{1.5}, intValue{2}, realValue{3.5}}, realValue{10.5}},
+	{[]Value{realValue{1.5}, realValue{2.5}, intValue{3}}, realValue{11.25}},
+	{[]Value{
 		realValue{1.5}, realValue{2.5}, realValue{3.5},
 	}, realValue{13.125}},
 }
@@ -37,12 +37,12 @@ func TestSuccessfulNumericMulOperation(t *testing.T) {
 			t.Errorf("couldn't evaluate multiplication operation: %v", err)
 			return
 		}
-		valResult, ok := result.(value)
+		valResult, ok := result.(Value)
 		if !ok {
 			t.Errorf("couldn't convert result to value")
 			return
 		}
-		if !valResult.equals(testCase.result) {
+		if !valResult.Equals(testCase.result) {
 			t.Errorf("case %d, got %v, want %v", n+1,
 				valResult, testCase.result)
 		}
@@ -51,9 +51,9 @@ func TestSuccessfulNumericMulOperation(t *testing.T) {
 }
 
 var mulVariableGoodCases = []struct {
-	number   value
-	variable value
-	result   value
+	number   Value
+	variable Value
+	result   Value
 }{
 	{intValue{42}, intValue{99}, intValue{4158}},
 	{intValue{42}, realValue{99.5}, realValue{4179}},
@@ -72,12 +72,12 @@ func TestSuccessfulVariableMulOperation(t *testing.T) {
 			t.Errorf("couldn't evaluate multiplication operation: %v", err)
 			return
 		}
-		valResult, ok := result.(value)
+		valResult, ok := result.(Value)
 		if !ok {
 			t.Errorf("couldn't convert result to value")
 			return
 		}
-		if !valResult.equals(testCase.result) {
+		if !valResult.Equals(testCase.result) {
 			t.Errorf("case %d, got %v, want %v", n+1,
 				valResult, testCase.result)
 		}
@@ -85,8 +85,8 @@ func TestSuccessfulVariableMulOperation(t *testing.T) {
 }
 
 var mulNumberBadCases = []struct {
-	left  value
-	right value
+	left  Value
+	right Value
 }{
 	{intValue{42}, boolValue{false}},
 	{stringValue{"commander_jameson"}, realValue{1.52}},
@@ -106,8 +106,8 @@ func TestUnsuccessfulNumberMulOperation(t *testing.T) {
 }
 
 var mulVariableBadCases = []struct {
-	number   value
-	variable value
+	number   Value
+	variable Value
 }{
 	{intValue{42}, boolValue{false}},
 	{stringValue{"commander_jameson"}, realValue{1.52}},

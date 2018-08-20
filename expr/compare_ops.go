@@ -5,7 +5,7 @@ type equalityOp struct {
 }
 
 func (op equalityOp) Evaluate(table *symTab) (Expr, error) {
-	exps, err := evaluateExprs(table, isNumeric, op.left, op.right)
+	exps, err := evaluateExprs(table, IsNumeric, op.left, op.right)
 	if err != nil {
 		return nil, err
 	}
@@ -22,7 +22,7 @@ type nonEqualityOp struct {
 }
 
 func (op nonEqualityOp) Evaluate(table *symTab) (Expr, error) {
-	exps, err := evaluateExprs(table, isNumeric, op.left, op.right)
+	exps, err := evaluateExprs(table, IsNumeric, op.left, op.right)
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ type lessThanOp struct {
 }
 
 func (op lessThanOp) Evaluate(table *symTab) (Expr, error) {
-	exps, err := evaluateExprs(table, isNumeric, op.left, op.right)
+	exps, err := evaluateExprs(table, IsNumeric, op.left, op.right)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ type greaterThanOp struct {
 }
 
 func (op greaterThanOp) Evaluate(table *symTab) (Expr, error) {
-	exps, err := evaluateExprs(table, isNumeric, op.left, op.right)
+	exps, err := evaluateExprs(table, IsNumeric, op.left, op.right)
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +74,7 @@ type lessThanOrEqualOp struct {
 }
 
 func (op lessThanOrEqualOp) Evaluate(table *symTab) (Expr, error) {
-	exps, err := evaluateExprs(table, isNumeric, op.left, op.right)
+	exps, err := evaluateExprs(table, IsNumeric, op.left, op.right)
 	if err != nil {
 		return nil, err
 	}
@@ -92,7 +92,7 @@ type greaterThanOrEqualOp struct {
 }
 
 func (op greaterThanOrEqualOp) Evaluate(table *symTab) (Expr, error) {
-	exps, err := evaluateExprs(table, isNumeric, op.left, op.right)
+	exps, err := evaluateExprs(table, IsNumeric, op.left, op.right)
 	if err != nil {
 		return nil, err
 	}

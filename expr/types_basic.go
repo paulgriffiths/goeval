@@ -6,14 +6,14 @@ import (
 )
 
 func IntValueIfPossible(expr Expr) (int64, bool) {
-	if !isInteger(expr) {
+	if !IsInteger(expr) {
 		return 0, false
 	}
 	return expr.(intValue).value, true
 }
 
 func FloatValueIfPossible(expr Expr) (float64, bool) {
-	if !isNumeric(expr) {
+	if !IsNumeric(expr) {
 		return 0, false
 	}
 	return expr.(arithmeticValue).floatValue(), true
@@ -23,16 +23,16 @@ type Expr interface {
 	Evaluate(table *symTab) (Expr, error)
 }
 
-type value interface {
+type Value interface {
 	Expr
-	equals(other value) bool
+	Equals(other Value) bool
 	String() string
 }
 
 type arithmeticValue interface {
-	value
+	Value
 	floatValue() float64
-	almostEquals(other value, epsilon float64) bool
+	almostEquals(other Value, epsilon float64) bool
 	add(other arithmeticValue) arithmeticValue
 	sub(other arithmeticValue) arithmeticValue
 	mul(other arithmeticValue) arithmeticValue
@@ -51,26 +51,26 @@ func NewInt(value int64) intValue {
 	return intValue{value}
 }
 
-func (n intValue) equals(other value) bool {
-	if !isInteger(other) {
+func (n intValue) Equals(other Value) bool {
+	if !IsInteger(other) {
 		return false
 	}
 	return n.value == other.(intValue).value
 }
 
-func (n intValue) almostEquals(other value, _ float64) bool {
-	return n.equals(other)
+func (n intValue) almostEquals(other Value, _ float64) bool {
+	return n.Equals(other)
 }
 
 func (n intValue) equality(other arithmeticValue) bool {
-	if !isInteger(other) {
+	if !IsInteger(other) {
 		return n.toReal().equality(other)
 	}
 	return n.value == other.(intValue).value
 }
 
 func (n intValue) lessThan(other arithmeticValue) bool {
-	if !isInteger(other) {
+	if !IsInteger(other) {
 		return n.toReal().lessThan(other)
 	}
 	return n.value < other.(intValue).value
@@ -93,28 +93,28 @@ func (n intValue) toReal() realValue {
 }
 
 func (n intValue) add(other arithmeticValue) arithmeticValue {
-	if isReal(other) {
+	if IsReal(other) {
 		return n.toReal().add(other)
 	}
 	return intValue{n.value + other.(intValue).value}
 }
 
 func (n intValue) sub(other arithmeticValue) arithmeticValue {
-	if isReal(other) {
+	if IsReal(other) {
 		return n.toReal().sub(other)
 	}
 	return intValue{n.value - other.(intValue).value}
 }
 
 func (n intValue) mul(other arithmeticValue) arithmeticValue {
-	if isReal(other) {
+	if IsReal(other) {
 		return n.toReal().mul(other)
 	}
 	return intValue{n.value * other.(intValue).value}
 }
 
 func (n intValue) div(other arithmeticValue) (arithmeticValue, error) {
-	if isReal(other) {
+	if IsReal(other) {
 		return n.toReal().div(other)
 	}
 	if other.(intValue).value == 0 {
@@ -127,7 +127,7 @@ func (n intValue) div(other arithmeticValue) (arithmeticValue, error) {
 }
 
 func (n intValue) pow(other arithmeticValue) (arithmeticValue, error) {
-	if isReal(other) || other.(intValue).value < 0 {
+	if IsReal(other) || other.(intValue).value < 0 {
 		return n.toReal().pow(other)
 	}
 	if other.(intValue).value == 0 {
@@ -152,15 +152,15 @@ func NewReal(value float64) realValue {
 	return realValue{value}
 }
 
-func (r realValue) equals(other value) bool {
-	if !isReal(other) {
+func (r realValue) Equals(other Value) bool {
+	if !IsReal(other) {
 		return false
 	}
 	return r.value == other.(realValue).value
 }
 
-func (r realValue) almostEquals(other value, epsilon float64) bool {
-	if !isReal(other) {
+func (r realValue) almostEquals(other Value, epsilon float64) bool {
+	if !IsReal(other) {
 		return false
 	}
 	if math.Abs(r.value-other.(realValue).value) <= epsilon {
@@ -233,8 +233,8 @@ func (b boolValue) Evaluate(_ *symTab) (Expr, error) {
 	return b, nil
 }
 
-func (b boolValue) equals(other value) bool {
-	if !isBoolean(other) {
+func (b boolValue) Equals(other Value) bool {
+	if !IsBoolean(other) {
 		return false
 	}
 	return b.value == other.(boolValue).value
@@ -256,8 +256,8 @@ func (s stringValue) Evaluate(_ *symTab) (Expr, error) {
 	return s, nil
 }
 
-func (s stringValue) equals(other value) bool {
-	if !isString(other) {
+func (s stringValue) Equals(other Value) bool {
+	if !IsString(other) {
 		return false
 	}
 	return s.value == other.(stringValue).value
@@ -287,8 +287,8 @@ func (v variableValue) Evaluate(table *symTab) (Expr, error) {
 	return val, nil
 }
 
-func (v variableValue) equals(other value) bool {
-	if !isVariable(other) {
+func (v variableValue) Equals(other Value) bool {
+	if !IsVariable(other) {
 		return false
 	}
 	return v.key == other.(variableValue).key

@@ -1,92 +1,92 @@
 package expr
 
-func isInteger(exp Expr) bool {
+func IsInteger(exp Expr) bool {
 	if _, ok := exp.(intValue); !ok {
 		return false
 	}
 	return true
 }
 
-func areInteger(exps ...Expr) bool {
+func AreInteger(exps ...Expr) bool {
 	for _, exp := range exps {
-		if !isInteger(exp) {
+		if !IsInteger(exp) {
 			return false
 		}
 	}
 	return true
 }
 
-func isReal(exp Expr) bool {
+func IsReal(exp Expr) bool {
 	if _, ok := exp.(realValue); !ok {
 		return false
 	}
 	return true
 }
 
-func areReal(exps ...Expr) bool {
+func AreReal(exps ...Expr) bool {
 	for _, exp := range exps {
-		if !isReal(exp) {
+		if !IsReal(exp) {
 			return false
 		}
 	}
 	return true
 }
 
-func isNumeric(exp Expr) bool {
-	return isInteger(exp) || isReal(exp)
+func IsNumeric(exp Expr) bool {
+	return IsInteger(exp) || IsReal(exp)
 }
 
-func areNumeric(exps ...Expr) bool {
+func AreNumeric(exps ...Expr) bool {
 	for _, exp := range exps {
-		if !isNumeric(exp) {
+		if !IsNumeric(exp) {
 			return false
 		}
 	}
 	return true
 }
 
-func isBoolean(exp Expr) bool {
+func IsBoolean(exp Expr) bool {
 	if _, ok := exp.(boolValue); !ok {
 		return false
 	}
 	return true
 }
 
-func areBoolean(exps ...Expr) bool {
+func AreBoolean(exps ...Expr) bool {
 	for _, exp := range exps {
-		if !isBoolean(exp) {
+		if !IsBoolean(exp) {
 			return false
 		}
 	}
 	return true
 }
 
-func isString(exp Expr) bool {
+func IsString(exp Expr) bool {
 	if _, ok := exp.(stringValue); !ok {
 		return false
 	}
 	return true
 }
 
-func areString(exps ...Expr) bool {
+func AreString(exps ...Expr) bool {
 	for _, exp := range exps {
-		if !isString(exp) {
+		if !IsString(exp) {
 			return false
 		}
 	}
 	return true
 }
 
-func isVariable(exp Expr) bool {
+func IsVariable(exp Expr) bool {
 	if _, ok := exp.(variableValue); !ok {
 		return false
 	}
 	return true
 }
 
-func areVariable(exps ...Expr) bool {
+func AreVariable(exps ...Expr) bool {
 	for _, exp := range exps {
-		if !isVariable(exp) {
+		if !IsVariable(exp) {
 			return false
 		}
 	}

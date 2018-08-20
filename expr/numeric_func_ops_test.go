@@ -138,7 +138,7 @@ func TestCeilOp(t *testing.T) {
 			t.Errorf("case %d, couldn't evaluate function: %v", n+1, err)
 			continue
 		}
-		if !got.(arithmeticValue).equals(testCase.want) {
+		if !got.(arithmeticValue).Equals(testCase.want) {
 			t.Errorf("case %d, got %v, want %v", n+1, got, testCase.want)
 		}
 	}
@@ -159,7 +159,7 @@ func TestFloorOp(t *testing.T) {
 			t.Errorf("case %d, couldn't evaluate function: %v", n+1, err)
 			continue
 		}
-		if !got.(arithmeticValue).equals(testCase.want) {
+		if !got.(arithmeticValue).Equals(testCase.want) {
 			t.Errorf("case %d, got %v, want %v", n+1, got, testCase.want)
 		}
 	}
@@ -180,7 +180,7 @@ func TestRoundOp(t *testing.T) {
 			t.Errorf("case %d, couldn't evaluate function: %v", n+1, err)
 			continue
 		}
-		if !got.(arithmeticValue).equals(testCase.want) {
+		if !got.(arithmeticValue).Equals(testCase.want) {
 			t.Errorf("case %d, got %v, want %v", n+1, got, testCase.want)
 		}
 	}
