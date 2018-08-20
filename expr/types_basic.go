@@ -39,6 +39,8 @@ type arithmeticValue interface {
 	div(other arithmeticValue) (arithmeticValue, error)
 	pow(other arithmeticValue) (arithmeticValue, error)
 	negate() arithmeticValue
+	equality(other arithmeticValue) bool
+	lessThan(other arithmeticValue) bool
 }
 
 type intValue struct {
@@ -58,6 +60,20 @@ func (n intValue) equals(other value) bool {
 
 func (n intValue) almostEquals(other value, _ float64) bool {
 	return n.equals(other)
+}
+
+func (n intValue) equality(other arithmeticValue) bool {
+	if !isInteger(other) {
+		return n.toReal().equality(other)
+	}
+	return n.value == other.(intValue).value
+}
+
+func (n intValue) lessThan(other arithmeticValue) bool {
+	if !isInteger(other) {
+		return n.toReal().lessThan(other)
+	}
+	return n.value < other.(intValue).value
 }
 
 func (n intValue) Evaluate(_ *symTab) (Expr, error) {
@@ -152,6 +168,14 @@ func (r realValue) almostEquals(other value, epsilon float64) bool {
 	} else {
 		return false
 	}
+}
+
+func (r realValue) equality(other arithmeticValue) bool {
+	return r.value == other.floatValue()
+}
+
+func (r realValue) lessThan(other arithmeticValue) bool {
+	return r.value < other.floatValue()
 }
 
 func (r realValue) Evaluate(_ *symTab) (Expr, error) {

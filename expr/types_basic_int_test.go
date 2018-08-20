@@ -218,3 +218,23 @@ func TestIntValueNegate(t *testing.T) {
 		}
 	}
 }
+
+func TestIntValueEquality(t *testing.T) {
+	testCases := []struct {
+		left, right arithmeticValue
+		result      bool
+	}{
+		{intValue{3}, intValue{3}, true},
+		{intValue{3}, intValue{-3}, false},
+		{intValue{3}, intValue{2}, false},
+		{intValue{3}, intValue{-2}, false},
+	}
+
+	for n, testCase := range testCases {
+		result := testCase.left.equality(testCase.right)
+		if result != testCase.result {
+			t.Errorf("case %d, got %v, want %v", n+1, result,
+				testCase.result)
+		}
+	}
+}
