@@ -5,13 +5,32 @@ type equalityOp struct {
 }
 
 func (op equalityOp) Evaluate(table *symTab) (Expr, error) {
+	exps, err := evaluateExprs(table, IsBoolean, op.left, op.right)
+	if err == nil {
+		cmp := exps[0].(boolValue).equality(exps[1].(boolValue))
+		return cmp, nil
+	}
+	exps, err = evaluateExprs(table, IsString, op.left, op.right)
+	if err == nil {
+		cmp := exps[0].(boolValue).equality(exps[1].(boolValue))
+		return cmp, nil
+	}
+	exps, err = evaluateExprs(table, IsNumeric, op.left, op.right)
+	if err == nil {
+		cmp := exps[0].(arithmeticValue).equality(exps[1].(arithmeticValue))
+		return boolValue{cmp}, nil
+	}
+	return nil, TypeError
+}
+
+/*func (op equalityOp) Evaluate(table *symTab) (Expr, error) {
 	exps, err := evaluateExprs(table, IsNumeric, op.left, op.right)
 	if err != nil {
 		return nil, err
 	}
 	cmp := exps[0].(arithmeticValue).equality(exps[1].(arithmeticValue))
 	return boolValue{cmp}, nil
-}
+}*/
 
 func NewEquality(left, right Expr) equalityOp {
 	return equalityOp{left, right}

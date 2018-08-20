@@ -229,6 +229,34 @@ func NewBool(value bool) boolValue {
 	return boolValue{value}
 }
 
+func (b boolValue) equality(other boolValue) boolValue {
+	return boolValue{b.value == other.value}
+}
+
+func (b boolValue) and(other boolValue) boolValue {
+	return boolValue{b.value && other.value}
+}
+
+func (b boolValue) or(other boolValue) boolValue {
+	return boolValue{b.value || other.value}
+}
+
+func (b boolValue) xor(other boolValue) boolValue {
+	return b.equality(other).not()
+}
+
+func (b boolValue) nor(other boolValue) boolValue {
+	return b.or(other).not()
+}
+
+func (b boolValue) nand(other boolValue) boolValue {
+	return b.and(other).not()
+}
+
+func (b boolValue) not() boolValue {
+	return boolValue{!b.value}
+}
+
 func (b boolValue) Evaluate(_ *symTab) (Expr, error) {
 	return b, nil
 }
@@ -250,6 +278,10 @@ type stringValue struct {
 
 func NewString(value string) stringValue {
 	return stringValue{value}
+}
+
+func (s stringValue) equality(other stringValue) boolValue {
+	return boolValue{s.value == other.value}
 }
 
 func (s stringValue) Evaluate(_ *symTab) (Expr, error) {
