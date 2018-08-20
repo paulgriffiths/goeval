@@ -34,7 +34,7 @@ func Evaluate(expression string) (expr.Value, error) {
 		return nil, err
 	}
 
-	value, ok := result.(expr.Value)
+	value, ok := expr.ToValue(result)
 	if !ok {
 		return nil, UnknownError
 	}

@@ -1,5 +1,56 @@
 package expr
 
+func ToValue(exp Expr) (Value, bool) {
+	if !IsValue(exp) {
+		return nil, false
+	}
+	return exp.(Value), true
+}
+
+func ToInt(exp Expr) (int64, bool) {
+	if !IsInteger(exp) {
+		return 0, false
+	}
+	return exp.(intValue).value, true
+}
+
+func ToFloat(exp Expr) (float64, bool) {
+	if !IsNumeric(exp) {
+		return 0.0, false
+	}
+	return exp.(arithmeticValue).floatValue(), true
+}
+
+func ToBool(exp Expr) (bool, bool) {
+	if !IsBoolean(exp) {
+		return false, false
+	}
+	return exp.(boolValue).value, true
+}
+
+func ToString(exp Expr) (string, bool) {
+	if !IsString(exp) {
+		return "", false
+	}
+	return exp.(stringValue).value, true
+}
+
+func IsValue(exp Expr) bool {
+	if _, ok := exp.(Value); !ok {
+		return false
+	}
+	return true
+}
+
+func AreValue(exps ...Expr) bool {
+	for _, exp := range exps {
+		if !IsValue(exp) {
+			return false
+		}
+	}
+	return true
+}
+
 func IsInteger(exp Expr) bool {
 	if _, ok := exp.(intValue); !ok {
 		return false

@@ -133,8 +133,8 @@ func TestGoodExpressions(t *testing.T) {
 			continue
 		}
 		if !result.Equals(c.expected) {
-			rv, okr := expr.FloatValueIfPossible(result)
-			cv, okc := expr.FloatValueIfPossible(c.expected)
+			rv, okr := expr.ToFloat(result)
+			cv, okc := expr.ToFloat(c.expected)
 			if !okr || !okc || !c.almost || !almostEqual(rv, cv, 0.000001) {
 				t.Errorf("Expr '%s': got %v, want %v", c.expr, rv, cv)
 			}
