@@ -1,32 +1,15 @@
 package vareval
 
-import "math"
-
 type addOp struct {
 	left, right expr
 }
 
 func (op addOp) evaluate(table *symTab) (expr, error) {
-	left, err := op.left.evaluate(table)
+	exps, err := evaluateExprs(table, isNumeric, op.left, op.right)
 	if err != nil {
 		return nil, err
 	}
-	right, err := op.right.evaluate(table)
-	if err != nil {
-		return nil, err
-	}
-
-	if !areNumeric(left, right) {
-		return nil, TypeError
-	}
-
-	if areInteger(left, right) {
-		sum := mustIntegerValue(left) + mustIntegerValue(right)
-		return intValue{sum}, nil
-	}
-
-	sum := mustRealValue(left) + mustRealValue(right)
-	return realValue{sum}, nil
+	return exps[0].(arithmeticValue).add(exps[1].(arithmeticValue)), nil
 }
 
 type subOp struct {
@@ -34,26 +17,11 @@ type subOp struct {
 }
 
 func (op subOp) evaluate(table *symTab) (expr, error) {
-	left, err := op.left.evaluate(table)
+	exps, err := evaluateExprs(table, isNumeric, op.left, op.right)
 	if err != nil {
 		return nil, err
 	}
-	right, err := op.right.evaluate(table)
-	if err != nil {
-		return nil, err
-	}
-
-	if !areNumeric(left, right) {
-		return nil, TypeError
-	}
-
-	if areInteger(left, right) {
-		diff := mustIntegerValue(left) - mustIntegerValue(right)
-		return intValue{diff}, nil
-	}
-
-	diff := mustRealValue(left) - mustRealValue(right)
-	return realValue{diff}, nil
+	return exps[0].(arithmeticValue).sub(exps[1].(arithmeticValue)), nil
 }
 
 type mulOp struct {
@@ -61,26 +29,11 @@ type mulOp struct {
 }
 
 func (op mulOp) evaluate(table *symTab) (expr, error) {
-	left, err := op.left.evaluate(table)
+	exps, err := evaluateExprs(table, isNumeric, op.left, op.right)
 	if err != nil {
 		return nil, err
 	}
-	right, err := op.right.evaluate(table)
-	if err != nil {
-		return nil, err
-	}
-
-	if !areNumeric(left, right) {
-		return nil, TypeError
-	}
-
-	if areInteger(left, right) {
-		prod := mustIntegerValue(left) * mustIntegerValue(right)
-		return intValue{prod}, nil
-	}
-
-	prod := mustRealValue(left) * mustRealValue(right)
-	return realValue{prod}, nil
+	return exps[0].(arithmeticValue).mul(exps[1].(arithmeticValue)), nil
 }
 
 type divOp struct {
@@ -88,35 +41,11 @@ type divOp struct {
 }
 
 func (op divOp) evaluate(table *symTab) (expr, error) {
-	left, err := op.left.evaluate(table)
+	exps, err := evaluateExprs(table, isNumeric, op.left, op.right)
 	if err != nil {
 		return nil, err
 	}
-	right, err := op.right.evaluate(table)
-	if err != nil {
-		return nil, err
-	}
-
-	if !areNumeric(left, right) {
-		return nil, TypeError
-	}
-
-	if areInteger(left, right) {
-		rVal := mustIntegerValue(right)
-		if rVal == 0 {
-			return nil, DivideByZeroError
-		}
-		lVal := mustIntegerValue(left)
-		if lVal%rVal == 0 {
-			return intValue{lVal / rVal}, nil
-		}
-	}
-
-	rVal := mustRealValue(right)
-	if rVal == 0.0 || rVal == -0.0 {
-		return nil, DivideByZeroError
-	}
-	return realValue{mustRealValue(left) / rVal}, nil
+	return exps[0].(arithmeticValue).div(exps[1].(arithmeticValue))
 }
 
 type powOp struct {
@@ -124,22 +53,25 @@ type powOp struct {
 }
 
 func (op powOp) evaluate(table *symTab) (expr, error) {
-	base, err := op.base.evaluate(table)
+	exps, err := evaluateExprs(table, isNumeric, op.base, op.exponent)
 	if err != nil {
 		return nil, err
 	}
-	exponent, err := op.exponent.evaluate(table)
-	if err != nil {
-		return nil, err
-	}
+	return exps[0].(arithmeticValue).pow(exps[1].(arithmeticValue))
+}
 
-	if !areNumeric(base, exponent) {
-		return nil, TypeError
+func evaluateExprs(table *symTab, testFunc func(expr) bool,
+	exps ...expr) ([]expr, error) {
+	result := []expr{}
+	for _, val := range exps {
+		v, err := val.evaluate(table)
+		if err != nil {
+			return nil, err
+		}
+		if testFunc != nil && !testFunc(v) {
+			return nil, TypeError
+		}
+		result = append(result, v)
 	}
-
-	prod := math.Pow(mustRealValue(base), mustRealValue(exponent))
-	if math.IsNaN(prod) {
-		return nil, DomainError
-	}
-	return realValue{prod}, nil
+	return result, nil
 }

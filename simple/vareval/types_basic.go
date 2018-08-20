@@ -1,6 +1,9 @@
 package vareval
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 type expr interface {
 	evaluate(table *symTab) (expr, error)
@@ -10,6 +13,16 @@ type value interface {
 	expr
 	equals(other value) bool
 	String() string
+}
+
+type arithmeticValue interface {
+	value
+	floatValue() float64
+	add(other arithmeticValue) arithmeticValue
+	sub(other arithmeticValue) arithmeticValue
+	mul(other arithmeticValue) arithmeticValue
+	div(other arithmeticValue) (arithmeticValue, error)
+	pow(other arithmeticValue) (arithmeticValue, error)
 }
 
 type intValue struct {
@@ -32,6 +45,45 @@ func (n intValue) String() string {
 	return fmt.Sprintf("%d", n.value)
 }
 
+func (n intValue) floatValue() float64 {
+	return float64(n.value)
+}
+
+func (n intValue) add(other arithmeticValue) arithmeticValue {
+	if isReal(other) {
+		return realValue{n.floatValue() + other.floatValue()}
+	}
+	return intValue{n.value + other.(intValue).value}
+}
+
+func (n intValue) sub(other arithmeticValue) arithmeticValue {
+	if isReal(other) {
+		return realValue{n.floatValue() - other.floatValue()}
+	}
+	return intValue{n.value - other.(intValue).value}
+}
+
+func (n intValue) mul(other arithmeticValue) arithmeticValue {
+	if isReal(other) {
+		return realValue{n.floatValue() * other.floatValue()}
+	}
+	return intValue{n.value * other.(intValue).value}
+}
+
+func (n intValue) div(other arithmeticValue) (arithmeticValue, error) {
+	if other.floatValue() == 0.0 || other.floatValue() == -0.0 {
+		return nil, DivideByZeroError
+	}
+	if isReal(other) {
+		return realValue{n.floatValue() / other.floatValue()}, nil
+	}
+	return intValue{n.value / other.(intValue).value}, nil
+}
+
+func (n intValue) pow(other arithmeticValue) (arithmeticValue, error) {
+	return realValue{n.floatValue()}.pow(other)
+}
+
 type realValue struct {
 	value float64
 }
@@ -50,6 +102,40 @@ func (r realValue) evaluate(table *symTab) (expr, error) {
 
 func (r realValue) String() string {
 	return fmt.Sprintf("%f", r.value)
+}
+
+func (r realValue) floatValue() float64 {
+	return r.value
+}
+
+func (r realValue) add(other arithmeticValue) arithmeticValue {
+	return realValue{r.value + other.floatValue()}
+}
+
+func (r realValue) sub(other arithmeticValue) arithmeticValue {
+	return realValue{r.value - other.floatValue()}
+}
+
+func (r realValue) mul(other arithmeticValue) arithmeticValue {
+	return realValue{r.value * other.floatValue()}
+}
+
+func (r realValue) div(other arithmeticValue) (arithmeticValue, error) {
+	if other.floatValue() == 0.0 {
+		return nil, DivideByZeroError
+	}
+	return realValue{r.value / other.floatValue()}, nil
+}
+
+func (r realValue) pow(other arithmeticValue) (arithmeticValue, error) {
+	if other.floatValue() == 0.0 {
+		return nil, DivideByZeroError
+	}
+	prod := math.Pow(r.value, other.floatValue())
+	if math.IsNaN(prod) {
+		return nil, DomainError
+	}
+	return realValue{prod}, nil
 }
 
 type boolValue struct {

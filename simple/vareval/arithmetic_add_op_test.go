@@ -34,7 +34,8 @@ func TestSuccessfulNumericAddOperation(t *testing.T) {
 		}
 		result, err := op.evaluate(nil)
 		if err != nil {
-			t.Errorf("couldn't evaluate addition operation: %v", err)
+			t.Errorf("case %d, couldn't evaluate addition operation: %v",
+				n, err)
 			return
 		}
 		valResult, ok := result.(value)
