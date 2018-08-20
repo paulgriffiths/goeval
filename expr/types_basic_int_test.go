@@ -179,3 +179,19 @@ func TestIntValuePowBadDomain(t *testing.T) {
 		}
 	}
 }
+
+func TestIntValueNegate(t *testing.T) {
+	testCases := []struct {
+		result, check arithmeticValue
+	}{
+		{intValue{3}.negate(), intValue{-3}},
+		{intValue{-3}.negate(), intValue{3}},
+	}
+
+	for n, testCase := range testCases {
+		if !testCase.result.equals(testCase.check) {
+			t.Errorf("case %d, got %v, want %v", n+1, testCase.result,
+				testCase.check)
+		}
+	}
+}

@@ -175,3 +175,19 @@ func TestRealValuePowBadDomain(t *testing.T) {
 		}
 	}
 }
+
+func TestRealValueNegate(t *testing.T) {
+	testCases := []struct {
+		result, check arithmeticValue
+	}{
+		{realValue{3.0}.negate(), realValue{-3.0}},
+		{realValue{-3.0}.negate(), realValue{3.0}},
+	}
+
+	for n, testCase := range testCases {
+		if !testCase.result.equals(testCase.check) {
+			t.Errorf("case %d, got %v, want %v", n+1, testCase.result,
+				testCase.check)
+		}
+	}
+}

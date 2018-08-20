@@ -23,6 +23,7 @@ type arithmeticValue interface {
 	mul(other arithmeticValue) arithmeticValue
 	div(other arithmeticValue) (arithmeticValue, error)
 	pow(other arithmeticValue) (arithmeticValue, error)
+	negate() arithmeticValue
 }
 
 type intValue struct {
@@ -90,6 +91,10 @@ func (n intValue) pow(other arithmeticValue) (arithmeticValue, error) {
 	return n.toReal().pow(other)
 }
 
+func (n intValue) negate() arithmeticValue {
+	return intValue{-n.value}
+}
+
 type realValue struct {
 	value float64
 }
@@ -138,6 +143,10 @@ func (r realValue) pow(other arithmeticValue) (arithmeticValue, error) {
 		return nil, DomainError
 	}
 	return realValue{prod}, nil
+}
+
+func (r realValue) negate() arithmeticValue {
+	return realValue{-r.value}
 }
 
 type boolValue struct {
