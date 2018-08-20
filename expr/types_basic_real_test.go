@@ -25,6 +25,38 @@ func TestRealValueEqual(t *testing.T) {
 	}
 }
 
+func TestRealValueAlmostEqual(t *testing.T) {
+	testCases := []struct {
+		left, right arithmeticValue
+		eps         float64
+		result      bool
+	}{
+		{realValue{1.0}, realValue{1.0}, 0.0, true},
+		{realValue{1.0}, realValue{1.9}, 1.0, true},
+		{realValue{1.0}, realValue{1.9}, 0.0, false},
+		{realValue{1.01}, realValue{1.09}, 0.1, true},
+		{realValue{1.01}, realValue{1.09}, 0.01, false},
+		{realValue{1.01}, realValue{1.09}, 0.0, false},
+		{realValue{1.001}, realValue{1.009}, 0.1, true},
+		{realValue{1.001}, realValue{1.009}, 0.01, true},
+		{realValue{1.001}, realValue{1.009}, 0.001, false},
+		{realValue{1.001}, realValue{1.009}, 0.0, false},
+		{realValue{1.0001}, realValue{1.0009}, 0.1, true},
+		{realValue{1.0001}, realValue{1.0009}, 0.01, true},
+		{realValue{1.0001}, realValue{1.0009}, 0.001, true},
+		{realValue{1.0001}, realValue{1.0009}, 0.0001, false},
+		{realValue{1.0001}, realValue{1.0009}, 0.0, false},
+	}
+
+	for n, testCase := range testCases {
+		result := testCase.left.almostEquals(testCase.right, testCase.eps)
+		if result != testCase.result {
+			t.Errorf("case %d, got %v, want %v", n+1, result,
+				testCase.result)
+		}
+	}
+}
+
 func TestRealValueAdd(t *testing.T) {
 	testCases := []struct {
 		result, check arithmeticValue

@@ -25,6 +25,27 @@ func TestIntValueEqual(t *testing.T) {
 	}
 }
 
+func TestIntValueAlmostEqual(t *testing.T) {
+	testCases := []struct {
+		left, right arithmeticValue
+		result      bool
+	}{
+		{intValue{3}, intValue{3}, true},
+		{intValue{3}, intValue{4}, false},
+		{intValue{3}, intValue{-3}, false},
+		{intValue{3}, intValue{0}, false},
+		{intValue{3}, realValue{3}, false},
+	}
+
+	for n, testCase := range testCases {
+		result := testCase.left.almostEquals(testCase.right, 0)
+		if result != testCase.result {
+			t.Errorf("case %d, got %v, want %v", n+1, result,
+				testCase.result)
+		}
+	}
+}
+
 func TestIntValueAdd(t *testing.T) {
 	testCases := []struct {
 		result, check arithmeticValue

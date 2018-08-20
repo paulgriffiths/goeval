@@ -25,6 +25,7 @@ type value interface {
 type arithmeticValue interface {
 	value
 	floatValue() float64
+	almostEquals(other value, epsilon float64) bool
 	add(other arithmeticValue) arithmeticValue
 	sub(other arithmeticValue) arithmeticValue
 	mul(other arithmeticValue) arithmeticValue
@@ -46,6 +47,10 @@ func (n intValue) equals(other value) bool {
 		return false
 	}
 	return n.value == other.(intValue).value
+}
+
+func (n intValue) almostEquals(other value, _ float64) bool {
+	return n.equals(other)
 }
 
 func (n intValue) Evaluate(_ *symTab) (Expr, error) {
@@ -119,6 +124,17 @@ func (r realValue) equals(other value) bool {
 		return false
 	}
 	return r.value == other.(realValue).value
+}
+
+func (r realValue) almostEquals(other value, epsilon float64) bool {
+	if !isReal(other) {
+		return false
+	}
+	if math.Abs(r.value-other.(realValue).value) <= epsilon {
+		return true
+	} else {
+		return false
+	}
 }
 
 func (r realValue) Evaluate(_ *symTab) (Expr, error) {
