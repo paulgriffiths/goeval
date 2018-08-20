@@ -11,6 +11,7 @@ var divNumberGoodCases = []struct {
 	{[]value{intValue{2}}, intValue{2}},
 	{[]value{realValue{3.5}}, realValue{3.5}},
 	{[]value{intValue{20}, intValue{5}}, intValue{4}},
+	{[]value{intValue{20}, intValue{8}}, realValue{2.5}},
 	{[]value{intValue{6}, realValue{4.0}}, realValue{1.5}},
 	{[]value{realValue{8.0}, intValue{2}}, realValue{4.0}},
 	{[]value{realValue{7.5}, realValue{1.5}}, realValue{5.0}},

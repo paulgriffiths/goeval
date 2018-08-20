@@ -30,15 +30,14 @@ type intValue struct {
 }
 
 func (n intValue) equals(other value) bool {
-	intOther, ok := other.(intValue)
-	if !ok {
+	if !isInteger(other) {
 		return false
 	}
-	return n.value == intOther.value
+	return n.value == other.(intValue).value
 }
 
-func (n intValue) evaluate(table *symTab) (expr, error) {
-	return intValue{n.value}, nil
+func (n intValue) evaluate(_ *symTab) (expr, error) {
+	return n, nil
 }
 
 func (n intValue) String() string {
@@ -49,39 +48,46 @@ func (n intValue) floatValue() float64 {
 	return float64(n.value)
 }
 
+func (n intValue) toReal() realValue {
+	return realValue{float64(n.value)}
+}
+
 func (n intValue) add(other arithmeticValue) arithmeticValue {
 	if isReal(other) {
-		return realValue{n.floatValue() + other.floatValue()}
+		return n.toReal().add(other)
 	}
 	return intValue{n.value + other.(intValue).value}
 }
 
 func (n intValue) sub(other arithmeticValue) arithmeticValue {
 	if isReal(other) {
-		return realValue{n.floatValue() - other.floatValue()}
+		return n.toReal().sub(other)
 	}
 	return intValue{n.value - other.(intValue).value}
 }
 
 func (n intValue) mul(other arithmeticValue) arithmeticValue {
 	if isReal(other) {
-		return realValue{n.floatValue() * other.floatValue()}
+		return n.toReal().mul(other)
 	}
 	return intValue{n.value * other.(intValue).value}
 }
 
 func (n intValue) div(other arithmeticValue) (arithmeticValue, error) {
-	if other.floatValue() == 0.0 || other.floatValue() == -0.0 {
+	if isReal(other) {
+		return n.toReal().div(other)
+	}
+	if other.(intValue).value == 0 {
 		return nil, DivideByZeroError
 	}
-	if isReal(other) {
-		return realValue{n.floatValue() / other.floatValue()}, nil
+	if n.value%other.(intValue).value != 0 {
+		return n.toReal().div(other)
 	}
 	return intValue{n.value / other.(intValue).value}, nil
 }
 
 func (n intValue) pow(other arithmeticValue) (arithmeticValue, error) {
-	return realValue{n.floatValue()}.pow(other)
+	return n.toReal().pow(other)
 }
 
 type realValue struct {
@@ -89,14 +95,13 @@ type realValue struct {
 }
 
 func (r realValue) equals(other value) bool {
-	realOther, ok := other.(realValue)
-	if !ok {
+	if !isReal(other) {
 		return false
 	}
-	return r.value == realOther.value
+	return r.value == other.(realValue).value
 }
 
-func (r realValue) evaluate(table *symTab) (expr, error) {
+func (r realValue) evaluate(_ *symTab) (expr, error) {
 	return r, nil
 }
 
@@ -142,16 +147,15 @@ type boolValue struct {
 	value bool
 }
 
-func (b boolValue) evaluate(table *symTab) (expr, error) {
+func (b boolValue) evaluate(_ *symTab) (expr, error) {
 	return b, nil
 }
 
 func (b boolValue) equals(other value) bool {
-	boolOther, ok := other.(boolValue)
-	if !ok {
+	if !isBoolean(other) {
 		return false
 	}
-	return b.value == boolOther.value
+	return b.value == other.(boolValue).value
 }
 
 func (b boolValue) String() string {
@@ -162,16 +166,15 @@ type stringValue struct {
 	value string
 }
 
-func (s stringValue) evaluate(table *symTab) (expr, error) {
+func (s stringValue) evaluate(_ *symTab) (expr, error) {
 	return s, nil
 }
 
 func (s stringValue) equals(other value) bool {
-	stringOther, ok := other.(stringValue)
-	if !ok {
+	if !isString(other) {
 		return false
 	}
-	return s.value == stringOther.value
+	return s.value == other.(stringValue).value
 }
 
 func (s stringValue) String() string {
@@ -195,11 +198,10 @@ func (v variableValue) evaluate(table *symTab) (expr, error) {
 }
 
 func (v variableValue) equals(other value) bool {
-	variableOther, ok := other.(variableValue)
-	if !ok {
+	if !isVariable(other) {
 		return false
 	}
-	return v.key == variableOther.key
+	return v.key == other.(variableValue).key
 }
 
 func (v variableValue) String() string {
