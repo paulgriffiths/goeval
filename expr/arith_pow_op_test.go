@@ -1,4 +1,4 @@
-package vareval
+package expr
 
 import (
 	"testing"

@@ -1,4 +1,4 @@
-package vareval
+package expr
 
 // symTab implements a multi-level symbol table
 type symTab struct {

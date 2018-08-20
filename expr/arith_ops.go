@@ -1,4 +1,4 @@
-package vareval
+package expr
 
 type addOp struct {
 	left, right expr

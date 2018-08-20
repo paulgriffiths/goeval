@@ -1,4 +1,4 @@
-package vareval
+package expr
 
 func isInteger(exp expr) bool {
 	if _, ok := exp.(intValue); !ok {

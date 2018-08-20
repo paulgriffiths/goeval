@@ -1,40 +1,41 @@
-package vareval
+package expr
 
 import (
 	"testing"
 )
 
-var mulNumberGoodCases = []struct {
+var addNumberGoodCases = []struct {
 	values []value
 	result value
 }{
 	{[]value{intValue{2}}, intValue{2}},
 	{[]value{realValue{3.5}}, realValue{3.5}},
-	{[]value{intValue{4}, intValue{5}}, intValue{20}},
-	{[]value{intValue{6}, realValue{7.5}}, realValue{45.0}},
-	{[]value{realValue{8.5}, realValue{9}}, realValue{76.5}},
-	{[]value{realValue{10.5}, realValue{11}}, realValue{115.5}},
+	{[]value{intValue{4}, intValue{5}}, intValue{9}},
+	{[]value{intValue{6}, realValue{7.5}}, realValue{13.5}},
+	{[]value{realValue{8.5}, realValue{9}}, realValue{17.5}},
+	{[]value{realValue{10.5}, realValue{11}}, realValue{21.5}},
 	{[]value{intValue{1}, intValue{2}, intValue{3}}, intValue{6}},
-	{[]value{realValue{1.5}, intValue{2}, intValue{3}}, realValue{9.0}},
-	{[]value{intValue{1}, realValue{2.5}, intValue{3}}, realValue{7.5}},
-	{[]value{intValue{1}, intValue{2}, realValue{3.5}}, realValue{7.0}},
-	{[]value{intValue{1}, realValue{2.5}, realValue{3.5}}, realValue{8.75}},
-	{[]value{realValue{1.5}, intValue{2}, realValue{3.5}}, realValue{10.5}},
-	{[]value{realValue{1.5}, realValue{2.5}, intValue{3}}, realValue{11.25}},
+	{[]value{realValue{1.5}, intValue{2}, intValue{3}}, realValue{6.5}},
+	{[]value{intValue{1}, realValue{2.5}, intValue{3}}, realValue{6.5}},
+	{[]value{intValue{1}, intValue{2}, realValue{3.5}}, realValue{6.5}},
+	{[]value{intValue{1}, realValue{2.5}, realValue{3.5}}, realValue{7.0}},
+	{[]value{realValue{1.5}, intValue{2}, realValue{3.5}}, realValue{7.0}},
+	{[]value{realValue{1.5}, realValue{2.5}, intValue{3}}, realValue{7.0}},
 	{[]value{
 		realValue{1.5}, realValue{2.5}, realValue{3.5},
-	}, realValue{13.125}},
+	}, realValue{7.5}},
 }
 
-func TestSuccessfulNumericMulOperation(t *testing.T) {
-	for n, testCase := range mulNumberGoodCases {
+func TestSuccessfulNumericAddOperation(t *testing.T) {
+	for n, testCase := range addNumberGoodCases {
 		var op expr = testCase.values[0]
 		for _, v := range testCase.values[1:] {
-			op = mulOp{op, v}
+			op = addOp{op, v}
 		}
 		result, err := op.evaluate(nil)
 		if err != nil {
-			t.Errorf("couldn't evaluate multiplication operation: %v", err)
+			t.Errorf("case %d, couldn't evaluate addition operation: %v",
+				n, err)
 			return
 		}
 		valResult, ok := result.(value)
@@ -50,26 +51,26 @@ func TestSuccessfulNumericMulOperation(t *testing.T) {
 	}
 }
 
-var mulVariableGoodCases = []struct {
+var addVariableGoodCases = []struct {
 	number   value
 	variable value
 	result   value
 }{
-	{intValue{42}, intValue{99}, intValue{4158}},
-	{intValue{42}, realValue{99.5}, realValue{4179}},
-	{realValue{42.5}, intValue{99}, realValue{4207.5}},
-	{realValue{42.5}, realValue{99.5}, realValue{4228.75}},
+	{intValue{42}, intValue{99}, intValue{141}},
+	{intValue{42}, realValue{99.5}, realValue{141.5}},
+	{realValue{42.5}, intValue{99}, realValue{141.5}},
+	{realValue{42.5}, realValue{99.5}, realValue{142.0}},
 }
 
-func TestSuccessfulVariableMulOperation(t *testing.T) {
-	for n, testCase := range mulVariableGoodCases {
+func TestSuccessfulVariableAddOperation(t *testing.T) {
+	for n, testCase := range addVariableGoodCases {
 		table := newTable()
 		table.store("foobar", testCase.variable)
-		op := mulOp{testCase.number, variableValue{"foobar"}}
+		op := addOp{testCase.number, variableValue{"foobar"}}
 
 		result, err := op.evaluate(table)
 		if err != nil {
-			t.Errorf("couldn't evaluate multiplication operation: %v", err)
+			t.Errorf("couldn't evaluate addition operation: %v", err)
 			return
 		}
 		valResult, ok := result.(value)
@@ -84,7 +85,7 @@ func TestSuccessfulVariableMulOperation(t *testing.T) {
 	}
 }
 
-var mulNumberBadCases = []struct {
+var addNumberBadCases = []struct {
 	left  value
 	right value
 }{
@@ -94,9 +95,9 @@ var mulNumberBadCases = []struct {
 	{boolValue{false}, boolValue{true}},
 }
 
-func TestUnsuccessfulNumberMulOperation(t *testing.T) {
-	for n, testCase := range mulNumberBadCases {
-		op := mulOp{testCase.left, testCase.right}
+func TestUnsuccessfulNumberAddOperation(t *testing.T) {
+	for n, testCase := range addNumberBadCases {
+		op := addOp{testCase.left, testCase.right}
 		_, err := op.evaluate(nil)
 		if err != TypeError {
 			t.Errorf("case %d, got %v, want %v", n+1,
@@ -105,7 +106,7 @@ func TestUnsuccessfulNumberMulOperation(t *testing.T) {
 	}
 }
 
-var mulVariableBadCases = []struct {
+var addVariableBadCases = []struct {
 	number   value
 	variable value
 }{
@@ -115,11 +116,11 @@ var mulVariableBadCases = []struct {
 	{boolValue{false}, boolValue{true}},
 }
 
-func TestUnsuccessfulVariableMulOperation(t *testing.T) {
-	for n, testCase := range mulVariableBadCases {
+func TestUnsuccessfulVariableAddOperation(t *testing.T) {
+	for n, testCase := range addVariableBadCases {
 		table := newTable()
 		table.store("foobar", testCase.variable)
-		op := mulOp{testCase.number, variableValue{"foobar"}}
+		op := addOp{testCase.number, variableValue{"foobar"}}
 
 		_, err := op.evaluate(table)
 		if err != TypeError {
@@ -129,9 +130,9 @@ func TestUnsuccessfulVariableMulOperation(t *testing.T) {
 	}
 }
 
-func TestUndefinedVariableMulOperation(t *testing.T) {
+func TestUndefinedVariableAddOperation(t *testing.T) {
 	table := newTable()
-	op := mulOp{intValue{42}, variableValue{"foobar"}}
+	op := addOp{intValue{42}, variableValue{"foobar"}}
 
 	_, err := op.evaluate(table)
 	if err != UnknownIdentifierError {
