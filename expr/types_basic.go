@@ -26,7 +26,7 @@ type arithmeticValue interface {
 }
 
 type intValue struct {
-	value int
+	value int64
 }
 
 func (n intValue) equals(other value) bool {
