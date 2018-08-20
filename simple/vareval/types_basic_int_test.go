@@ -2,6 +2,29 @@ package vareval
 
 import "testing"
 
+func TestIntValueEqual(t *testing.T) {
+	testCases := []struct {
+		left, right value
+		result      bool
+	}{
+		{intValue{3}, intValue{3}, true},
+		{intValue{3}, intValue{4}, false},
+		{intValue{3}, intValue{-3}, false},
+		{intValue{3}, intValue{0}, false},
+		{intValue{3}, realValue{3}, false},
+		{intValue{3}, boolValue{true}, false},
+		{intValue{3}, stringValue{"three"}, false},
+		{intValue{3}, variableValue{"foobar"}, false},
+	}
+
+	for n, testCase := range testCases {
+		if testCase.left.equals(testCase.right) != testCase.result {
+			t.Errorf("case %d, got %v, want %v", n+1, !testCase.result,
+				testCase.result)
+		}
+	}
+}
+
 func TestIntValueAdd(t *testing.T) {
 	testCases := []struct {
 		result, check arithmeticValue
