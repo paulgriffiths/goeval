@@ -37,6 +37,10 @@ type intValue struct {
 	value int64
 }
 
+func NewInt(value int64) intValue {
+	return intValue{value}
+}
+
 func (n intValue) equals(other value) bool {
 	if !isInteger(other) {
 		return false
@@ -164,6 +168,10 @@ type boolValue struct {
 	value bool
 }
 
+func NewBool(value bool) boolValue {
+	return boolValue{value}
+}
+
 func (b boolValue) Evaluate(_ *symTab) (Expr, error) {
 	return b, nil
 }
@@ -183,6 +191,10 @@ type stringValue struct {
 	value string
 }
 
+func NewString(value string) stringValue {
+	return stringValue{value}
+}
+
 func (s stringValue) Evaluate(_ *symTab) (Expr, error) {
 	return s, nil
 }
@@ -200,6 +212,10 @@ func (s stringValue) String() string {
 
 type variableValue struct {
 	key string
+}
+
+func NewVariable(key string) variableValue {
+	return variableValue{key}
 }
 
 func (v variableValue) Evaluate(table *symTab) (Expr, error) {
