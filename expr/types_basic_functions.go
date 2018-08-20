@@ -1,13 +1,13 @@
 package expr
 
-func isInteger(exp expr) bool {
+func isInteger(exp Expr) bool {
 	if _, ok := exp.(intValue); !ok {
 		return false
 	}
 	return true
 }
 
-func areInteger(exps ...expr) bool {
+func areInteger(exps ...Expr) bool {
 	for _, exp := range exps {
 		if !isInteger(exp) {
 			return false
@@ -16,14 +16,14 @@ func areInteger(exps ...expr) bool {
 	return true
 }
 
-func isReal(exp expr) bool {
+func isReal(exp Expr) bool {
 	if _, ok := exp.(realValue); !ok {
 		return false
 	}
 	return true
 }
 
-func areReal(exps ...expr) bool {
+func areReal(exps ...Expr) bool {
 	for _, exp := range exps {
 		if !isReal(exp) {
 			return false
@@ -32,11 +32,11 @@ func areReal(exps ...expr) bool {
 	return true
 }
 
-func isNumeric(exp expr) bool {
+func isNumeric(exp Expr) bool {
 	return isInteger(exp) || isReal(exp)
 }
 
-func areNumeric(exps ...expr) bool {
+func areNumeric(exps ...Expr) bool {
 	for _, exp := range exps {
 		if !isNumeric(exp) {
 			return false
@@ -45,14 +45,14 @@ func areNumeric(exps ...expr) bool {
 	return true
 }
 
-func isBoolean(exp expr) bool {
+func isBoolean(exp Expr) bool {
 	if _, ok := exp.(boolValue); !ok {
 		return false
 	}
 	return true
 }
 
-func areBoolean(exps ...expr) bool {
+func areBoolean(exps ...Expr) bool {
 	for _, exp := range exps {
 		if !isBoolean(exp) {
 			return false
@@ -61,14 +61,14 @@ func areBoolean(exps ...expr) bool {
 	return true
 }
 
-func isString(exp expr) bool {
+func isString(exp Expr) bool {
 	if _, ok := exp.(stringValue); !ok {
 		return false
 	}
 	return true
 }
 
-func areString(exps ...expr) bool {
+func areString(exps ...Expr) bool {
 	for _, exp := range exps {
 		if !isString(exp) {
 			return false
@@ -77,14 +77,14 @@ func areString(exps ...expr) bool {
 	return true
 }
 
-func isVariable(exp expr) bool {
+func isVariable(exp Expr) bool {
 	if _, ok := exp.(variableValue); !ok {
 		return false
 	}
 	return true
 }
 
-func areVariable(exps ...expr) bool {
+func areVariable(exps ...Expr) bool {
 	for _, exp := range exps {
 		if !isVariable(exp) {
 			return false
@@ -93,11 +93,11 @@ func areVariable(exps ...expr) bool {
 	return true
 }
 
-func evaluateExprs(table *symTab, testFunc func(expr) bool,
-	exps ...expr) ([]expr, error) {
-	result := []expr{}
+func evaluateExprs(table *symTab, testFunc func(Expr) bool,
+	exps ...Expr) ([]Expr, error) {
+	result := []Expr{}
 	for _, val := range exps {
-		v, err := val.evaluate(table)
+		v, err := val.Evaluate(table)
 		if err != nil {
 			return nil, err
 		}

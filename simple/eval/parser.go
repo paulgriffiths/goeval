@@ -4,6 +4,7 @@ package eval
 
 import (
 	"fmt"
+	"github.com/paulgriffiths/goeval/expr"
 	"github.com/paulgriffiths/goeval/tokens"
 	"math"
 	"strconv"
@@ -18,7 +19,7 @@ func Evaluate(expression string) (float64, error) {
 	}
 
 	ltc := tokens.NewLTChan(ch)
-	expr, err := getExpr(ltc)
+	exp, err := getExpr(ltc)
 	if err != nil {
 		return 1, err
 	}
@@ -28,15 +29,20 @@ func Evaluate(expression string) (float64, error) {
 		return 1, TrailingTokensError
 	}
 
-	value, err := expr.Evaluate()
+	value, err := exp.Evaluate(nil)
 	if err != nil {
 		return 1, err
 	}
-	return value, nil
+
+	retval, ok := expr.FloatValueIfPossible(value)
+	if !ok {
+		return 0, UnknownError
+	}
+	return retval, nil
 }
 
-func getExpr(ltchan *tokens.LTChan) (expr, error) {
-	var left expr
+func getExpr(ltchan *tokens.LTChan) (expr.Expr, error) {
+	var left expr.Expr
 	left, err := getTerm(ltchan)
 	if err != nil {
 		return nil, err
@@ -50,13 +56,13 @@ loop:
 			if err != nil {
 				return nil, err
 			}
-			left = add{left, right}
+			left = expr.NewAdd(left, right)
 		case ltchan.Match(tokens.OperatorToken("-")):
 			right, err := getTerm(ltchan)
 			if err != nil {
 				return nil, err
 			}
-			left = subtract{left, right}
+			left = expr.NewSub(left, right)
 		default:
 			break loop
 		}
@@ -64,8 +70,8 @@ loop:
 	return left, nil
 }
 
-func getTerm(ltchan *tokens.LTChan) (expr, error) {
-	var left expr
+func getTerm(ltchan *tokens.LTChan) (expr.Expr, error) {
+	var left expr.Expr
 	left, err := getSubTerm(ltchan)
 	if err != nil {
 		return nil, err
@@ -79,13 +85,13 @@ loop:
 			if err != nil {
 				return nil, err
 			}
-			left = multiply{left, right}
+			left = expr.NewMul(left, right)
 		case ltchan.Match(tokens.OperatorToken("/")):
 			right, err := getFactor(ltchan)
 			if err != nil {
 				return nil, err
 			}
-			left = divide{left, right}
+			left = expr.NewDiv(left, right)
 		default:
 			break loop
 		}
@@ -93,8 +99,8 @@ loop:
 	return left, nil
 }
 
-func getSubTerm(ltchan *tokens.LTChan) (expr, error) {
-	var left expr
+func getSubTerm(ltchan *tokens.LTChan) (expr.Expr, error) {
+	var left expr.Expr
 	left, err := getFactor(ltchan)
 	if err != nil {
 		return nil, err
@@ -111,7 +117,7 @@ loop:
 
 			// Note that we make the power operator left-associative, here
 
-			left = power{left, right}
+			left = expr.NewPow(left, right)
 		default:
 			break loop
 		}
@@ -119,12 +125,12 @@ loop:
 	return left, nil
 }
 
-func getFactor(ltchan *tokens.LTChan) (expr, error) {
+func getFactor(ltchan *tokens.LTChan) (expr.Expr, error) {
 	neg := false
 	if ltchan.Match(tokens.OperatorToken("-")) {
 		neg = true
 	}
-	var result expr
+	var result expr.Expr
 
 	switch {
 	case ltchan.Match(tokens.RightParenToken()):
@@ -142,17 +148,17 @@ func getFactor(ltchan *tokens.LTChan) (expr, error) {
 		value, err := strconv.ParseFloat(ltchan.Value(), 64)
 		if err != nil {
 			panic(fmt.Sprintf("Couldn't convert to float: %s",
-                ltchan.Value()))
+				ltchan.Value()))
 		}
-		result = number{value}
+		result = expr.NewReal(value)
 	case ltchan.MatchType(tokens.EmptyWordToken()):
 		word := string(ltchan.Value())
 
 		if word == "e" {
-			result = number{math.E}
+			result = expr.NewReal(math.E)
 			break
 		} else if word == "pi" {
-			result = number{math.Pi}
+			result = expr.NewReal(math.Pi)
 			break
 		}
 
@@ -168,29 +174,29 @@ func getFactor(ltchan *tokens.LTChan) (expr, error) {
 		}
 		switch word {
 		case "cos":
-			result = cos{ex}
+			result = expr.NewCos(ex)
 		case "sin":
-			result = sin{ex}
+			result = expr.NewSin(ex)
 		case "tan":
-			result = tan{ex}
+			result = expr.NewTan(ex)
 		case "acos":
-			result = acos{ex}
+			result = expr.NewAcos(ex)
 		case "asin":
-			result = asin{ex}
+			result = expr.NewAsin(ex)
 		case "atan":
-			result = atan{ex}
+			result = expr.NewAtan(ex)
 		case "round":
-			result = round{ex}
+			result = expr.NewRound(ex)
 		case "ceil":
-			result = ceil{ex}
+			result = expr.NewCeil(ex)
 		case "floor":
-			result = floor{ex}
+			result = expr.NewFloor(ex)
 		case "sqrt":
-			result = sqrt{ex}
+			result = expr.NewSqrt(ex)
 		case "log":
-			result = log{ex}
+			result = expr.NewLog(ex)
 		case "ln":
-			result = ln{ex}
+			result = expr.NewLn(ex)
 		default:
 			return nil, UnknownFunctionError
 		}
@@ -199,7 +205,7 @@ func getFactor(ltchan *tokens.LTChan) (expr, error) {
 	}
 
 	if neg {
-		return negate{result}, nil
+		return expr.NewNeg(result), nil
 	} else {
 		return result, nil
 	}

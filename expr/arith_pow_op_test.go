@@ -19,11 +19,11 @@ var powNumberGoodCases = []struct {
 
 func TestSuccessfulNumericPowOperation(t *testing.T) {
 	for n, testCase := range powNumberGoodCases {
-		var op expr = testCase.values[0]
+		var op Expr = testCase.values[0]
 		for _, v := range testCase.values[1:] {
 			op = powOp{op, v}
 		}
-		result, err := op.evaluate(nil)
+		result, err := op.Evaluate(nil)
 		if err != nil {
 			t.Errorf("couldn't evaluate exponentiation operation: %v", err)
 			return
@@ -58,7 +58,7 @@ func TestSuccessfulVariablePowOperation(t *testing.T) {
 		table.store("foobar", testCase.variable)
 		op := powOp{testCase.number, variableValue{"foobar"}}
 
-		result, err := op.evaluate(table)
+		result, err := op.Evaluate(table)
 		if err != nil {
 			t.Errorf("couldn't evaluate exponentiation operation: %v", err)
 			return
@@ -91,7 +91,7 @@ var powNumberBadCases = []struct {
 func TestUnsuccessfulNumberPowOperation(t *testing.T) {
 	for n, testCase := range powNumberBadCases {
 		op := powOp{testCase.left, testCase.right}
-		_, err := op.evaluate(nil)
+		_, err := op.Evaluate(nil)
 		if err != testCase.err {
 			t.Errorf("case %d, got %v, want %v", n+1,
 				err, testCase.err)
@@ -118,7 +118,7 @@ func TestUnsuccessfulVariablePowOperation(t *testing.T) {
 		table.store("foobar", testCase.variable)
 		op := powOp{testCase.number, variableValue{"foobar"}}
 
-		_, err := op.evaluate(table)
+		_, err := op.Evaluate(table)
 		if err != testCase.err {
 			t.Errorf("case %d, got %v, want %v", n+1,
 				err, testCase.err)
@@ -130,7 +130,7 @@ func TestUndefinedVariablePowOperation(t *testing.T) {
 	table := newTable()
 	op := powOp{intValue{42}, variableValue{"foobar"}}
 
-	_, err := op.evaluate(table)
+	_, err := op.Evaluate(table)
 	if err != UnknownIdentifierError {
 		t.Errorf("got %v, want %v", err, UnknownIdentifierError)
 	}

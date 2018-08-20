@@ -1,6 +1,7 @@
 package eval
 
 import (
+	"github.com/paulgriffiths/goeval/expr"
 	"math"
 	"testing"
 )
@@ -144,7 +145,7 @@ func TestBadExpressions(t *testing.T) {
 		{"(", MissingFactorError},
 		{"(1", UnbalancedParenthesesError},
 		{")", UnbalancedParenthesesError},
-		{"4/0", DivideByZeroError},
+		{"4/0", expr.DivideByZeroError},
 		{"-", MissingFactorError},
 		{"+", MissingFactorError},
 		{"--", MissingFactorError},
@@ -156,9 +157,9 @@ func TestBadExpressions(t *testing.T) {
 		{"cos(", MissingFactorError},
 		{"cos()", UnbalancedParenthesesError}, // Should be missing factor?
 		{"foobar(4)", UnknownFunctionError},
-		{"-1^0.5", DomainError},
-		{"sqrt(-1)", DomainError},
-		{"log(-1000)", DomainError},
+		{"-1^0.5", expr.DomainError},
+		{"sqrt(-1)", expr.DomainError},
+		{"log(-1000)", expr.DomainError},
 		{"1+2(3+4)", TrailingTokensError},
 	}
 

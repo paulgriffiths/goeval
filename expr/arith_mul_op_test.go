@@ -28,11 +28,11 @@ var mulNumberGoodCases = []struct {
 
 func TestSuccessfulNumericMulOperation(t *testing.T) {
 	for n, testCase := range mulNumberGoodCases {
-		var op expr = testCase.values[0]
+		var op Expr = testCase.values[0]
 		for _, v := range testCase.values[1:] {
 			op = mulOp{op, v}
 		}
-		result, err := op.evaluate(nil)
+		result, err := op.Evaluate(nil)
 		if err != nil {
 			t.Errorf("couldn't evaluate multiplication operation: %v", err)
 			return
@@ -67,7 +67,7 @@ func TestSuccessfulVariableMulOperation(t *testing.T) {
 		table.store("foobar", testCase.variable)
 		op := mulOp{testCase.number, variableValue{"foobar"}}
 
-		result, err := op.evaluate(table)
+		result, err := op.Evaluate(table)
 		if err != nil {
 			t.Errorf("couldn't evaluate multiplication operation: %v", err)
 			return
@@ -97,7 +97,7 @@ var mulNumberBadCases = []struct {
 func TestUnsuccessfulNumberMulOperation(t *testing.T) {
 	for n, testCase := range mulNumberBadCases {
 		op := mulOp{testCase.left, testCase.right}
-		_, err := op.evaluate(nil)
+		_, err := op.Evaluate(nil)
 		if err != TypeError {
 			t.Errorf("case %d, got %v, want %v", n+1,
 				err, TypeError)
@@ -121,7 +121,7 @@ func TestUnsuccessfulVariableMulOperation(t *testing.T) {
 		table.store("foobar", testCase.variable)
 		op := mulOp{testCase.number, variableValue{"foobar"}}
 
-		_, err := op.evaluate(table)
+		_, err := op.Evaluate(table)
 		if err != TypeError {
 			t.Errorf("case %d, got %v, want %v", n+1,
 				err, TypeError)
@@ -133,7 +133,7 @@ func TestUndefinedVariableMulOperation(t *testing.T) {
 	table := newTable()
 	op := mulOp{intValue{42}, variableValue{"foobar"}}
 
-	_, err := op.evaluate(table)
+	_, err := op.Evaluate(table)
 	if err != UnknownIdentifierError {
 		t.Errorf("got %v, want %v", err, UnknownIdentifierError)
 	}

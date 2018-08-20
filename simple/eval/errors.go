@@ -6,23 +6,21 @@ type evalError int
 // Error values
 const (
 	UnbalancedParenthesesError evalError = iota
-	DivideByZeroError
 	MissingFactorError
 	MissingArgumentError
 	UnknownFunctionError
 	TrailingTokensError
-	DomainError
+	UnknownError
 )
 
 // descs contains string descriptions of each error value
 var descs = [...]string{
 	UnbalancedParenthesesError: "unbalanced parentheses",
-	DivideByZeroError:          "divide by zero",
 	MissingFactorError:         "missing factor",
 	MissingArgumentError:       "missing function argument",
 	UnknownFunctionError:       "unknown function",
 	TrailingTokensError:        "trailing tokens",
-	DomainError:                "domain error",
+	UnknownError:               "unknown error",
 }
 
 // Error returns a string description of an error

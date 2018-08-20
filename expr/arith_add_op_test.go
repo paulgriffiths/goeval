@@ -28,11 +28,11 @@ var addNumberGoodCases = []struct {
 
 func TestSuccessfulNumericAddOperation(t *testing.T) {
 	for n, testCase := range addNumberGoodCases {
-		var op expr = testCase.values[0]
+		var op Expr = testCase.values[0]
 		for _, v := range testCase.values[1:] {
 			op = addOp{op, v}
 		}
-		result, err := op.evaluate(nil)
+		result, err := op.Evaluate(nil)
 		if err != nil {
 			t.Errorf("case %d, couldn't evaluate addition operation: %v",
 				n, err)
@@ -68,7 +68,7 @@ func TestSuccessfulVariableAddOperation(t *testing.T) {
 		table.store("foobar", testCase.variable)
 		op := addOp{testCase.number, variableValue{"foobar"}}
 
-		result, err := op.evaluate(table)
+		result, err := op.Evaluate(table)
 		if err != nil {
 			t.Errorf("couldn't evaluate addition operation: %v", err)
 			return
@@ -98,7 +98,7 @@ var addNumberBadCases = []struct {
 func TestUnsuccessfulNumberAddOperation(t *testing.T) {
 	for n, testCase := range addNumberBadCases {
 		op := addOp{testCase.left, testCase.right}
-		_, err := op.evaluate(nil)
+		_, err := op.Evaluate(nil)
 		if err != TypeError {
 			t.Errorf("case %d, got %v, want %v", n+1,
 				err, TypeError)
@@ -122,7 +122,7 @@ func TestUnsuccessfulVariableAddOperation(t *testing.T) {
 		table.store("foobar", testCase.variable)
 		op := addOp{testCase.number, variableValue{"foobar"}}
 
-		_, err := op.evaluate(table)
+		_, err := op.Evaluate(table)
 		if err != TypeError {
 			t.Errorf("case %d, got %v, want %v", n+1,
 				err, TypeError)
@@ -134,7 +134,7 @@ func TestUndefinedVariableAddOperation(t *testing.T) {
 	table := newTable()
 	op := addOp{intValue{42}, variableValue{"foobar"}}
 
-	_, err := op.evaluate(table)
+	_, err := op.Evaluate(table)
 	if err != UnknownIdentifierError {
 		t.Errorf("got %v, want %v", err, UnknownIdentifierError)
 	}

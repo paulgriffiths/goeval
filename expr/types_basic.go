@@ -5,12 +5,19 @@ import (
 	"math"
 )
 
-type expr interface {
-	evaluate(table *symTab) (expr, error)
+func FloatValueIfPossible(expr Expr) (float64, bool) {
+	if !isNumeric(expr) {
+		return 0, false
+	}
+	return expr.(arithmeticValue).floatValue(), true
+}
+
+type Expr interface {
+	Evaluate(table *symTab) (Expr, error)
 }
 
 type value interface {
-	expr
+	Expr
 	equals(other value) bool
 	String() string
 }
@@ -37,7 +44,7 @@ func (n intValue) equals(other value) bool {
 	return n.value == other.(intValue).value
 }
 
-func (n intValue) evaluate(_ *symTab) (expr, error) {
+func (n intValue) Evaluate(_ *symTab) (Expr, error) {
 	return n, nil
 }
 
@@ -99,6 +106,10 @@ type realValue struct {
 	value float64
 }
 
+func NewReal(value float64) realValue {
+	return realValue{value}
+}
+
 func (r realValue) equals(other value) bool {
 	if !isReal(other) {
 		return false
@@ -106,7 +117,7 @@ func (r realValue) equals(other value) bool {
 	return r.value == other.(realValue).value
 }
 
-func (r realValue) evaluate(_ *symTab) (expr, error) {
+func (r realValue) Evaluate(_ *symTab) (Expr, error) {
 	return r, nil
 }
 
@@ -153,7 +164,7 @@ type boolValue struct {
 	value bool
 }
 
-func (b boolValue) evaluate(_ *symTab) (expr, error) {
+func (b boolValue) Evaluate(_ *symTab) (Expr, error) {
 	return b, nil
 }
 
@@ -172,7 +183,7 @@ type stringValue struct {
 	value string
 }
 
-func (s stringValue) evaluate(_ *symTab) (expr, error) {
+func (s stringValue) Evaluate(_ *symTab) (Expr, error) {
 	return s, nil
 }
 
@@ -191,7 +202,7 @@ type variableValue struct {
 	key string
 }
 
-func (v variableValue) evaluate(table *symTab) (expr, error) {
+func (v variableValue) Evaluate(table *symTab) (Expr, error) {
 	if table == nil {
 		panic("symbol table is nil")
 	}
