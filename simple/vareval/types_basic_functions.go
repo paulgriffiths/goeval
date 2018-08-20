@@ -92,3 +92,19 @@ func areVariable(exps ...expr) bool {
 	}
 	return true
 }
+
+func evaluateExprs(table *symTab, testFunc func(expr) bool,
+	exps ...expr) ([]expr, error) {
+	result := []expr{}
+	for _, val := range exps {
+		v, err := val.evaluate(table)
+		if err != nil {
+			return nil, err
+		}
+		if testFunc != nil && !testFunc(v) {
+			return nil, TypeError
+		}
+		result = append(result, v)
+	}
+	return result, nil
+}

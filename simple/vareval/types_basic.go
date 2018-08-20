@@ -133,9 +133,6 @@ func (r realValue) div(other arithmeticValue) (arithmeticValue, error) {
 }
 
 func (r realValue) pow(other arithmeticValue) (arithmeticValue, error) {
-	if other.floatValue() == 0.0 {
-		return nil, DivideByZeroError
-	}
 	prod := math.Pow(r.value, other.floatValue())
 	if math.IsNaN(prod) {
 		return nil, DomainError

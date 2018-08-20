@@ -59,19 +59,3 @@ func (op powOp) evaluate(table *symTab) (expr, error) {
 	}
 	return exps[0].(arithmeticValue).pow(exps[1].(arithmeticValue))
 }
-
-func evaluateExprs(table *symTab, testFunc func(expr) bool,
-	exps ...expr) ([]expr, error) {
-	result := []expr{}
-	for _, val := range exps {
-		v, err := val.evaluate(table)
-		if err != nil {
-			return nil, err
-		}
-		if testFunc != nil && !testFunc(v) {
-			return nil, TypeError
-		}
-		result = append(result, v)
-	}
-	return result, nil
-}
