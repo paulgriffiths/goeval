@@ -1,5 +1,6 @@
 package expr
 
+// arithmeticValue holds an integral or real value
 type arithmeticValue interface {
 	Value
 	floatValue() float64

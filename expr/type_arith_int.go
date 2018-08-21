@@ -4,19 +4,32 @@ import (
 	"fmt"
 )
 
+// intValue contains an integral value
 type intValue struct {
 	value int64
 }
 
+// NewInt creates a new integral value
 func NewInt(value int64) intValue {
 	return intValue{value}
 }
 
+// Equals tests whether an integral value equals another
 func (n intValue) Equals(other Value) bool {
 	if !IsInteger(other) {
 		return false
 	}
 	return n.value == other.(intValue).value
+}
+
+// Evaluate evalutes an integral value
+func (n intValue) Evaluate(_ *SymTab) (Expr, error) {
+	return n, nil
+}
+
+// String returns a string representation of an integral value
+func (n intValue) String() string {
+	return fmt.Sprintf("%d", n.value)
 }
 
 func (n intValue) almostEquals(other Value, _ float64) bool {
@@ -35,14 +48,6 @@ func (n intValue) lessThan(other arithmeticValue) bool {
 		return n.toReal().lessThan(other)
 	}
 	return n.value < other.(intValue).value
-}
-
-func (n intValue) Evaluate(_ *SymTab) (Expr, error) {
-	return n, nil
-}
-
-func (n intValue) String() string {
-	return fmt.Sprintf("%d", n.value)
 }
 
 func (n intValue) floatValue() float64 {

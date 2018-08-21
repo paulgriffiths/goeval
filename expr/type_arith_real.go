@@ -5,19 +5,32 @@ import (
 	"math"
 )
 
+// realValue contains a real value
 type realValue struct {
 	value float64
 }
 
+// NewReal creates a new real value
 func NewReal(value float64) realValue {
 	return realValue{value}
 }
 
+// Equals tests if a real value equals another
 func (r realValue) Equals(other Value) bool {
 	if !IsReal(other) {
 		return false
 	}
 	return r.value == other.(realValue).value
+}
+
+// Evaluate evaluates a real value
+func (r realValue) Evaluate(_ *SymTab) (Expr, error) {
+	return r, nil
+}
+
+// String returns a string representation of a real value
+func (r realValue) String() string {
+	return fmt.Sprintf("%f", r.value)
 }
 
 func (r realValue) almostEquals(other Value, epsilon float64) bool {
@@ -37,14 +50,6 @@ func (r realValue) equality(other arithmeticValue) bool {
 
 func (r realValue) lessThan(other arithmeticValue) bool {
 	return r.value < other.floatValue()
-}
-
-func (r realValue) Evaluate(_ *SymTab) (Expr, error) {
-	return r, nil
-}
-
-func (r realValue) String() string {
-	return fmt.Sprintf("%f", r.value)
 }
 
 func (r realValue) floatValue() float64 {
