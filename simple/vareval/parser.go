@@ -263,47 +263,49 @@ func getFactor(ltchan *tokens.LTChan) (expr.Expr, error) {
 		case "false":
 			result = expr.NewBool(false)
 		}
-	case ltchan.MatchType(tokens.EmptyWordToken()):
+		if _, ok := functions[word]; ok {
+			if !ltchan.Match(tokens.LeftParenToken()) {
+				return nil, MissingArgumentError
+			}
+			ex, err := getExpr(ltchan)
+			if err != nil {
+				return nil, err
+			}
+			if !ltchan.Match(tokens.RightParenToken()) {
+				return nil, UnbalancedParenthesesError
+			}
+			switch word {
+			case "cos":
+				result = expr.NewCos(ex)
+			case "sin":
+				result = expr.NewSin(ex)
+			case "tan":
+				result = expr.NewTan(ex)
+			case "acos":
+				result = expr.NewAcos(ex)
+			case "asin":
+				result = expr.NewAsin(ex)
+			case "atan":
+				result = expr.NewAtan(ex)
+			case "round":
+				result = expr.NewRound(ex)
+			case "ceil":
+				result = expr.NewCeil(ex)
+			case "floor":
+				result = expr.NewFloor(ex)
+			case "sqrt":
+				result = expr.NewSqrt(ex)
+			case "log":
+				result = expr.NewLog(ex)
+			case "ln":
+				result = expr.NewLn(ex)
+			default:
+				return nil, UnknownFunctionError
+			}
+		}
+	case ltchan.MatchType(tokens.EmptyIdentifierToken()):
 		word := string(ltchan.Value())
-
-		if !ltchan.Match(tokens.LeftParenToken()) {
-			return nil, MissingArgumentError
-		}
-		ex, err := getExpr(ltchan)
-		if err != nil {
-			return nil, err
-		}
-		if !ltchan.Match(tokens.RightParenToken()) {
-			return nil, UnbalancedParenthesesError
-		}
-		switch word {
-		case "cos":
-			result = expr.NewCos(ex)
-		case "sin":
-			result = expr.NewSin(ex)
-		case "tan":
-			result = expr.NewTan(ex)
-		case "acos":
-			result = expr.NewAcos(ex)
-		case "asin":
-			result = expr.NewAsin(ex)
-		case "atan":
-			result = expr.NewAtan(ex)
-		case "round":
-			result = expr.NewRound(ex)
-		case "ceil":
-			result = expr.NewCeil(ex)
-		case "floor":
-			result = expr.NewFloor(ex)
-		case "sqrt":
-			result = expr.NewSqrt(ex)
-		case "log":
-			result = expr.NewLog(ex)
-		case "ln":
-			result = expr.NewLn(ex)
-		default:
-			return nil, UnknownFunctionError
-		}
+		result = expr.NewVariable(word)
 	default:
 		return nil, MissingFactorError
 	}

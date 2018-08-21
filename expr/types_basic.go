@@ -309,7 +309,7 @@ func NewVariable(key string) variableValue {
 
 func (v variableValue) Evaluate(table *SymTab) (Expr, error) {
 	if table == nil {
-		panic("symbol table is nil")
+		return nil, UnknownIdentifierError
 	}
 
 	val, ok := table.Retrieve(v.key)

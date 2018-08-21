@@ -85,6 +85,35 @@ var classMatchGoodCases = []struct {
 		{(*LookaheadReader).MatchLetters, "def", FilePos{1, 3}},
 		{(*LookaheadReader).MatchNewline, "\n", FilePos{4, 3}},
 	}},
+	{"a", []classMatch{
+		{(*LookaheadReader).MatchIdentifier, "a", FilePos{0, 1}},
+	}},
+	{"ab", []classMatch{
+		{(*LookaheadReader).MatchIdentifier, "ab", FilePos{0, 1}},
+	}},
+	{"a1", []classMatch{
+		{(*LookaheadReader).MatchIdentifier, "a1", FilePos{0, 1}},
+	}},
+	{"a_", []classMatch{
+		{(*LookaheadReader).MatchIdentifier, "a_", FilePos{0, 1}},
+	}},
+	{"_", []classMatch{
+		{(*LookaheadReader).MatchIdentifier, "_", FilePos{0, 1}},
+	}},
+	{"_a", []classMatch{
+		{(*LookaheadReader).MatchIdentifier, "_a", FilePos{0, 1}},
+	}},
+	{"_1", []classMatch{
+		{(*LookaheadReader).MatchIdentifier, "_1", FilePos{0, 1}},
+	}},
+	{"abc123", []classMatch{
+		{(*LookaheadReader).MatchIdentifier, "abc123", FilePos{0, 1}},
+	}},
+	{"123abc456 ", []classMatch{
+		{(*LookaheadReader).MatchDigits, "123", FilePos{0, 1}},
+		{(*LookaheadReader).MatchIdentifier, "abc456", FilePos{3, 1}},
+		{(*LookaheadReader).MatchSpace, " ", FilePos{9, 1}},
+	}},
 }
 
 var classMatchBadCases = []struct {
@@ -102,12 +131,14 @@ var classMatchBadCases = []struct {
 		(*LookaheadReader).MatchLetters,
 		(*LookaheadReader).MatchSpace,
 		(*LookaheadReader).MatchSpaces,
+		(*LookaheadReader).MatchIdentifier,
 	}},
 	{" ", []func(*LookaheadReader) bool{
 		(*LookaheadReader).MatchLetter,
 		(*LookaheadReader).MatchLetters,
 		(*LookaheadReader).MatchDigit,
 		(*LookaheadReader).MatchDigits,
+		(*LookaheadReader).MatchIdentifier,
 	}},
 	{"", []func(*LookaheadReader) bool{
 		(*LookaheadReader).MatchLetter,
@@ -116,5 +147,6 @@ var classMatchBadCases = []struct {
 		(*LookaheadReader).MatchDigits,
 		(*LookaheadReader).MatchSpace,
 		(*LookaheadReader).MatchSpaces,
+		(*LookaheadReader).MatchIdentifier,
 	}},
 }

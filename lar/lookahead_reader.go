@@ -73,6 +73,34 @@ func (r *LookaheadReader) MatchOneOf(vals ...rune) bool {
 	return false
 }
 
+// MatchOneOf returns true if the next character to be read is among
+// the characters passed to the function and stores that character in
+// the result, otherwise it returns false and clears the result.
+func (r *LookaheadReader) MatchIdentifier() bool {
+	r.Result.clear()
+	found := false
+	for isIdentifierCharacter(r.lookahead) {
+		if !found && unicode.IsDigit(r.lookahead) {
+			return false
+		}
+		current, _ := r.Next()
+		if !found {
+			r.Result.setPos(r.pos)
+			found = true
+		}
+		r.Result.appendRune(current)
+	}
+	return found
+}
+
+// isIdentifierCharacter returns true if the specifier rune is
+// a letter, or a digit or an underscore character, i.e. if it is
+// a legal character for a C identifier (excluding the first character,
+// which may not be a digit)
+func isIdentifierCharacter(r rune) bool {
+	return unicode.IsLetter(r) || unicode.IsDigit(r) || r == '_'
+}
+
 // MatchNewline returns true if the next character to be read is
 // a newline character and stores that character in the result,
 // otherwise it returns false and clears the result

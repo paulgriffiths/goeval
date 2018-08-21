@@ -98,9 +98,9 @@ func TestGoodExpressions(t *testing.T) {
 		{"acos(0)", expr.NewReal(90), true},
 		{"-cos(0)", expr.NewReal(-1), true},
 		{"-cos(60)", expr.NewReal(-0.5), true},
-		{"-cos(90)", expr.NewReal(0), true},
-		{"-acos(1)", expr.NewReal(0), true},
-		{"-acos(0.5)", expr.NewReal(-60), true},
+		{"-cos(90)", expr.NewReal(0.0), true},
+		{"-acos(1)", expr.NewReal(0.0), true},
+		{"-acos(0.5)", expr.NewReal(-60.0), true},
 		{"-acos(0)", expr.NewReal(-90), true},
 		{"sin(0)", expr.NewReal(0), true},
 		{"sin(30)", expr.NewReal(0.5), true},
@@ -187,7 +187,7 @@ func TestGoodExpressions(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		result, err := Evaluate(c.expr)
+		result, err := Evaluate(c.expr, nil)
 		if err != nil {
 			t.Errorf("Expr '%s': got error %v, want %v", c.expr, err, nil)
 			continue
@@ -223,7 +223,7 @@ func TestBadExpressions(t *testing.T) {
 		{"cos", MissingArgumentError},
 		{"cos(", MissingFactorError},
 		{"cos()", UnbalancedParenthesesError}, // Should be missing factor?
-		{"foobar(4)", UnknownFunctionError},
+		{"foobar(4)", TrailingTokensError},
 		{"-1^0.5", expr.DomainError},
 		{"sqrt(-1)", expr.DomainError},
 		{"log(-1000)", expr.DomainError},
@@ -248,12 +248,54 @@ func TestBadExpressions(t *testing.T) {
 		{"1 > 2 > 3", expr.TypeError},
 		{"1 <= 2 <= 3", expr.TypeError},
 		{"1 >= 2 >= 3", expr.TypeError},
+		{"frob + 3", expr.UnknownIdentifierError},
+		{"cos(foobar)", expr.UnknownIdentifierError},
 	}
 
 	for _, c := range cases {
-		_, err := Evaluate(c.expr)
+		_, err := Evaluate(c.expr, nil)
 		if err != c.err {
 			t.Errorf("Expr '%s': got %v, want %v", c.expr, err, c.err)
+		}
+	}
+}
+
+func TestGoodExpressionsWithVariables(t *testing.T) {
+	cases := []struct {
+		expr     string
+		expected expr.Value
+		almost   bool
+	}{
+		{"tom", expr.NewInt(5), false},
+		{"dick", expr.NewReal(10.5), false},
+		{"harry", expr.NewBool(true), false},
+		{"tom * 5", expr.NewInt(25), false},
+		{"(tom * 5)", expr.NewInt(25), false},
+		{"tom + tom", expr.NewInt(10), false},
+		{"tom + dick", expr.NewReal(15.5), false},
+		{"harry == false", expr.NewBool(false), false},
+		{"round(dick) + 3", expr.NewReal(14.0), false},
+		{"ceil(dick) + 3", expr.NewReal(14.0), false},
+		{"floor(dick) + 3", expr.NewReal(13.0), false},
+	}
+
+	for _, c := range cases {
+		table := expr.NewTable()
+		table.Store("tom", expr.NewInt(5))
+		table.Store("dick", expr.NewReal(10.5))
+		table.Store("harry", expr.NewBool(true))
+
+		result, err := Evaluate(c.expr, table)
+		if err != nil {
+			t.Errorf("Expr '%s': got error %v, want %v", c.expr, err, nil)
+			continue
+		}
+		if !result.Equals(c.expected) {
+			rv, okr := expr.ToFloat(result)
+			cv, okc := expr.ToFloat(c.expected)
+			if !okr || !okc || !c.almost || !almostEqual(rv, cv, 0.000001) {
+				t.Errorf("Expr '%s': got %v, want %v", c.expr, rv, cv)
+			}
 		}
 	}
 }

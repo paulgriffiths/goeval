@@ -35,7 +35,7 @@ func TestLexerTokenValues(t *testing.T) {
 		{"1.23e+45", []string{"1.23e+45"}},
 		{" (  1.2e-3*(cos(45  ) +sin8.7)  )~?  ",
 			[]string{"(", "1.2e-3", "*", "(", "cos", "(", "45",
-				")", "+", "sin", "8.7", ")", ")", "~", "?"}},
+				")", "+", "sin8", ".", "7", ")", ")", "~", "?"}},
 	}
 
 	for n, c := range cases {
@@ -70,7 +70,9 @@ func TestLexerTokenTypes(t *testing.T) {
 		{"1.23e6", []func(*tokens.Token) bool{(*tokens.Token).IsNumber}},
 		{"1e-6", []func(*tokens.Token) bool{(*tokens.Token).IsNumber}},
 		{"1.23e-6", []func(*tokens.Token) bool{(*tokens.Token).IsNumber}},
-		{"cos", []func(*tokens.Token) bool{(*tokens.Token).IsWord}},
+		{"cos", []func(*tokens.Token) bool{(*tokens.Token).IsKeyword}},
+		{"foo", []func(*tokens.Token) bool{(*tokens.Token).IsIdentifier}},
+		{"ha12", []func(*tokens.Token) bool{(*tokens.Token).IsIdentifier}},
 		{"+", []func(*tokens.Token) bool{(*tokens.Token).IsOperator}},
 		{"-", []func(*tokens.Token) bool{(*tokens.Token).IsOperator}},
 		{"*", []func(*tokens.Token) bool{(*tokens.Token).IsOperator}},

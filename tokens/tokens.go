@@ -13,6 +13,7 @@ const (
 	numberToken
 	wordToken
 	keywordToken
+	identifierToken
 	leftParenToken
 	rightParenToken
 	illegalToken
@@ -59,6 +60,13 @@ func EmptyKeywordToken() Token {
 	return Token{keywordToken, ""}
 }
 
+// EmptyIdentifierToken returns an identifier token containing the
+// empty string. It can be passed to a function which compares the
+// types of tokens, but which doesn't care about the values.
+func EmptyIdentifierToken() Token {
+	return Token{identifierToken, ""}
+}
+
 // OperatorToken returns an operator token with the specified value.
 func OperatorToken(value string) Token {
 	return Token{operatorToken, value}
@@ -77,6 +85,11 @@ func WordToken(value string) Token {
 // WordToken returns a word token with the specified value.
 func KeywordToken(value string) Token {
 	return Token{keywordToken, value}
+}
+
+// IdentifierToken returns an identifier token with the specified value.
+func IdentifierToken(value string) Token {
+	return Token{identifierToken, value}
 }
 
 // IllegalToken returns an illegal token with the specified value.
@@ -115,9 +128,21 @@ func (t Token) IsKeyword() bool {
 	return t.tokenType == keywordToken
 }
 
-// IsKeyword returns true if the token is a keyword token.
+// IsKeyword returns true if the token is a keyword token
+// with the specified value.
 func (t Token) IsKeywordWith(value string) bool {
 	return t.tokenType == keywordToken && t.value == value
+}
+
+// IsIdentifier returns true if the token is an identifier token.
+func (t Token) IsIdentifier() bool {
+	return t.tokenType == identifierToken
+}
+
+// IsIdentifier returns true if the token is an identifier token
+// with the specified value.
+func (t Token) IsIdentifierWith(value string) bool {
+	return t.tokenType == identifierToken && t.value == value
 }
 
 // IsLeftParen returns true if the token is a left parenthesis token.

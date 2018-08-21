@@ -10,7 +10,7 @@ import (
 )
 
 // Evaluates the provided simple mathematical expression.
-func Evaluate(expression string) (expr.Value, error) {
+func Evaluate(expression string, table *expr.SymTab) (expr.Value, error) {
 	ch, err := NewLexer(strings.NewReader(expression))
 	if err != nil {
 		return nil, fmt.Errorf("Couldn't create lexer: %v", err)
@@ -27,7 +27,7 @@ func Evaluate(expression string) (expr.Value, error) {
 		return nil, TrailingTokensError
 	}
 
-	result, err := exp.Evaluate(nil)
+	result, err := exp.Evaluate(table)
 	if err != nil {
 		return nil, err
 	}

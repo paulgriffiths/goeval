@@ -14,6 +14,33 @@ var keywords = map[string]bool{
 	"or":    true,
 	"e":     true,
 	"pi":    true,
+	"cos":   true,
+	"sin":   true,
+	"tan":   true,
+	"acos":  true,
+	"asin":  true,
+	"atan":  true,
+	"ceil":  true,
+	"floor": true,
+	"round": true,
+	"sqrt":  true,
+	"log":   true,
+	"ln":    true,
+}
+
+var functions = map[string]bool{
+	"cos":   true,
+	"sin":   true,
+	"tan":   true,
+	"acos":  true,
+	"asin":  true,
+	"atan":  true,
+	"ceil":  true,
+	"floor": true,
+	"round": true,
+	"sqrt":  true,
+	"log":   true,
+	"ln":    true,
 }
 
 // NewLexer creates a new lexer to read from the provided reader
@@ -64,12 +91,12 @@ func NewLexer(input io.Reader) (chan tokens.Token, error) {
 				ch <- tokens.LeftParenToken()
 			case reader.MatchOneOf(')'):
 				ch <- tokens.RightParenToken()
-			case reader.MatchLetters():
+			case reader.MatchIdentifier():
 				word := string(reader.Result.Value)
 				if _, ok := keywords[word]; ok {
 					ch <- tokens.KeywordToken(word)
 				} else {
-					ch <- tokens.WordToken(word)
+					ch <- tokens.IdentifierToken(word)
 				}
 			case reader.MatchDigits():
 				value := reader.Result.Value
