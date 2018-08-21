@@ -16,7 +16,7 @@ type cosOp struct {
 	value Expr
 }
 
-func (op cosOp) Evaluate(table *symTab) (Expr, error) {
+func (op cosOp) Evaluate(table *SymTab) (Expr, error) {
 	exps, err := evaluateExprs(table, IsNumeric, op.value)
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ type sinOp struct {
 	value Expr
 }
 
-func (op sinOp) Evaluate(table *symTab) (Expr, error) {
+func (op sinOp) Evaluate(table *SymTab) (Expr, error) {
 	exps, err := evaluateExprs(table, IsNumeric, op.value)
 	if err != nil {
 		return nil, err
@@ -56,7 +56,7 @@ type tanOp struct {
 	value Expr
 }
 
-func (op tanOp) Evaluate(table *symTab) (Expr, error) {
+func (op tanOp) Evaluate(table *SymTab) (Expr, error) {
 	exps, err := evaluateExprs(table, IsNumeric, op.value)
 	if err != nil {
 		return nil, err
@@ -76,7 +76,7 @@ type acosOp struct {
 	value Expr
 }
 
-func (op acosOp) Evaluate(table *symTab) (Expr, error) {
+func (op acosOp) Evaluate(table *SymTab) (Expr, error) {
 	exps, err := evaluateExprs(table, IsNumeric, op.value)
 	if err != nil {
 		return nil, err
@@ -96,7 +96,7 @@ type asinOp struct {
 	value Expr
 }
 
-func (op asinOp) Evaluate(table *symTab) (Expr, error) {
+func (op asinOp) Evaluate(table *SymTab) (Expr, error) {
 	exps, err := evaluateExprs(table, IsNumeric, op.value)
 	if err != nil {
 		return nil, err
@@ -116,7 +116,7 @@ type atanOp struct {
 	value Expr
 }
 
-func (op atanOp) Evaluate(table *symTab) (Expr, error) {
+func (op atanOp) Evaluate(table *SymTab) (Expr, error) {
 	exps, err := evaluateExprs(table, IsNumeric, op.value)
 	if err != nil {
 		return nil, err
@@ -136,7 +136,7 @@ type roundOp struct {
 	value Expr
 }
 
-func (op roundOp) Evaluate(table *symTab) (Expr, error) {
+func (op roundOp) Evaluate(table *SymTab) (Expr, error) {
 	exps, err := evaluateExprs(table, IsNumeric, op.value)
 	if err != nil {
 		return nil, err
@@ -153,7 +153,7 @@ type ceilOp struct {
 	value Expr
 }
 
-func (op ceilOp) Evaluate(table *symTab) (Expr, error) {
+func (op ceilOp) Evaluate(table *SymTab) (Expr, error) {
 	exps, err := evaluateExprs(table, IsNumeric, op.value)
 	if err != nil {
 		return nil, err
@@ -170,7 +170,7 @@ type floorOp struct {
 	value Expr
 }
 
-func (op floorOp) Evaluate(table *symTab) (Expr, error) {
+func (op floorOp) Evaluate(table *SymTab) (Expr, error) {
 	exps, err := evaluateExprs(table, IsNumeric, op.value)
 	if err != nil {
 		return nil, err
@@ -187,7 +187,7 @@ type sqrtOp struct {
 	value Expr
 }
 
-func (op sqrtOp) Evaluate(table *symTab) (Expr, error) {
+func (op sqrtOp) Evaluate(table *SymTab) (Expr, error) {
 	exps, err := evaluateExprs(table, IsNumeric, op.value)
 	if err != nil {
 		return nil, err
@@ -207,7 +207,7 @@ type logOp struct {
 	value Expr
 }
 
-func (op logOp) Evaluate(table *symTab) (Expr, error) {
+func (op logOp) Evaluate(table *SymTab) (Expr, error) {
 	exps, err := evaluateExprs(table, IsNumeric, op.value)
 	if err != nil {
 		return nil, err
@@ -227,7 +227,7 @@ type lnOp struct {
 	value Expr
 }
 
-func (op lnOp) Evaluate(table *symTab) (Expr, error) {
+func (op lnOp) Evaluate(table *SymTab) (Expr, error) {
 	exps, err := evaluateExprs(table, IsNumeric, op.value)
 	if err != nil {
 		return nil, err

@@ -63,8 +63,8 @@ var mulVariableGoodCases = []struct {
 
 func TestSuccessfulVariableMulOperation(t *testing.T) {
 	for n, testCase := range mulVariableGoodCases {
-		table := newTable()
-		table.store("foobar", testCase.variable)
+		table := NewTable()
+		table.Store("foobar", testCase.variable)
 		op := mulOp{testCase.number, variableValue{"foobar"}}
 
 		result, err := op.Evaluate(table)
@@ -117,8 +117,8 @@ var mulVariableBadCases = []struct {
 
 func TestUnsuccessfulVariableMulOperation(t *testing.T) {
 	for n, testCase := range mulVariableBadCases {
-		table := newTable()
-		table.store("foobar", testCase.variable)
+		table := NewTable()
+		table.Store("foobar", testCase.variable)
 		op := mulOp{testCase.number, variableValue{"foobar"}}
 
 		_, err := op.Evaluate(table)
@@ -130,7 +130,7 @@ func TestUnsuccessfulVariableMulOperation(t *testing.T) {
 }
 
 func TestUndefinedVariableMulOperation(t *testing.T) {
-	table := newTable()
+	table := NewTable()
 	op := mulOp{intValue{42}, variableValue{"foobar"}}
 
 	_, err := op.Evaluate(table)

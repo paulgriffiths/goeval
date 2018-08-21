@@ -63,8 +63,8 @@ var subVariableGoodCases = []struct {
 
 func TestSuccessfulVariableSubOperation(t *testing.T) {
 	for n, testCase := range subVariableGoodCases {
-		table := newTable()
-		table.store("foobar", testCase.variable)
+		table := NewTable()
+		table.Store("foobar", testCase.variable)
 		op := subOp{testCase.number, variableValue{"foobar"}}
 
 		result, err := op.Evaluate(table)
@@ -117,8 +117,8 @@ var subVariableBadCases = []struct {
 
 func TestUnsuccessfulVariableSubOperation(t *testing.T) {
 	for n, testCase := range subVariableBadCases {
-		table := newTable()
-		table.store("foobar", testCase.variable)
+		table := NewTable()
+		table.Store("foobar", testCase.variable)
 		op := subOp{testCase.number, variableValue{"foobar"}}
 
 		_, err := op.Evaluate(table)
@@ -130,7 +130,7 @@ func TestUnsuccessfulVariableSubOperation(t *testing.T) {
 }
 
 func TestUndefinedVariableSubOperation(t *testing.T) {
-	table := newTable()
+	table := NewTable()
 	op := subOp{intValue{42}, variableValue{"foobar"}}
 
 	_, err := op.Evaluate(table)

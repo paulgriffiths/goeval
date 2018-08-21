@@ -20,7 +20,7 @@ func FloatValueIfPossible(expr Expr) (float64, bool) {
 }
 
 type Expr interface {
-	Evaluate(table *symTab) (Expr, error)
+	Evaluate(table *SymTab) (Expr, error)
 }
 
 type Value interface {
@@ -76,7 +76,7 @@ func (n intValue) lessThan(other arithmeticValue) bool {
 	return n.value < other.(intValue).value
 }
 
-func (n intValue) Evaluate(_ *symTab) (Expr, error) {
+func (n intValue) Evaluate(_ *SymTab) (Expr, error) {
 	return n, nil
 }
 
@@ -178,7 +178,7 @@ func (r realValue) lessThan(other arithmeticValue) bool {
 	return r.value < other.floatValue()
 }
 
-func (r realValue) Evaluate(_ *symTab) (Expr, error) {
+func (r realValue) Evaluate(_ *SymTab) (Expr, error) {
 	return r, nil
 }
 
@@ -257,7 +257,7 @@ func (b boolValue) not() boolValue {
 	return boolValue{!b.value}
 }
 
-func (b boolValue) Evaluate(_ *symTab) (Expr, error) {
+func (b boolValue) Evaluate(_ *SymTab) (Expr, error) {
 	return b, nil
 }
 
@@ -284,7 +284,7 @@ func (s stringValue) equality(other stringValue) boolValue {
 	return boolValue{s.value == other.value}
 }
 
-func (s stringValue) Evaluate(_ *symTab) (Expr, error) {
+func (s stringValue) Evaluate(_ *SymTab) (Expr, error) {
 	return s, nil
 }
 
@@ -307,12 +307,12 @@ func NewVariable(key string) variableValue {
 	return variableValue{key}
 }
 
-func (v variableValue) Evaluate(table *symTab) (Expr, error) {
+func (v variableValue) Evaluate(table *SymTab) (Expr, error) {
 	if table == nil {
 		panic("symbol table is nil")
 	}
 
-	val, ok := table.retrieve(v.key)
+	val, ok := table.Retrieve(v.key)
 	if !ok {
 		return nil, UnknownIdentifierError
 	}

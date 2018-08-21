@@ -4,7 +4,7 @@ type addOp struct {
 	left, right Expr
 }
 
-func (op addOp) Evaluate(table *symTab) (Expr, error) {
+func (op addOp) Evaluate(table *SymTab) (Expr, error) {
 	exps, err := evaluateExprs(table, IsNumeric, op.left, op.right)
 	if err != nil {
 		return nil, err
@@ -20,7 +20,7 @@ type subOp struct {
 	left, right Expr
 }
 
-func (op subOp) Evaluate(table *symTab) (Expr, error) {
+func (op subOp) Evaluate(table *SymTab) (Expr, error) {
 	exps, err := evaluateExprs(table, IsNumeric, op.left, op.right)
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ type mulOp struct {
 	left, right Expr
 }
 
-func (op mulOp) Evaluate(table *symTab) (Expr, error) {
+func (op mulOp) Evaluate(table *SymTab) (Expr, error) {
 	exps, err := evaluateExprs(table, IsNumeric, op.left, op.right)
 	if err != nil {
 		return nil, err
@@ -52,7 +52,7 @@ type divOp struct {
 	left, right Expr
 }
 
-func (op divOp) Evaluate(table *symTab) (Expr, error) {
+func (op divOp) Evaluate(table *SymTab) (Expr, error) {
 	exps, err := evaluateExprs(table, IsNumeric, op.left, op.right)
 	if err != nil {
 		return nil, err
@@ -68,7 +68,7 @@ type powOp struct {
 	base, exponent Expr
 }
 
-func (op powOp) Evaluate(table *symTab) (Expr, error) {
+func (op powOp) Evaluate(table *SymTab) (Expr, error) {
 	exps, err := evaluateExprs(table, IsNumeric, op.base, op.exponent)
 	if err != nil {
 		return nil, err
@@ -84,7 +84,7 @@ type negOp struct {
 	value Expr
 }
 
-func (op negOp) Evaluate(table *symTab) (Expr, error) {
+func (op negOp) Evaluate(table *SymTab) (Expr, error) {
 	exps, err := evaluateExprs(table, IsNumeric, op.value)
 	if err != nil {
 		return nil, err

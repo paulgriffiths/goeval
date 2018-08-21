@@ -2,6 +2,7 @@ package vareval
 
 import (
 	"fmt"
+	"github.com/paulgriffiths/goeval/expr"
 )
 
 type stmt interface {
@@ -9,11 +10,11 @@ type stmt interface {
 }
 
 type output struct {
-	exp expr
+	exp expr.Expr
 }
 
 func (o *output) execute(e *env) error {
-	value, err := o.exp.evaluate(e.table)
+	value, err := o.exp.Evaluate(e.table)
 	if err != nil {
 		return err
 	}

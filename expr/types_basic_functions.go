@@ -144,7 +144,7 @@ func AreVariable(exps ...Expr) bool {
 	return true
 }
 
-func evaluateExprs(table *symTab, testFunc func(Expr) bool,
+func evaluateExprs(table *SymTab, testFunc func(Expr) bool,
 	exps ...Expr) ([]Expr, error) {
 	result := []Expr{}
 	for _, val := range exps {

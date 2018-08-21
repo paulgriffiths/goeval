@@ -4,7 +4,7 @@ type andOp struct {
 	left, right Expr
 }
 
-func (op andOp) Evaluate(table *symTab) (Expr, error) {
+func (op andOp) Evaluate(table *SymTab) (Expr, error) {
 	exps, err := evaluateExprs(table, IsBoolean, op.left, op.right)
 	if err != nil {
 		return nil, err
@@ -21,7 +21,7 @@ type orOp struct {
 	left, right Expr
 }
 
-func (op orOp) Evaluate(table *symTab) (Expr, error) {
+func (op orOp) Evaluate(table *SymTab) (Expr, error) {
 	exps, err := evaluateExprs(table, IsBoolean, op.left, op.right)
 	if err != nil {
 		return nil, err
@@ -38,7 +38,7 @@ type xorOp struct {
 	left, right Expr
 }
 
-func (op xorOp) Evaluate(table *symTab) (Expr, error) {
+func (op xorOp) Evaluate(table *SymTab) (Expr, error) {
 	exps, err := evaluateExprs(table, IsBoolean, op.left, op.right)
 	if err != nil {
 		return nil, err
@@ -55,7 +55,7 @@ type norOp struct {
 	left, right Expr
 }
 
-func (op norOp) Evaluate(table *symTab) (Expr, error) {
+func (op norOp) Evaluate(table *SymTab) (Expr, error) {
 	exps, err := evaluateExprs(table, IsBoolean, op.left, op.right)
 	if err != nil {
 		return nil, err
@@ -72,7 +72,7 @@ type nandOp struct {
 	left, right Expr
 }
 
-func (op nandOp) Evaluate(table *symTab) (Expr, error) {
+func (op nandOp) Evaluate(table *SymTab) (Expr, error) {
 	exps, err := evaluateExprs(table, IsBoolean, op.left, op.right)
 	if err != nil {
 		return nil, err
@@ -89,7 +89,7 @@ type notOp struct {
 	operand Expr
 }
 
-func (op notOp) Evaluate(table *symTab) (Expr, error) {
+func (op notOp) Evaluate(table *SymTab) (Expr, error) {
 	exps, err := evaluateExprs(table, IsBoolean, op.operand)
 	if err != nil {
 		return nil, err

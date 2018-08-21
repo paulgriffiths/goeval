@@ -56,8 +56,8 @@ var powVariableGoodCases = []struct {
 
 func TestSuccessfulVariablePowOperation(t *testing.T) {
 	for n, testCase := range powVariableGoodCases {
-		table := newTable()
-		table.store("foobar", testCase.variable)
+		table := NewTable()
+		table.Store("foobar", testCase.variable)
 		op := powOp{testCase.number, variableValue{"foobar"}}
 
 		result, err := op.Evaluate(table)
@@ -116,8 +116,8 @@ var powVariableBadCases = []struct {
 
 func TestUnsuccessfulVariablePowOperation(t *testing.T) {
 	for n, testCase := range powVariableBadCases {
-		table := newTable()
-		table.store("foobar", testCase.variable)
+		table := NewTable()
+		table.Store("foobar", testCase.variable)
 		op := powOp{testCase.number, variableValue{"foobar"}}
 
 		_, err := op.Evaluate(table)
@@ -129,7 +129,7 @@ func TestUnsuccessfulVariablePowOperation(t *testing.T) {
 }
 
 func TestUndefinedVariablePowOperation(t *testing.T) {
-	table := newTable()
+	table := NewTable()
 	op := powOp{intValue{42}, variableValue{"foobar"}}
 
 	_, err := op.Evaluate(table)

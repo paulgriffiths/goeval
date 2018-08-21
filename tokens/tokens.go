@@ -12,6 +12,7 @@ const (
 	operatorToken int = iota
 	numberToken
 	wordToken
+	keywordToken
 	leftParenToken
 	rightParenToken
 	illegalToken
@@ -51,6 +52,13 @@ func EmptyWordToken() Token {
 	return Token{wordToken, ""}
 }
 
+// EmptyKeywordToken returns a keyword token containing the empty string.
+// It can be passed to a function which compares the types of tokens,
+// but which doesn't care about the values.
+func EmptyKeywordToken() Token {
+	return Token{keywordToken, ""}
+}
+
 // OperatorToken returns an operator token with the specified value.
 func OperatorToken(value string) Token {
 	return Token{operatorToken, value}
@@ -64,6 +72,11 @@ func NumberToken(value string) Token {
 // WordToken returns a word token with the specified value.
 func WordToken(value string) Token {
 	return Token{wordToken, value}
+}
+
+// WordToken returns a word token with the specified value.
+func KeywordToken(value string) Token {
+	return Token{keywordToken, value}
 }
 
 // IllegalToken returns an illegal token with the specified value.
@@ -95,6 +108,16 @@ func (t Token) IsNumber() bool {
 // IsWord returns true if the token is a word token.
 func (t Token) IsWord() bool {
 	return t.tokenType == wordToken
+}
+
+// IsKeyword returns true if the token is a keyword token.
+func (t Token) IsKeyword() bool {
+	return t.tokenType == keywordToken
+}
+
+// IsKeyword returns true if the token is a keyword token.
+func (t Token) IsKeywordWith(value string) bool {
+	return t.tokenType == keywordToken && t.value == value
 }
 
 // IsLeftParen returns true if the token is a left parenthesis token.

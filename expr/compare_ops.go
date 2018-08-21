@@ -4,7 +4,7 @@ type equalityOp struct {
 	left, right Expr
 }
 
-func (op equalityOp) Evaluate(table *symTab) (Expr, error) {
+func (op equalityOp) Evaluate(table *SymTab) (Expr, error) {
 	exps, err := evaluateExprs(table, IsBoolean, op.left, op.right)
 	if err == nil {
 		cmp := exps[0].(boolValue).equality(exps[1].(boolValue))
@@ -12,7 +12,7 @@ func (op equalityOp) Evaluate(table *symTab) (Expr, error) {
 	}
 	exps, err = evaluateExprs(table, IsString, op.left, op.right)
 	if err == nil {
-		cmp := exps[0].(boolValue).equality(exps[1].(boolValue))
+		cmp := exps[0].(stringValue).equality(exps[1].(stringValue))
 		return cmp, nil
 	}
 	exps, err = evaluateExprs(table, IsNumeric, op.left, op.right)
@@ -23,7 +23,7 @@ func (op equalityOp) Evaluate(table *symTab) (Expr, error) {
 	return nil, TypeError
 }
 
-/*func (op equalityOp) Evaluate(table *symTab) (Expr, error) {
+/*func (op equalityOp) Evaluate(table *SymTab) (Expr, error) {
 	exps, err := evaluateExprs(table, IsNumeric, op.left, op.right)
 	if err != nil {
 		return nil, err
@@ -40,13 +40,23 @@ type nonEqualityOp struct {
 	left, right Expr
 }
 
-func (op nonEqualityOp) Evaluate(table *symTab) (Expr, error) {
-	exps, err := evaluateExprs(table, IsNumeric, op.left, op.right)
-	if err != nil {
-		return nil, err
+func (op nonEqualityOp) Evaluate(table *SymTab) (Expr, error) {
+	exps, err := evaluateExprs(table, IsBoolean, op.left, op.right)
+	if err == nil {
+		cmp := exps[0].(boolValue).equality(exps[1].(boolValue))
+		return boolValue{!cmp.value}, nil
 	}
-	cmp := !exps[0].(arithmeticValue).equality(exps[1].(arithmeticValue))
-	return boolValue{cmp}, nil
+	exps, err = evaluateExprs(table, IsString, op.left, op.right)
+	if err == nil {
+		cmp := exps[0].(stringValue).equality(exps[1].(stringValue))
+		return boolValue{!cmp.value}, nil
+	}
+	exps, err = evaluateExprs(table, IsNumeric, op.left, op.right)
+	if err == nil {
+		cmp := !exps[0].(arithmeticValue).equality(exps[1].(arithmeticValue))
+		return boolValue{cmp}, nil
+	}
+	return nil, TypeError
 }
 
 func NewNonEquality(left, right Expr) nonEqualityOp {
@@ -57,7 +67,7 @@ type lessThanOp struct {
 	left, right Expr
 }
 
-func (op lessThanOp) Evaluate(table *symTab) (Expr, error) {
+func (op lessThanOp) Evaluate(table *SymTab) (Expr, error) {
 	exps, err := evaluateExprs(table, IsNumeric, op.left, op.right)
 	if err != nil {
 		return nil, err
@@ -74,7 +84,7 @@ type greaterThanOp struct {
 	left, right Expr
 }
 
-func (op greaterThanOp) Evaluate(table *symTab) (Expr, error) {
+func (op greaterThanOp) Evaluate(table *SymTab) (Expr, error) {
 	exps, err := evaluateExprs(table, IsNumeric, op.left, op.right)
 	if err != nil {
 		return nil, err
@@ -92,7 +102,7 @@ type lessThanOrEqualOp struct {
 	left, right Expr
 }
 
-func (op lessThanOrEqualOp) Evaluate(table *symTab) (Expr, error) {
+func (op lessThanOrEqualOp) Evaluate(table *SymTab) (Expr, error) {
 	exps, err := evaluateExprs(table, IsNumeric, op.left, op.right)
 	if err != nil {
 		return nil, err
@@ -110,7 +120,7 @@ type greaterThanOrEqualOp struct {
 	left, right Expr
 }
 
-func (op greaterThanOrEqualOp) Evaluate(table *symTab) (Expr, error) {
+func (op greaterThanOrEqualOp) Evaluate(table *SymTab) (Expr, error) {
 	exps, err := evaluateExprs(table, IsNumeric, op.left, op.right)
 	if err != nil {
 		return nil, err

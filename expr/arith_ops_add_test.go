@@ -64,8 +64,8 @@ var addVariableGoodCases = []struct {
 
 func TestSuccessfulVariableAddOperation(t *testing.T) {
 	for n, testCase := range addVariableGoodCases {
-		table := newTable()
-		table.store("foobar", testCase.variable)
+		table := NewTable()
+		table.Store("foobar", testCase.variable)
 		op := addOp{testCase.number, variableValue{"foobar"}}
 
 		result, err := op.Evaluate(table)
@@ -118,8 +118,8 @@ var addVariableBadCases = []struct {
 
 func TestUnsuccessfulVariableAddOperation(t *testing.T) {
 	for n, testCase := range addVariableBadCases {
-		table := newTable()
-		table.store("foobar", testCase.variable)
+		table := NewTable()
+		table.Store("foobar", testCase.variable)
 		op := addOp{testCase.number, variableValue{"foobar"}}
 
 		_, err := op.Evaluate(table)
@@ -131,7 +131,7 @@ func TestUnsuccessfulVariableAddOperation(t *testing.T) {
 }
 
 func TestUndefinedVariableAddOperation(t *testing.T) {
-	table := newTable()
+	table := NewTable()
 	op := addOp{intValue{42}, variableValue{"foobar"}}
 
 	_, err := op.Evaluate(table)

@@ -64,8 +64,8 @@ var divVariableGoodCases = []struct {
 
 func TestSuccessfulVariableDivOperation(t *testing.T) {
 	for n, testCase := range divVariableGoodCases {
-		table := newTable()
-		table.store("foobar", testCase.variable)
+		table := NewTable()
+		table.Store("foobar", testCase.variable)
 		op := divOp{testCase.number, variableValue{"foobar"}}
 
 		result, err := op.Evaluate(table)
@@ -130,8 +130,8 @@ var divVariableBadCases = []struct {
 
 func TestUnsuccessfulVariableDivOperation(t *testing.T) {
 	for n, testCase := range divVariableBadCases {
-		table := newTable()
-		table.store("foobar", testCase.variable)
+		table := NewTable()
+		table.Store("foobar", testCase.variable)
 		op := divOp{testCase.number, variableValue{"foobar"}}
 
 		_, err := op.Evaluate(table)
@@ -143,7 +143,7 @@ func TestUnsuccessfulVariableDivOperation(t *testing.T) {
 }
 
 func TestUndefinedVariableDivOperation(t *testing.T) {
-	table := newTable()
+	table := NewTable()
 	op := divOp{intValue{42}, variableValue{"foobar"}}
 
 	_, err := op.Evaluate(table)

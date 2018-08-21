@@ -4,13 +4,13 @@ import (
 	"testing"
 )
 
-func TestSymbolTablestoreAndretrieve(t *testing.T) {
-	tab := newTable()
+func TestSymbolTableStoreAndRetrieve(t *testing.T) {
+	tab := NewTable()
 	key := "meaning of life"
 	value := intValue{42}
-	tab.store(key, value)
-	if result, ok := tab.retrieve(key); !ok {
-		t.Errorf("couldn't retrieve value for %s", key)
+	tab.Store(key, value)
+	if result, ok := tab.Retrieve(key); !ok {
+		t.Errorf("couldn't Retrieve value for %s", key)
 	} else {
 		if !result.Equals(value) {
 			t.Errorf("got %d, want %d", result, value)
@@ -18,21 +18,21 @@ func TestSymbolTablestoreAndretrieve(t *testing.T) {
 	}
 }
 
-func TestSymbolTableretrieveNotSet(t *testing.T) {
-	tab := newTable()
+func TestSymbolTableRetrieveNotSet(t *testing.T) {
+	tab := NewTable()
 	key := "nothing to see"
-	if _, ok := tab.retrieve(key); ok {
+	if _, ok := tab.Retrieve(key); ok {
 		t.Errorf("failed to indicate absence of key")
 	}
 }
 
 func TestSymbolTableOverWrite(t *testing.T) {
-	tab := newTable()
+	tab := NewTable()
 	key := "halves in a quarter"
 	value := realValue{0.5}
-	tab.store(key, value)
-	if result, ok := tab.retrieve(key); !ok {
-		t.Errorf("couldn't retrieve value for %s", key)
+	tab.Store(key, value)
+	if result, ok := tab.Retrieve(key); !ok {
+		t.Errorf("couldn't Retrieve value for %s", key)
 	} else {
 		if !result.Equals(value) {
 			t.Errorf("got %f, want %f", result, value)
@@ -41,9 +41,9 @@ func TestSymbolTableOverWrite(t *testing.T) {
 
 	key = "went to moon"
 	newValue := boolValue{true}
-	tab.store(key, newValue)
-	if result, ok := tab.retrieve(key); !ok {
-		t.Errorf("couldn't retrieve value for %s", key)
+	tab.Store(key, newValue)
+	if result, ok := tab.Retrieve(key); !ok {
+		t.Errorf("couldn't Retrieve value for %s", key)
 	} else {
 		if !result.Equals(newValue) {
 			t.Errorf("got %t, want %t", result, newValue)
@@ -52,30 +52,30 @@ func TestSymbolTableOverWrite(t *testing.T) {
 }
 
 func TestSymbolTableShadow(t *testing.T) {
-	tab := newTable()
+	tab := NewTable()
 	key := "antidote"
 	value := intValue{99}
-	tab.store(key, value)
-	if result, ok := tab.retrieve(key); !ok {
-		t.Errorf("failed to retrieve for key %s", key)
+	tab.Store(key, value)
+	if result, ok := tab.Retrieve(key); !ok {
+		t.Errorf("failed to Retrieve for key %s", key)
 		return
 	} else if !result.Equals(value) {
 		t.Errorf("got %d, want %d", result, value)
 	}
 
-	tab.push()
+	tab.Push()
 	shadowValue := realValue{103.5}
-	tab.store(key, shadowValue)
-	if result, ok := tab.retrieve(key); !ok {
-		t.Errorf("failed to retrieve for key %s", key)
+	tab.Store(key, shadowValue)
+	if result, ok := tab.Retrieve(key); !ok {
+		t.Errorf("failed to Retrieve for key %s", key)
 		return
 	} else if !result.Equals(shadowValue) {
 		t.Errorf("got %f, want %f", result, shadowValue)
 	}
 
-	tab.pop()
-	if result, ok := tab.retrieve(key); !ok {
-		t.Errorf("failed to retrieve for key %s", key)
+	tab.Pop()
+	if result, ok := tab.Retrieve(key); !ok {
+		t.Errorf("failed to Retrieve for key %s", key)
 		return
 	} else if !result.Equals(value) {
 		t.Errorf("got %d, want %d", result, value)
@@ -83,34 +83,34 @@ func TestSymbolTableShadow(t *testing.T) {
 }
 
 func TestSymbolTableGoesOutOfScope(t *testing.T) {
-	tab := newTable()
+	tab := NewTable()
 	key := "frantic"
 	value := realValue{99.5}
 
-	tab.push()
-	tab.store(key, value)
-	if result, ok := tab.retrieve(key); !ok {
-		t.Errorf("failed to retrieve for key %s", key)
+	tab.Push()
+	tab.Store(key, value)
+	if result, ok := tab.Retrieve(key); !ok {
+		t.Errorf("failed to Retrieve for key %s", key)
 		return
 	} else if !result.Equals(value) {
 		t.Errorf("got %f, want %f", result, value)
 	}
 
-	tab.pop()
-	if _, ok := tab.retrieve(key); ok {
+	tab.Pop()
+	if _, ok := tab.Retrieve(key); ok {
 		t.Errorf("failed to indicate absence of key")
 	}
 }
 
 func TestSymbolTableResolution(t *testing.T) {
-	tab := newTable()
+	tab := NewTable()
 	key := "over the"
 	value := stringValue{"top"}
 
-	tab.store(key, value)
-	tab.push()
-	if result, ok := tab.retrieve(key); !ok {
-		t.Errorf("failed to retrieve for key %s", key)
+	tab.Store(key, value)
+	tab.Push()
+	if result, ok := tab.Retrieve(key); !ok {
+		t.Errorf("failed to Retrieve for key %s", key)
 		return
 	} else if !result.Equals(value) {
 		t.Errorf("got %s, want %s", result, value)
