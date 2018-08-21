@@ -12,8 +12,8 @@ const (
 	RangeError
 )
 
-// descs contains string descriptions of each error value
-var descs = [...]string{
+// exprErrorDescs contains string descriptions of each error value
+var exprErrorDescs = [...]string{
 	DivideByZeroError:      "divide by zero",
 	DomainError:            "domain error",
 	TypeError:              "type error",
@@ -23,5 +23,5 @@ var descs = [...]string{
 
 // Error returns a string description of an error
 func (e exprError) Error() string {
-	return descs[e]
+	return exprErrorDescs[e]
 }
