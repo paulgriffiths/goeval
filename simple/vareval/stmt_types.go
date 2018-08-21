@@ -5,15 +5,15 @@ import (
 	"github.com/paulgriffiths/goeval/expr"
 )
 
-type stmt interface {
-	execute(e *env) error
+type Stmt interface {
+	Execute(e *env) error
 }
 
-type output struct {
+type outputStmt struct {
 	exp expr.Expr
 }
 
-func (o *output) execute(e *env) error {
+func (o *outputStmt) Execute(e *env) error {
 	value, err := o.exp.Evaluate(e.table)
 	if err != nil {
 		return err
@@ -21,4 +21,49 @@ func (o *output) execute(e *env) error {
 
 	fmt.Fprintf(e.output, "%v\n", value)
 	return nil
+}
+
+func NewOutputStatement(exp expr.Expr) *outputStmt {
+	return &outputStmt{exp}
+}
+
+type outputExprStmt struct {
+	exp expr.Expr
+}
+
+func (o *outputExprStmt) Execute(e *env) error {
+	value, err := o.exp.Evaluate(e.table)
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(e.output, "  = %v\n", value)
+	return nil
+}
+
+func NewOutputExprStatement(exp expr.Expr) *outputExprStmt {
+	return &outputExprStmt{exp}
+}
+
+type assignStmt struct {
+	variable string
+	exp      expr.Expr
+}
+
+func (a *assignStmt) Execute(e *env) error {
+	value, err := a.exp.Evaluate(e.table)
+	if err != nil {
+		return err
+	}
+
+	v, ok := expr.ToValue(value)
+	if !ok {
+		return UnknownError
+	}
+	e.table.Store(a.variable, v)
+	return nil
+}
+
+func NewAssignStatement(name string, exp expr.Expr) *assignStmt {
+	return &assignStmt{name, exp}
 }

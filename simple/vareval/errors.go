@@ -11,6 +11,8 @@ const (
 	UnknownFunctionError
 	TrailingTokensError
 	UnknownIdentifierError
+	IllegalIdentifierError
+	SyntaxError
 	UnknownError
 )
 
@@ -22,6 +24,8 @@ var descs = [...]string{
 	UnknownFunctionError:       "unknown function",
 	TrailingTokensError:        "trailing tokens",
 	UnknownIdentifierError:     "unknown identifier",
+	IllegalIdentifierError:     "illegal identifier",
+	SyntaxError:                "syntax error",
 	UnknownError:               "unknown error",
 }
 

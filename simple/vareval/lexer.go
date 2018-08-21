@@ -8,6 +8,7 @@ import (
 
 var keywords = map[string]bool{
 	"print": true,
+	"let":   true,
 	"true":  true,
 	"false": true,
 	"and":   true,
