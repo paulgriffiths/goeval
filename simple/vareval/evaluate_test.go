@@ -182,6 +182,8 @@ func TestGoodExpressions(t *testing.T) {
 		{"2 >= 1", expr.NewBool(true), false},
 		{"2 >= 2", expr.NewBool(true), false},
 		{"2 >= 3", expr.NewBool(false), false},
+		{"2 < 3 == 5 > 4", expr.NewBool(true), false},
+		{"2 < 3 != 5 < 4", expr.NewBool(true), false},
 	}
 
 	for _, c := range cases {
