@@ -20,6 +20,6 @@ func (op sinOp) Evaluate(table *SymTab) (Expr, error) {
 	return realValue{result}, nil
 }
 
-func NewSin(value Expr) sinOp {
-	return sinOp{value}
+func NewSin(operand Expr) Expr {
+	return sinOp{operand}
 }

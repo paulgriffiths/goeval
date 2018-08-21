@@ -17,7 +17,7 @@ func almostEqual(a, b, epsilon float64) bool {
 func TestGoodExpressions(t *testing.T) {
 	cases := []struct {
 		expr     string
-		expected expr.Value
+		expected expr.Expr
 		almost   bool
 	}{
 		{"0", expr.NewInt(0), false},
@@ -132,7 +132,7 @@ func TestGoodExpressions(t *testing.T) {
 			t.Errorf("Expr '%s': got error %v, want %v", c.expr, err, nil)
 			continue
 		}
-		if !result.Equals(c.expected) {
+		if !expr.Equals(result, c.expected, nil) {
 			rv, okr := expr.ToFloat(result)
 			cv, okc := expr.ToFloat(c.expected)
 			if !okr || !okc || !c.almost || !almostEqual(rv, cv, 0.000001) {

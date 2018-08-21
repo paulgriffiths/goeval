@@ -12,6 +12,6 @@ func (op addOp) Evaluate(table *SymTab) (Expr, error) {
 	return exps[0].(arithmeticValue).add(exps[1].(arithmeticValue)), nil
 }
 
-func NewAdd(left, right Expr) addOp {
+func NewAdd(left, right Expr) Expr {
 	return addOp{left, right}
 }

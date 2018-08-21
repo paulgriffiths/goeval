@@ -13,6 +13,6 @@ func (op andOp) Evaluate(table *SymTab) (Expr, error) {
 	return cmp, nil
 }
 
-func NewAnd(left, right Expr) andOp {
+func NewAnd(left, right Expr) Expr {
 	return andOp{left, right}
 }

@@ -13,6 +13,6 @@ func (op nandOp) Evaluate(table *SymTab) (Expr, error) {
 	return cmp, nil
 }
 
-func NewNand(left, right Expr) nandOp {
+func NewNand(left, right Expr) Expr {
 	return nandOp{left, right}
 }

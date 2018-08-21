@@ -4,7 +4,7 @@ type stringValue struct {
 	value string
 }
 
-func NewString(value string) stringValue {
+func NewString(value string) Expr {
 	return stringValue{value}
 }
 
@@ -16,7 +16,7 @@ func (s stringValue) Evaluate(_ *SymTab) (Expr, error) {
 	return s, nil
 }
 
-func (s stringValue) Equals(other Value) bool {
+func (s stringValue) Equals(other value) bool {
 	if !IsString(other) {
 		return false
 	}

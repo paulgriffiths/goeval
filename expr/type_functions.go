@@ -1,10 +1,14 @@
 package expr
 
-func ToValue(exp Expr) (Value, bool) {
-	if !IsValue(exp) {
-		return nil, false
+func Equals(left, right Expr, table *SymTab) bool {
+	exps, err := evaluateExprs(nil, isValue, left, right)
+	if err != nil {
+		return false
 	}
-	return exp.(Value), true
+	if exps[0].(value).Equals(exps[1].(value)) {
+		return true
+	}
+	return false
 }
 
 func ToInt(exp Expr) (int64, bool) {
@@ -35,16 +39,16 @@ func ToString(exp Expr) (string, bool) {
 	return exp.(stringValue).value, true
 }
 
-func IsValue(exp Expr) bool {
-	if _, ok := exp.(Value); !ok {
+func isValue(exp Expr) bool {
+	if _, ok := exp.(value); !ok {
 		return false
 	}
 	return true
 }
 
-func AreValue(exps ...Expr) bool {
+func areValue(exps ...Expr) bool {
 	for _, exp := range exps {
-		if !IsValue(exp) {
+		if !isValue(exp) {
 			return false
 		}
 	}

@@ -4,7 +4,7 @@ import "testing"
 
 func TestBoolValueEqual(t *testing.T) {
 	testCases := []struct {
-		left, right Value
+		left, right value
 		result      bool
 	}{
 		{boolValue{true}, boolValue{true}, true},

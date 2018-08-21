@@ -13,6 +13,6 @@ func (op norOp) Evaluate(table *SymTab) (Expr, error) {
 	return cmp, nil
 }
 
-func NewNor(left, right Expr) norOp {
+func NewNor(left, right Expr) Expr {
 	return norOp{left, right}
 }

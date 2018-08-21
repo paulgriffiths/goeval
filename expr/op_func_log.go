@@ -20,6 +20,6 @@ func (op logOp) Evaluate(table *SymTab) (Expr, error) {
 	return realValue{result}, nil
 }
 
-func NewLog(value Expr) logOp {
-	return logOp{value}
+func NewLog(operand Expr) Expr {
+	return logOp{operand}
 }

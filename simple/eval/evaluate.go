@@ -10,7 +10,7 @@ import (
 )
 
 // Evaluates the provided simple mathematical expression.
-func Evaluate(expression string) (expr.Value, error) {
+func Evaluate(expression string) (expr.Expr, error) {
 	ch, err := NewLexer(strings.NewReader(expression))
 	if err != nil {
 		return nil, fmt.Errorf("Couldn't create lexer: %v", err)
@@ -32,10 +32,5 @@ func Evaluate(expression string) (expr.Value, error) {
 		return nil, err
 	}
 
-	value, ok := expr.ToValue(result)
-	if !ok {
-		return nil, UnknownError
-	}
-
-	return value, nil
+	return result, nil
 }

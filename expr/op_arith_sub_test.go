@@ -5,23 +5,23 @@ import (
 )
 
 var subNumberGoodCases = []struct {
-	values []Value
-	result Value
+	values []value
+	result value
 }{
-	{[]Value{intValue{2}}, intValue{2}},
-	{[]Value{realValue{3.5}}, realValue{3.5}},
-	{[]Value{intValue{4}, intValue{5}}, intValue{-1}},
-	{[]Value{intValue{6}, realValue{7.5}}, realValue{-1.5}},
-	{[]Value{realValue{8.5}, realValue{9}}, realValue{-0.5}},
-	{[]Value{realValue{10.5}, realValue{11}}, realValue{-0.5}},
-	{[]Value{intValue{1}, intValue{2}, intValue{3}}, intValue{-4}},
-	{[]Value{realValue{1.5}, intValue{2}, intValue{3}}, realValue{-3.5}},
-	{[]Value{intValue{1}, realValue{2.5}, intValue{3}}, realValue{-4.5}},
-	{[]Value{intValue{1}, intValue{2}, realValue{3.5}}, realValue{-4.5}},
-	{[]Value{intValue{1}, realValue{2.5}, realValue{3.5}}, realValue{-5.0}},
-	{[]Value{realValue{1.5}, intValue{2}, realValue{3.5}}, realValue{-4.0}},
-	{[]Value{realValue{1.5}, realValue{2.5}, intValue{3}}, realValue{-4.0}},
-	{[]Value{
+	{[]value{intValue{2}}, intValue{2}},
+	{[]value{realValue{3.5}}, realValue{3.5}},
+	{[]value{intValue{4}, intValue{5}}, intValue{-1}},
+	{[]value{intValue{6}, realValue{7.5}}, realValue{-1.5}},
+	{[]value{realValue{8.5}, realValue{9}}, realValue{-0.5}},
+	{[]value{realValue{10.5}, realValue{11}}, realValue{-0.5}},
+	{[]value{intValue{1}, intValue{2}, intValue{3}}, intValue{-4}},
+	{[]value{realValue{1.5}, intValue{2}, intValue{3}}, realValue{-3.5}},
+	{[]value{intValue{1}, realValue{2.5}, intValue{3}}, realValue{-4.5}},
+	{[]value{intValue{1}, intValue{2}, realValue{3.5}}, realValue{-4.5}},
+	{[]value{intValue{1}, realValue{2.5}, realValue{3.5}}, realValue{-5.0}},
+	{[]value{realValue{1.5}, intValue{2}, realValue{3.5}}, realValue{-4.0}},
+	{[]value{realValue{1.5}, realValue{2.5}, intValue{3}}, realValue{-4.0}},
+	{[]value{
 		realValue{1.5}, realValue{2.5}, realValue{3.5},
 	}, realValue{-4.5}},
 }
@@ -37,7 +37,7 @@ func TestSuccessfulNumericSubOperation(t *testing.T) {
 			t.Errorf("couldn't evaluate subtraction operation: %v", err)
 			return
 		}
-		valResult, ok := result.(Value)
+		valResult, ok := result.(value)
 		if !ok {
 			t.Errorf("couldn't convert result to value")
 			return
@@ -51,9 +51,9 @@ func TestSuccessfulNumericSubOperation(t *testing.T) {
 }
 
 var subVariableGoodCases = []struct {
-	number   Value
-	variable Value
-	result   Value
+	number   value
+	variable value
+	result   value
 }{
 	{intValue{42}, intValue{99}, intValue{-57}},
 	{intValue{42}, realValue{99.5}, realValue{-57.5}},
@@ -72,7 +72,7 @@ func TestSuccessfulVariableSubOperation(t *testing.T) {
 			t.Errorf("couldn't evaluate subtraction operation: %v", err)
 			return
 		}
-		valResult, ok := result.(Value)
+		valResult, ok := result.(value)
 		if !ok {
 			t.Errorf("couldn't convert result to value")
 			return
@@ -85,8 +85,8 @@ func TestSuccessfulVariableSubOperation(t *testing.T) {
 }
 
 var subNumberBadCases = []struct {
-	left  Value
-	right Value
+	left  value
+	right value
 }{
 	{intValue{42}, boolValue{false}},
 	{stringValue{"commander_jameson"}, realValue{1.52}},
@@ -106,8 +106,8 @@ func TestUnsuccessfulNumberSubOperation(t *testing.T) {
 }
 
 var subVariableBadCases = []struct {
-	number   Value
-	variable Value
+	number   value
+	variable value
 }{
 	{intValue{42}, boolValue{false}},
 	{stringValue{"commander_jameson"}, realValue{1.52}},

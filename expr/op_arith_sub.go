@@ -12,6 +12,6 @@ func (op subOp) Evaluate(table *SymTab) (Expr, error) {
 	return exps[0].(arithmeticValue).sub(exps[1].(arithmeticValue)), nil
 }
 
-func NewSub(left, right Expr) subOp {
+func NewSub(left, right Expr) Expr {
 	return subOp{left, right}
 }

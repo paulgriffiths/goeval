@@ -12,6 +12,6 @@ func (op divOp) Evaluate(table *SymTab) (Expr, error) {
 	return exps[0].(arithmeticValue).div(exps[1].(arithmeticValue))
 }
 
-func NewDiv(left, right Expr) divOp {
+func NewDiv(left, right Expr) Expr {
 	return divOp{left, right}
 }

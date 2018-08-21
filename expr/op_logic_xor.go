@@ -13,6 +13,6 @@ func (op xorOp) Evaluate(table *SymTab) (Expr, error) {
 	return cmp, nil
 }
 
-func NewXor(left, right Expr) xorOp {
+func NewXor(left, right Expr) Expr {
 	return xorOp{left, right}
 }

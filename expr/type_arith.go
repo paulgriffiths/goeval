@@ -2,9 +2,9 @@ package expr
 
 // arithmeticValue holds an integral or real value
 type arithmeticValue interface {
-	Value
+	value
 	floatValue() float64
-	almostEquals(other Value, epsilon float64) bool
+	almostEquals(other value, epsilon float64) bool
 	add(other arithmeticValue) arithmeticValue
 	sub(other arithmeticValue) arithmeticValue
 	mul(other arithmeticValue) arithmeticValue

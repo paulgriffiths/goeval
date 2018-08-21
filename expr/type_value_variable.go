@@ -4,8 +4,8 @@ type variableValue struct {
 	key string
 }
 
-func NewVariable(key string) variableValue {
-	return variableValue{key}
+func NewVariable(name string) Expr {
+	return variableValue{name}
 }
 
 func (v variableValue) Evaluate(table *SymTab) (Expr, error) {
@@ -20,7 +20,7 @@ func (v variableValue) Evaluate(table *SymTab) (Expr, error) {
 	return val, nil
 }
 
-func (v variableValue) Equals(other Value) bool {
+func (v variableValue) Equals(other value) bool {
 	if !IsVariable(other) {
 		return false
 	}

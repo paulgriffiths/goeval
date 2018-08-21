@@ -10,12 +10,12 @@ type intValue struct {
 }
 
 // NewInt creates a new integral value
-func NewInt(value int64) intValue {
+func NewInt(value int64) Expr {
 	return intValue{value}
 }
 
 // Equals tests whether an integral value equals another
-func (n intValue) Equals(other Value) bool {
+func (n intValue) Equals(other value) bool {
 	if !IsInteger(other) {
 		return false
 	}
@@ -32,7 +32,7 @@ func (n intValue) String() string {
 	return fmt.Sprintf("%d", n.value)
 }
 
-func (n intValue) almostEquals(other Value, _ float64) bool {
+func (n intValue) almostEquals(other value, _ float64) bool {
 	return n.Equals(other)
 }
 

@@ -23,6 +23,6 @@ func (op nonEqualityOp) Evaluate(table *SymTab) (Expr, error) {
 	return nil, TypeError
 }
 
-func NewNonEquality(left, right Expr) nonEqualityOp {
+func NewNonEquality(left, right Expr) Expr {
 	return nonEqualityOp{left, right}
 }

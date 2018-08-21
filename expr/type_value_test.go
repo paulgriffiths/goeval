@@ -4,7 +4,7 @@ import "testing"
 
 func TestEqualityMismatchedTypes(t *testing.T) {
 	testCases := []struct {
-		left, right Value
+		left, right value
 	}{
 		{boolValue{true}, intValue{4}},
 		{boolValue{true}, realValue{4.0}},

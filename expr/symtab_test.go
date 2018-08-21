@@ -12,7 +12,7 @@ func TestSymbolTableStoreAndRetrieve(t *testing.T) {
 	if result, ok := tab.Retrieve(key); !ok {
 		t.Errorf("couldn't Retrieve value for %s", key)
 	} else {
-		if !result.Equals(value) {
+		if !Equals(result, value, tab) {
 			t.Errorf("got %d, want %d", result, value)
 		}
 	}
@@ -34,7 +34,7 @@ func TestSymbolTableOverWrite(t *testing.T) {
 	if result, ok := tab.Retrieve(key); !ok {
 		t.Errorf("couldn't Retrieve value for %s", key)
 	} else {
-		if !result.Equals(value) {
+		if !Equals(result, value, tab) {
 			t.Errorf("got %f, want %f", result, value)
 		}
 	}
@@ -45,7 +45,7 @@ func TestSymbolTableOverWrite(t *testing.T) {
 	if result, ok := tab.Retrieve(key); !ok {
 		t.Errorf("couldn't Retrieve value for %s", key)
 	} else {
-		if !result.Equals(newValue) {
+		if !Equals(result, newValue, tab) {
 			t.Errorf("got %t, want %t", result, newValue)
 		}
 	}
@@ -59,7 +59,7 @@ func TestSymbolTableShadow(t *testing.T) {
 	if result, ok := tab.Retrieve(key); !ok {
 		t.Errorf("failed to Retrieve for key %s", key)
 		return
-	} else if !result.Equals(value) {
+	} else if !Equals(result, value, tab) {
 		t.Errorf("got %d, want %d", result, value)
 	}
 
@@ -69,7 +69,7 @@ func TestSymbolTableShadow(t *testing.T) {
 	if result, ok := tab.Retrieve(key); !ok {
 		t.Errorf("failed to Retrieve for key %s", key)
 		return
-	} else if !result.Equals(shadowValue) {
+	} else if !Equals(result, shadowValue, tab) {
 		t.Errorf("got %f, want %f", result, shadowValue)
 	}
 
@@ -77,7 +77,7 @@ func TestSymbolTableShadow(t *testing.T) {
 	if result, ok := tab.Retrieve(key); !ok {
 		t.Errorf("failed to Retrieve for key %s", key)
 		return
-	} else if !result.Equals(value) {
+	} else if !Equals(result, value, tab) {
 		t.Errorf("got %d, want %d", result, value)
 	}
 }
@@ -92,7 +92,7 @@ func TestSymbolTableGoesOutOfScope(t *testing.T) {
 	if result, ok := tab.Retrieve(key); !ok {
 		t.Errorf("failed to Retrieve for key %s", key)
 		return
-	} else if !result.Equals(value) {
+	} else if !Equals(result, value, tab) {
 		t.Errorf("got %f, want %f", result, value)
 	}
 
@@ -112,7 +112,7 @@ func TestSymbolTableResolution(t *testing.T) {
 	if result, ok := tab.Retrieve(key); !ok {
 		t.Errorf("failed to Retrieve for key %s", key)
 		return
-	} else if !result.Equals(value) {
+	} else if !Equals(result, value, tab) {
 		t.Errorf("got %s, want %s", result, value)
 	}
 }

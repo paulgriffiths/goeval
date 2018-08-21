@@ -13,6 +13,6 @@ func (op notOp) Evaluate(table *SymTab) (Expr, error) {
 	return cmp, nil
 }
 
-func NewNot(operand Expr) notOp {
+func NewNot(operand Expr) Expr {
 	return notOp{operand}
 }

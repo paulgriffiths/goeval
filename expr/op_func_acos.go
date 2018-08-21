@@ -20,6 +20,6 @@ func (op acosOp) Evaluate(table *SymTab) (Expr, error) {
 	return realValue{result}, nil
 }
 
-func NewAcos(value Expr) acosOp {
-	return acosOp{value}
+func NewAcos(operand Expr) Expr {
+	return acosOp{operand}
 }

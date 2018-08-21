@@ -13,6 +13,6 @@ func (op lessThanOp) Evaluate(table *SymTab) (Expr, error) {
 	return boolValue{cmp}, nil
 }
 
-func NewLessThan(left, right Expr) lessThanOp {
+func NewLessThan(left, right Expr) Expr {
 	return lessThanOp{left, right}
 }

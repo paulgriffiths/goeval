@@ -23,6 +23,6 @@ func (op equalityOp) Evaluate(table *SymTab) (Expr, error) {
 	return nil, TypeError
 }
 
-func NewEquality(left, right Expr) equalityOp {
+func NewEquality(left, right Expr) Expr {
 	return equalityOp{left, right}
 }

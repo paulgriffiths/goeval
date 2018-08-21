@@ -17,6 +17,6 @@ func (op roundOp) Evaluate(table *SymTab) (Expr, error) {
 	return realValue{result}, nil
 }
 
-func NewRound(value Expr) roundOp {
-	return roundOp{value}
+func NewRound(operand Expr) Expr {
+	return roundOp{operand}
 }

@@ -5,16 +5,16 @@ import (
 )
 
 var powNumberGoodCases = []struct {
-	values []Value
-	result Value
+	values []value
+	result value
 }{
-	{[]Value{intValue{2}}, intValue{2}},
-	{[]Value{realValue{3.5}}, realValue{3.5}},
-	{[]Value{intValue{2}, intValue{3}}, intValue{8}},
-	{[]Value{intValue{2}, realValue{3.0}}, realValue{8.0}},
-	{[]Value{realValue{2.0}, intValue{3}}, realValue{8.0}},
-	{[]Value{realValue{16.0}, realValue{0.5}}, realValue{4.0}},
-	{[]Value{intValue{2}, intValue{3}, intValue{4}}, intValue{4096.0}},
+	{[]value{intValue{2}}, intValue{2}},
+	{[]value{realValue{3.5}}, realValue{3.5}},
+	{[]value{intValue{2}, intValue{3}}, intValue{8}},
+	{[]value{intValue{2}, realValue{3.0}}, realValue{8.0}},
+	{[]value{realValue{2.0}, intValue{3}}, realValue{8.0}},
+	{[]value{realValue{16.0}, realValue{0.5}}, realValue{4.0}},
+	{[]value{intValue{2}, intValue{3}, intValue{4}}, intValue{4096.0}},
 }
 
 func TestSuccessfulNumericPowOperation(t *testing.T) {
@@ -28,7 +28,7 @@ func TestSuccessfulNumericPowOperation(t *testing.T) {
 			t.Errorf("couldn't evaluate exponentiation operation: %v", err)
 			return
 		}
-		valResult, ok := result.(Value)
+		valResult, ok := result.(value)
 		if !ok {
 			t.Errorf("couldn't convert result to value")
 			return
@@ -42,9 +42,9 @@ func TestSuccessfulNumericPowOperation(t *testing.T) {
 }
 
 var powVariableGoodCases = []struct {
-	number   Value
-	variable Value
-	result   Value
+	number   value
+	variable value
+	result   value
 }{
 	{intValue{2}, intValue{0}, intValue{1}},
 	{intValue{2}, intValue{1}, intValue{2}},
@@ -65,7 +65,7 @@ func TestSuccessfulVariablePowOperation(t *testing.T) {
 			t.Errorf("couldn't evaluate exponentiation operation: %v", err)
 			return
 		}
-		valResult, ok := result.(Value)
+		valResult, ok := result.(value)
 		if !ok {
 			t.Errorf("couldn't convert result to value")
 			return
@@ -78,8 +78,8 @@ func TestSuccessfulVariablePowOperation(t *testing.T) {
 }
 
 var powNumberBadCases = []struct {
-	left  Value
-	right Value
+	left  value
+	right value
 	err   error
 }{
 	{intValue{42}, boolValue{false}, TypeError},
@@ -102,8 +102,8 @@ func TestUnsuccessfulNumberPowOperation(t *testing.T) {
 }
 
 var powVariableBadCases = []struct {
-	number   Value
-	variable Value
+	number   value
+	variable value
 	err      error
 }{
 	{intValue{42}, boolValue{false}, TypeError},

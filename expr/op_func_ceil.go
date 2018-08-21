@@ -17,6 +17,6 @@ func (op ceilOp) Evaluate(table *SymTab) (Expr, error) {
 	return realValue{result}, nil
 }
 
-func NewCeil(value Expr) ceilOp {
-	return ceilOp{value}
+func NewCeil(operand Expr) Expr {
+	return ceilOp{operand}
 }

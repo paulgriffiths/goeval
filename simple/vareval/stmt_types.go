@@ -56,11 +56,7 @@ func (a *assignStmt) Execute(e *env) error {
 		return err
 	}
 
-	v, ok := expr.ToValue(value)
-	if !ok {
-		return UnknownError
-	}
-	e.table.Store(a.variable, v)
+	e.table.Store(a.variable, value)
 	return nil
 }
 

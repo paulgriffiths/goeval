@@ -12,6 +12,6 @@ func (op negOp) Evaluate(table *SymTab) (Expr, error) {
 	return exps[0].(arithmeticValue).negate(), nil
 }
 
-func NewNeg(value Expr) negOp {
+func NewNeg(value Expr) Expr {
 	return negOp{value}
 }

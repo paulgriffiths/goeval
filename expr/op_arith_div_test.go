@@ -5,24 +5,24 @@ import (
 )
 
 var divNumberGoodCases = []struct {
-	values []Value
-	result Value
+	values []value
+	result value
 }{
-	{[]Value{intValue{2}}, intValue{2}},
-	{[]Value{realValue{3.5}}, realValue{3.5}},
-	{[]Value{intValue{20}, intValue{5}}, intValue{4}},
-	{[]Value{intValue{20}, intValue{8}}, realValue{2.5}},
-	{[]Value{intValue{6}, realValue{4.0}}, realValue{1.5}},
-	{[]Value{realValue{8.0}, intValue{2}}, realValue{4.0}},
-	{[]Value{realValue{7.5}, realValue{1.5}}, realValue{5.0}},
-	{[]Value{intValue{60}, intValue{2}, intValue{5}}, intValue{6}},
-	{[]Value{realValue{60.0}, intValue{2}, intValue{3}}, realValue{10.0}},
-	{[]Value{intValue{60}, realValue{0.5}, intValue{80}}, realValue{1.5}},
-	{[]Value{intValue{60}, intValue{3}, realValue{4.0}}, realValue{5.0}},
-	{[]Value{intValue{60}, realValue{1.5}, realValue{10.0}}, realValue{4.0}},
-	{[]Value{realValue{60.0}, intValue{4}, realValue{5.0}}, realValue{3.0}},
-	{[]Value{realValue{60.0}, realValue{1.5}, intValue{4}}, realValue{10.0}},
-	{[]Value{
+	{[]value{intValue{2}}, intValue{2}},
+	{[]value{realValue{3.5}}, realValue{3.5}},
+	{[]value{intValue{20}, intValue{5}}, intValue{4}},
+	{[]value{intValue{20}, intValue{8}}, realValue{2.5}},
+	{[]value{intValue{6}, realValue{4.0}}, realValue{1.5}},
+	{[]value{realValue{8.0}, intValue{2}}, realValue{4.0}},
+	{[]value{realValue{7.5}, realValue{1.5}}, realValue{5.0}},
+	{[]value{intValue{60}, intValue{2}, intValue{5}}, intValue{6}},
+	{[]value{realValue{60.0}, intValue{2}, intValue{3}}, realValue{10.0}},
+	{[]value{intValue{60}, realValue{0.5}, intValue{80}}, realValue{1.5}},
+	{[]value{intValue{60}, intValue{3}, realValue{4.0}}, realValue{5.0}},
+	{[]value{intValue{60}, realValue{1.5}, realValue{10.0}}, realValue{4.0}},
+	{[]value{realValue{60.0}, intValue{4}, realValue{5.0}}, realValue{3.0}},
+	{[]value{realValue{60.0}, realValue{1.5}, intValue{4}}, realValue{10.0}},
+	{[]value{
 		realValue{60.0}, realValue{2.5}, realValue{16.0},
 	}, realValue{1.5}},
 }
@@ -38,7 +38,7 @@ func TestSuccessfulNumericDivOperation(t *testing.T) {
 			t.Errorf("couldn't evaluate division operation: %v", err)
 			return
 		}
-		valResult, ok := result.(Value)
+		valResult, ok := result.(value)
 		if !ok {
 			t.Errorf("couldn't convert result to value")
 			return
@@ -52,9 +52,9 @@ func TestSuccessfulNumericDivOperation(t *testing.T) {
 }
 
 var divVariableGoodCases = []struct {
-	number   Value
-	variable Value
-	result   Value
+	number   value
+	variable value
+	result   value
 }{
 	{intValue{120}, intValue{30}, intValue{4}},
 	{intValue{120}, realValue{0.5}, realValue{240.0}},
@@ -73,7 +73,7 @@ func TestSuccessfulVariableDivOperation(t *testing.T) {
 			t.Errorf("couldn't evaluate division operation: %v", err)
 			return
 		}
-		valResult, ok := result.(Value)
+		valResult, ok := result.(value)
 		if !ok {
 			t.Errorf("couldn't convert result to value")
 			return
@@ -86,8 +86,8 @@ func TestSuccessfulVariableDivOperation(t *testing.T) {
 }
 
 var divNumberBadCases = []struct {
-	left  Value
-	right Value
+	left  value
+	right value
 	err   error
 }{
 	{intValue{42}, boolValue{false}, TypeError},
@@ -113,8 +113,8 @@ func TestUnsuccessfulNumberDivOperation(t *testing.T) {
 }
 
 var divVariableBadCases = []struct {
-	number   Value
-	variable Value
+	number   value
+	variable value
 	err      error
 }{
 	{intValue{42}, boolValue{false}, TypeError},

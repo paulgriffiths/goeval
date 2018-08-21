@@ -20,6 +20,6 @@ func (op tanOp) Evaluate(table *SymTab) (Expr, error) {
 	return realValue{result}, nil
 }
 
-func NewTan(value Expr) tanOp {
-	return tanOp{value}
+func NewTan(operand Expr) Expr {
+	return tanOp{operand}
 }

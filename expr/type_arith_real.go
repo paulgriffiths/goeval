@@ -11,12 +11,12 @@ type realValue struct {
 }
 
 // NewReal creates a new real value
-func NewReal(value float64) realValue {
+func NewReal(value float64) Expr {
 	return realValue{value}
 }
 
 // Equals tests if a real value equals another
-func (r realValue) Equals(other Value) bool {
+func (r realValue) Equals(other value) bool {
 	if !IsReal(other) {
 		return false
 	}
@@ -33,7 +33,7 @@ func (r realValue) String() string {
 	return fmt.Sprintf("%f", r.value)
 }
 
-func (r realValue) almostEquals(other Value, epsilon float64) bool {
+func (r realValue) almostEquals(other value, epsilon float64) bool {
 	if !IsReal(other) {
 		return false
 	}

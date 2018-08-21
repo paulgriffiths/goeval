@@ -12,6 +12,6 @@ func (op powOp) Evaluate(table *SymTab) (Expr, error) {
 	return exps[0].(arithmeticValue).pow(exps[1].(arithmeticValue))
 }
 
-func NewPow(base, exponent Expr) powOp {
+func NewPow(base, exponent Expr) Expr {
 	return powOp{base, exponent}
 }

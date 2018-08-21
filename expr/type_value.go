@@ -4,8 +4,8 @@ package expr
 // The purpose of this type is to differentiate these from, for
 // example, operations, which can evaluate to a value, but which
 // do not themselves contain a specific value.
-type Value interface {
+type value interface {
 	Expr
-	Equals(other Value) bool
+	Equals(other value) bool
 	String() string
 }

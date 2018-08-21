@@ -20,6 +20,6 @@ func (op cosOp) Evaluate(table *SymTab) (Expr, error) {
 	return realValue{result}, nil
 }
 
-func NewCos(value Expr) cosOp {
-	return cosOp{value}
+func NewCos(operand Expr) Expr {
+	return cosOp{operand}
 }

@@ -17,6 +17,6 @@ func (op floorOp) Evaluate(table *SymTab) (Expr, error) {
 	return realValue{result}, nil
 }
 
-func NewFloor(value Expr) floorOp {
-	return floorOp{value}
+func NewFloor(operand Expr) Expr {
+	return floorOp{operand}
 }

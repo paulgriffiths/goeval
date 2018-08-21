@@ -14,6 +14,6 @@ func (op lessThanOrEqualOp) Evaluate(table *SymTab) (Expr, error) {
 	return boolValue{lt || eq}, nil
 }
 
-func NewLessThanOrEqual(left, right Expr) lessThanOrEqualOp {
+func NewLessThanOrEqual(left, right Expr) Expr {
 	return lessThanOrEqualOp{left, right}
 }

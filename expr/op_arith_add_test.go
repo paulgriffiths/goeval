@@ -5,23 +5,23 @@ import (
 )
 
 var addNumberGoodCases = []struct {
-	values []Value
-	result Value
+	values []value
+	result value
 }{
-	{[]Value{intValue{2}}, intValue{2}},
-	{[]Value{realValue{3.5}}, realValue{3.5}},
-	{[]Value{intValue{4}, intValue{5}}, intValue{9}},
-	{[]Value{intValue{6}, realValue{7.5}}, realValue{13.5}},
-	{[]Value{realValue{8.5}, realValue{9}}, realValue{17.5}},
-	{[]Value{realValue{10.5}, realValue{11}}, realValue{21.5}},
-	{[]Value{intValue{1}, intValue{2}, intValue{3}}, intValue{6}},
-	{[]Value{realValue{1.5}, intValue{2}, intValue{3}}, realValue{6.5}},
-	{[]Value{intValue{1}, realValue{2.5}, intValue{3}}, realValue{6.5}},
-	{[]Value{intValue{1}, intValue{2}, realValue{3.5}}, realValue{6.5}},
-	{[]Value{intValue{1}, realValue{2.5}, realValue{3.5}}, realValue{7.0}},
-	{[]Value{realValue{1.5}, intValue{2}, realValue{3.5}}, realValue{7.0}},
-	{[]Value{realValue{1.5}, realValue{2.5}, intValue{3}}, realValue{7.0}},
-	{[]Value{
+	{[]value{intValue{2}}, intValue{2}},
+	{[]value{realValue{3.5}}, realValue{3.5}},
+	{[]value{intValue{4}, intValue{5}}, intValue{9}},
+	{[]value{intValue{6}, realValue{7.5}}, realValue{13.5}},
+	{[]value{realValue{8.5}, realValue{9}}, realValue{17.5}},
+	{[]value{realValue{10.5}, realValue{11}}, realValue{21.5}},
+	{[]value{intValue{1}, intValue{2}, intValue{3}}, intValue{6}},
+	{[]value{realValue{1.5}, intValue{2}, intValue{3}}, realValue{6.5}},
+	{[]value{intValue{1}, realValue{2.5}, intValue{3}}, realValue{6.5}},
+	{[]value{intValue{1}, intValue{2}, realValue{3.5}}, realValue{6.5}},
+	{[]value{intValue{1}, realValue{2.5}, realValue{3.5}}, realValue{7.0}},
+	{[]value{realValue{1.5}, intValue{2}, realValue{3.5}}, realValue{7.0}},
+	{[]value{realValue{1.5}, realValue{2.5}, intValue{3}}, realValue{7.0}},
+	{[]value{
 		realValue{1.5}, realValue{2.5}, realValue{3.5},
 	}, realValue{7.5}},
 }
@@ -38,7 +38,7 @@ func TestSuccessfulNumericAddOperation(t *testing.T) {
 				n, err)
 			return
 		}
-		valResult, ok := result.(Value)
+		valResult, ok := result.(value)
 		if !ok {
 			t.Errorf("couldn't convert result to value")
 			return
@@ -52,9 +52,9 @@ func TestSuccessfulNumericAddOperation(t *testing.T) {
 }
 
 var addVariableGoodCases = []struct {
-	number   Value
-	variable Value
-	result   Value
+	number   value
+	variable value
+	result   value
 }{
 	{intValue{42}, intValue{99}, intValue{141}},
 	{intValue{42}, realValue{99.5}, realValue{141.5}},
@@ -73,7 +73,7 @@ func TestSuccessfulVariableAddOperation(t *testing.T) {
 			t.Errorf("couldn't evaluate addition operation: %v", err)
 			return
 		}
-		valResult, ok := result.(Value)
+		valResult, ok := result.(value)
 		if !ok {
 			t.Errorf("couldn't convert result to value")
 			return
@@ -86,8 +86,8 @@ func TestSuccessfulVariableAddOperation(t *testing.T) {
 }
 
 var addNumberBadCases = []struct {
-	left  Value
-	right Value
+	left  value
+	right value
 }{
 	{intValue{42}, boolValue{false}},
 	{stringValue{"commander_jameson"}, realValue{1.52}},
@@ -107,8 +107,8 @@ func TestUnsuccessfulNumberAddOperation(t *testing.T) {
 }
 
 var addVariableBadCases = []struct {
-	number   Value
-	variable Value
+	number   value
+	variable value
 }{
 	{intValue{42}, boolValue{false}},
 	{stringValue{"commander_jameson"}, realValue{1.52}},

@@ -13,6 +13,6 @@ func (op orOp) Evaluate(table *SymTab) (Expr, error) {
 	return cmp, nil
 }
 
-func NewOr(left, right Expr) orOp {
+func NewOr(left, right Expr) Expr {
 	return orOp{left, right}
 }

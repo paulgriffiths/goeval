@@ -8,7 +8,7 @@ type boolValue struct {
 	value bool
 }
 
-func NewBool(value bool) boolValue {
+func NewBool(value bool) Expr {
 	return boolValue{value}
 }
 
@@ -44,7 +44,7 @@ func (b boolValue) Evaluate(_ *SymTab) (Expr, error) {
 	return b, nil
 }
 
-func (b boolValue) Equals(other Value) bool {
+func (b boolValue) Equals(other value) bool {
 	if !IsBoolean(other) {
 		return false
 	}

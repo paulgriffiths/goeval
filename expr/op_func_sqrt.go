@@ -20,6 +20,6 @@ func (op sqrtOp) Evaluate(table *SymTab) (Expr, error) {
 	return realValue{result}, nil
 }
 
-func NewSqrt(value Expr) sqrtOp {
-	return sqrtOp{value}
+func NewSqrt(operand Expr) Expr {
+	return sqrtOp{operand}
 }

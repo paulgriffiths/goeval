@@ -5,8 +5,8 @@ import (
 )
 
 var negNumberGoodCases = []struct {
-	value  Value
-	result Value
+	value  value
+	result value
 }{
 	{intValue{2}, intValue{-2}},
 	{intValue{-2}, intValue{2}},
@@ -20,7 +20,7 @@ func TestSuccessfulNumericNegOperation(t *testing.T) {
 			t.Errorf("couldn't evaluate exponentiation operation: %v", err)
 			return
 		}
-		valResult, ok := result.(Value)
+		valResult, ok := result.(value)
 		if !ok {
 			t.Errorf("couldn't convert result to value")
 			return
@@ -34,7 +34,7 @@ func TestSuccessfulNumericNegOperation(t *testing.T) {
 }
 
 var negNumberBadCases = []struct {
-	operand Value
+	operand value
 	err     error
 }{
 	{boolValue{false}, TypeError},

@@ -12,6 +12,6 @@ func (op mulOp) Evaluate(table *SymTab) (Expr, error) {
 	return exps[0].(arithmeticValue).mul(exps[1].(arithmeticValue)), nil
 }
 
-func NewMul(left, right Expr) mulOp {
+func NewMul(left, right Expr) Expr {
 	return mulOp{left, right}
 }

@@ -4,7 +4,7 @@ import "testing"
 
 func TestRealValueEqual(t *testing.T) {
 	testCases := []struct {
-		left, right Value
+		left, right value
 		result      bool
 	}{
 		{realValue{3.0}, realValue{3.0}, true},
