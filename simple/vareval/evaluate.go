@@ -1,5 +1,3 @@
-// Package eval provides a simple mathematical expression evaluator.
-
 package vareval
 
 import (
@@ -9,11 +7,10 @@ import (
 	"strings"
 )
 
-// Evaluates the provided simple mathematical expression.
-func Evaluate(expression string, table *expr.SymTab) (expr.Expr, error) {
+func evaluate(expression string, table *expr.SymTab) (expr.Expr, error) {
 	ch, err := NewLexer(strings.NewReader(expression))
 	if err != nil {
-		return nil, fmt.Errorf("Couldn't create lexer: %v", err)
+		return nil, fmt.Errorf("couldn't create lexer: %v", err)
 	}
 
 	ltc := tokens.NewLTChan(ch)

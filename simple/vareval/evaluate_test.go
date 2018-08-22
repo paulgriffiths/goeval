@@ -9,9 +9,8 @@ import (
 func almostEqual(a, b, epsilon float64) bool {
 	if math.Abs(a-b) <= epsilon {
 		return true
-	} else {
-		return false
 	}
+	return false
 }
 
 func TestGoodExpressions(t *testing.T) {
@@ -187,7 +186,7 @@ func TestGoodExpressions(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		result, err := Evaluate(c.expr, nil)
+		result, err := evaluate(c.expr, nil)
 		if err != nil {
 			t.Errorf("Expr '%s': got error %v, want %v", c.expr, err, nil)
 			continue
@@ -253,7 +252,7 @@ func TestBadExpressions(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		_, err := Evaluate(c.expr, nil)
+		_, err := evaluate(c.expr, nil)
 		if err != c.err {
 			t.Errorf("Expr '%s': got %v, want %v", c.expr, err, c.err)
 		}
@@ -285,7 +284,7 @@ func TestGoodExpressionsWithVariables(t *testing.T) {
 		table.Store("dick", expr.NewReal(10.5))
 		table.Store("harry", expr.NewBool(true))
 
-		result, err := Evaluate(c.expr, table)
+		result, err := evaluate(c.expr, table)
 		if err != nil {
 			t.Errorf("Expr '%s': got error %v, want %v", c.expr, err, nil)
 			continue

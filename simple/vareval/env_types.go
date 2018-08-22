@@ -6,16 +6,21 @@ import (
 	"os"
 )
 
-type env struct {
+// Env represents an execution environment.
+type Env struct {
 	table  *expr.SymTab
 	output io.Writer
 	input  io.Reader
 }
 
-func NewStdEnv() *env {
-	return &env{expr.NewTable(), os.Stdout, os.Stdin}
+// NewStdEnv returns a new execution environment with an empty
+// symbol table, and with IO set to standard output and input.
+func NewStdEnv() *Env {
+	return &Env{expr.NewTable(), os.Stdout, os.Stdin}
 }
 
-func NewEnvWithIO(output io.Writer, input io.Reader) *env {
-	return &env{expr.NewTable(), output, input}
+// NewEnvWithIO returns a new execution environment with an empty
+// symbol table, and with IO set to the specified writer and reader.
+func NewEnvWithIO(output io.Writer, input io.Reader) *Env {
+	return &Env{expr.NewTable(), output, input}
 }

@@ -312,7 +312,6 @@ func getFactor(ltchan *tokens.LTChan) (expr.Expr, error) {
 
 	if neg {
 		return expr.NewNeg(result), nil
-	} else {
-		return result, nil
 	}
+	return result, nil
 }

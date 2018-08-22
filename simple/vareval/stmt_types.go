@@ -5,15 +5,16 @@ import (
 	"github.com/paulgriffiths/goeval/expr"
 )
 
+// Stmt represents a programming language statement.
 type Stmt interface {
-	Execute(e *env) error
+	Execute(e *Env) error
 }
 
 type outputStmt struct {
 	exp expr.Expr
 }
 
-func (o *outputStmt) Execute(e *env) error {
+func (o *outputStmt) Execute(e *Env) error {
 	value, err := o.exp.Evaluate(e.table)
 	if err != nil {
 		return err
@@ -23,7 +24,8 @@ func (o *outputStmt) Execute(e *env) error {
 	return nil
 }
 
-func NewOutputStatement(exp expr.Expr) *outputStmt {
+// NewOutputStatement returns a new output statement.
+func NewOutputStatement(exp expr.Expr) Stmt {
 	return &outputStmt{exp}
 }
 
@@ -31,7 +33,7 @@ type outputExprStmt struct {
 	exp expr.Expr
 }
 
-func (o *outputExprStmt) Execute(e *env) error {
+func (o *outputExprStmt) Execute(e *Env) error {
 	value, err := o.exp.Evaluate(e.table)
 	if err != nil {
 		return err
@@ -41,7 +43,8 @@ func (o *outputExprStmt) Execute(e *env) error {
 	return nil
 }
 
-func NewOutputExprStatement(exp expr.Expr) *outputExprStmt {
+// NewOutputExprStatement returns a new single-expression output statement.
+func NewOutputExprStatement(exp expr.Expr) Stmt {
 	return &outputExprStmt{exp}
 }
 
@@ -50,7 +53,7 @@ type assignStmt struct {
 	exp      expr.Expr
 }
 
-func (a *assignStmt) Execute(e *env) error {
+func (a *assignStmt) Execute(e *Env) error {
 	value, err := a.exp.Evaluate(e.table)
 	if err != nil {
 		return err
@@ -60,6 +63,7 @@ func (a *assignStmt) Execute(e *env) error {
 	return nil
 }
 
-func NewAssignStatement(name string, exp expr.Expr) *assignStmt {
+// NewAssignStatement returns a new assignment statement.
+func NewAssignStatement(name string, exp expr.Expr) Stmt {
 	return &assignStmt{name, exp}
 }

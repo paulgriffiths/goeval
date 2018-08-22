@@ -6,10 +6,11 @@ import (
 	"strings"
 )
 
+// ParseStatement parses a statement provided in string form.
 func ParseStatement(stmt string) (Stmt, error) {
 	ch, err := NewLexer(strings.NewReader(stmt))
 	if err != nil {
-		return nil, fmt.Errorf("Couldn't create lexer: %v", err)
+		return nil, fmt.Errorf("couldn't create lexer: %v", err)
 	}
 
 	ltc := tokens.NewLTChan(ch)
