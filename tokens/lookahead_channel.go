@@ -67,12 +67,13 @@ func (l *LTChan) MatchType(t Token) bool {
 	return false
 }
 
-// IsEmpty() returns true if there are no more tokens to read in the channel.
+// IsEmpty returns true if there are no more tokens to read in the channel.
 func (l *LTChan) IsEmpty() bool {
 	return l.lookahead == nullToken()
 }
 
-// Flush() reads all remaining tokens in the channel, so the sender can finish.
+// Flush reads all remaining tokens in the channel, so the sender
+// can finish.
 func (l *LTChan) Flush() {
 	for !l.IsEmpty() {
 		l.Next()

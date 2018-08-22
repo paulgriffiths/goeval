@@ -1,4 +1,3 @@
-// Package tokens provides a lexeme token type and associated functions.
 package tokens
 
 // Token contains a lexeme token type and its value.
@@ -17,7 +16,7 @@ const (
 	leftParenToken
 	rightParenToken
 	illegalToken
-	nullTokenId
+	nullTokenID
 )
 
 // NullToken returns a token representing a null token.
@@ -26,7 +25,7 @@ const (
 // if the null token is actually passed to it as input, so we
 // don't export the symbol to avoid that.
 func nullToken() Token {
-	return Token{nullTokenId, ""}
+	return Token{nullTokenID, ""}
 }
 
 // LeftParenToken returns a left parenthesis token.
@@ -82,7 +81,7 @@ func WordToken(value string) Token {
 	return Token{wordToken, value}
 }
 
-// WordToken returns a word token with the specified value.
+// KeywordToken returns a word token with the specified value.
 func KeywordToken(value string) Token {
 	return Token{keywordToken, value}
 }
@@ -128,7 +127,7 @@ func (t Token) IsKeyword() bool {
 	return t.tokenType == keywordToken
 }
 
-// IsKeyword returns true if the token is a keyword token
+// IsKeywordWith returns true if the token is a keyword token
 // with the specified value.
 func (t Token) IsKeywordWith(value string) bool {
 	return t.tokenType == keywordToken && t.value == value
@@ -139,7 +138,7 @@ func (t Token) IsIdentifier() bool {
 	return t.tokenType == identifierToken
 }
 
-// IsIdentifier returns true if the token is an identifier token
+// IsIdentifierWith returns true if the token is an identifier token
 // with the specified value.
 func (t Token) IsIdentifierWith(value string) bool {
 	return t.tokenType == identifierToken && t.value == value
