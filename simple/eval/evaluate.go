@@ -1,5 +1,3 @@
-// Package eval provides a simple mathematical expression evaluator.
-
 package eval
 
 import (
@@ -9,11 +7,11 @@ import (
 	"strings"
 )
 
-// Evaluates the provided simple mathematical expression.
+// Evaluate evaluates an expression provided in string form.
 func Evaluate(expression string) (expr.Expr, error) {
 	ch, err := NewLexer(strings.NewReader(expression))
 	if err != nil {
-		return nil, fmt.Errorf("Couldn't create lexer: %v", err)
+		return nil, fmt.Errorf("couldn't create lexer: %v", err)
 	}
 
 	ltc := tokens.NewLTChan(ch)

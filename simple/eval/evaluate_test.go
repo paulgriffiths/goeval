@@ -9,9 +9,8 @@ import (
 func almostEqual(a, b, epsilon float64) bool {
 	if math.Abs(a-b) <= epsilon {
 		return true
-	} else {
-		return false
 	}
+	return false
 }
 
 func TestGoodExpressions(t *testing.T) {
