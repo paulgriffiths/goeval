@@ -21,11 +21,11 @@ type LookaheadReader struct {
 func NewLookaheadReader(reader io.Reader) (LookaheadReader, error) {
 	r := LookaheadReader{bufio.NewReader(reader), 0, 0,
 		FilePos{-1, 1}, ReaderResult{[]rune{}, FilePos{0, 0}}}
-	if peek, _, err := r.reader.ReadRune(); err != nil && err != io.EOF {
+	peek, _, err := r.reader.ReadRune();
+    if err != nil && err != io.EOF {
 		return r, fmt.Errorf("couldn't create lookahead reader: %v", err)
-	} else {
-		r.lookahead = peek
 	}
+    r.lookahead = peek
 	return r, nil
 }
 
@@ -73,7 +73,7 @@ func (r *LookaheadReader) MatchOneOf(vals ...rune) bool {
 	return false
 }
 
-// MatchOneOf returns true if the next character to be read is among
+// MatchIdentifier returns true if the next character to be read is among
 // the characters passed to the function and stores that character in
 // the result, otherwise it returns false and clears the result.
 func (r *LookaheadReader) MatchIdentifier() bool {

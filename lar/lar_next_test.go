@@ -71,7 +71,7 @@ func TestNextEndOfInput(t *testing.T) {
 		return
 	}
 
-	for n, _ := range nextTestCases {
+	for n := range nextTestCases {
 		if _, err := lar.Next(); err != nil {
 			t.Errorf("case %d, couldn't get next byte: %v", n, err)
 		}
