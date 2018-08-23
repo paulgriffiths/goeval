@@ -27,3 +27,7 @@ func (s stringValue) String() string {
 func (s stringValue) equality(other stringValue) bool {
 	return s.value == other.value
 }
+
+func (s stringValue) concat(other stringValue) stringValue {
+	return stringValue{s.value + other.value}
+}

@@ -10,14 +10,18 @@ func (op nonEqualityOp) Evaluate(table *SymTab) (Expr, error) {
 	lb, rb, err := evalPairIfBoolean(table, op.left, op.right)
 	if err == nil {
 		return boolValue{!lb.equality(rb)}, nil
+	} else if err == UndefinedVariableError {
+		return nil, err
 	}
 	ls, rs, err := evalPairIfString(table, op.left, op.right)
 	if err == nil {
 		return boolValue{!ls.equality(rs)}, nil
+	} else if err == UndefinedVariableError {
+		return nil, err
 	}
 	ln, rn, err := evalPairIfArithmetic(table, op.left, op.right)
 	if err != nil {
-		return nil, TypeError
+		return nil, err
 	}
 	return boolValue{!ln.equality(rn)}, nil
 }
