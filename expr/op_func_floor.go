@@ -10,11 +10,11 @@ type floorOp struct {
 }
 
 func (op floorOp) Evaluate(table *SymTab) (Expr, error) {
-	exps, err := evaluateExprs(table, IsNumeric, op.operand)
+	e, err := evalIfArithmetic(table, op.operand)
 	if err != nil {
 		return nil, err
 	}
-	result := math.Floor(exps[0].(arithmeticValue).floatValue())
+	result := math.Floor(e.floatValue())
 	return realValue{result}, nil
 }
 

@@ -7,12 +7,11 @@ type nandOp struct {
 }
 
 func (op nandOp) Evaluate(table *SymTab) (Expr, error) {
-	exps, err := evaluateExprs(table, IsBoolean, op.left, op.right)
+	l, r, err := evalPairIfBoolean(table, op.left, op.right)
 	if err != nil {
 		return nil, err
 	}
-	cmp := exps[0].(boolValue).nand(exps[1].(boolValue))
-	return cmp, nil
+	return l.nand(r), nil
 }
 
 // NewNand creates a new logical nand operator expression.

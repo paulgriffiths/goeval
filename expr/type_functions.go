@@ -169,19 +169,3 @@ func AreVariable(exps ...Expr) bool {
 	}
 	return true
 }
-
-func evaluateExprs(table *SymTab, testFunc func(Expr) bool,
-	exps ...Expr) ([]Expr, error) {
-	result := []Expr{}
-	for _, val := range exps {
-		v, err := val.Evaluate(table)
-		if err != nil {
-			return nil, err
-		}
-		if testFunc != nil && !testFunc(v) {
-			return nil, TypeError
-		}
-		result = append(result, v)
-	}
-	return result, nil
-}

@@ -23,12 +23,13 @@ func TestBoolValueEqual(t *testing.T) {
 
 func TestBoolValueEquality(t *testing.T) {
 	testCases := []struct {
-		left, right, result boolValue
+		left, right boolValue
+        result bool
 	}{
-		{boolValue{true}, boolValue{true}, boolValue{true}},
-		{boolValue{true}, boolValue{false}, boolValue{false}},
-		{boolValue{false}, boolValue{true}, boolValue{false}},
-		{boolValue{false}, boolValue{false}, boolValue{true}},
+		{boolValue{true}, boolValue{true}, true},
+		{boolValue{true}, boolValue{false}, false},
+		{boolValue{false}, boolValue{true}, false},
+		{boolValue{false}, boolValue{false}, true},
 	}
 
 	for n, testCase := range testCases {

@@ -7,11 +7,11 @@ type negOp struct {
 }
 
 func (op negOp) Evaluate(table *SymTab) (Expr, error) {
-	exps, err := evaluateExprs(table, IsNumeric, op.value)
+	e, err := evalIfArithmetic(table, op.value)
 	if err != nil {
 		return nil, err
 	}
-	return exps[0].(arithmeticValue).negate(), nil
+	return e.negate(), nil
 }
 
 // NewNeg creates a new negation operator expression.

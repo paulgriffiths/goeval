@@ -7,11 +7,11 @@ type powOp struct {
 }
 
 func (op powOp) Evaluate(table *SymTab) (Expr, error) {
-	exps, err := evaluateExprs(table, IsNumeric, op.base, op.exponent)
+	b, e, err := evalPairIfArithmetic(table, op.base, op.exponent)
 	if err != nil {
 		return nil, err
 	}
-	return exps[0].(arithmeticValue).pow(exps[1].(arithmeticValue))
+	return b.pow(e)
 }
 
 // NewPow creates a new exponentiation operator expression.

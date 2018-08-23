@@ -9,8 +9,8 @@ func NewString(value string) Expr {
 	return stringValue{value}
 }
 
-func (s stringValue) equality(other stringValue) boolValue {
-	return boolValue{s.value == other.value}
+func (s stringValue) equality(other stringValue) bool {
+	return s.value == other.value
 }
 
 func (s stringValue) Evaluate(_ *SymTab) (Expr, error) {

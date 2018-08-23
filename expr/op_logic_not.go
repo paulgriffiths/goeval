@@ -7,12 +7,11 @@ type notOp struct {
 }
 
 func (op notOp) Evaluate(table *SymTab) (Expr, error) {
-	exps, err := evaluateExprs(table, IsBoolean, op.operand)
+	e, err := evalIfBoolean(table, op.operand)
 	if err != nil {
 		return nil, err
 	}
-	cmp := exps[0].(boolValue).not()
-	return cmp, nil
+	return e.not(), nil
 }
 
 // NewNot creates a new logical not operator expression.

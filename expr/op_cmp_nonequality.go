@@ -7,22 +7,19 @@ type nonEqualityOp struct {
 }
 
 func (op nonEqualityOp) Evaluate(table *SymTab) (Expr, error) {
-	exps, err := evaluateExprs(table, IsBoolean, op.left, op.right)
+	lb, rb, err := evalPairIfBoolean(table, op.left, op.right)
 	if err == nil {
-		cmp := exps[0].(boolValue).equality(exps[1].(boolValue))
-		return boolValue{!cmp.value}, nil
+		return boolValue{!lb.equality(rb)}, nil
 	}
-	exps, err = evaluateExprs(table, IsString, op.left, op.right)
+    ls, rs, err := evalPairIfString(table, op.left, op.right)
 	if err == nil {
-		cmp := exps[0].(stringValue).equality(exps[1].(stringValue))
-		return boolValue{!cmp.value}, nil
+		return boolValue{!ls.equality(rs)}, nil
 	}
-	exps, err = evaluateExprs(table, IsNumeric, op.left, op.right)
-	if err == nil {
-		cmp := !exps[0].(arithmeticValue).equality(exps[1].(arithmeticValue))
-		return boolValue{cmp}, nil
+    ln, rn, err := evalPairIfArithmetic(table, op.left, op.right)
+	if err != nil {
+        return nil, TypeError
 	}
-	return nil, TypeError
+    return boolValue{!ln.equality(rn)}, nil
 }
 
 // NewNonEquality creates a new conditional non-equality

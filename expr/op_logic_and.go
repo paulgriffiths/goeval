@@ -7,12 +7,11 @@ type andOp struct {
 }
 
 func (op andOp) Evaluate(table *SymTab) (Expr, error) {
-	exps, err := evaluateExprs(table, IsBoolean, op.left, op.right)
+	l, r, err := evalPairIfBoolean(table, op.left, op.right)
 	if err != nil {
 		return nil, err
 	}
-	cmp := exps[0].(boolValue).and(exps[1].(boolValue))
-	return cmp, nil
+	return l.and(r), nil
 }
 
 // NewAnd creates a new logical and operator expression.

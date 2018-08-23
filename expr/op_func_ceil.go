@@ -10,11 +10,11 @@ type ceilOp struct {
 }
 
 func (op ceilOp) Evaluate(table *SymTab) (Expr, error) {
-	exps, err := evaluateExprs(table, IsNumeric, op.operand)
+	e, err := evalIfArithmetic(table, op.operand)
 	if err != nil {
 		return nil, err
 	}
-	result := math.Ceil(exps[0].(arithmeticValue).floatValue())
+	result := math.Ceil(e.floatValue())
 	return realValue{result}, nil
 }
 

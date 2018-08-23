@@ -6,15 +6,15 @@ import (
 )
 
 type tanOp struct {
-	operand Expr
+	degrees Expr
 }
 
 func (op tanOp) Evaluate(table *SymTab) (Expr, error) {
-	exps, err := evaluateExprs(table, IsNumeric, op.operand)
+	e, err := evalIfArithmetic(table, op.degrees)
 	if err != nil {
 		return nil, err
 	}
-	result := math.Tan(toRadians(exps[0].(arithmeticValue).floatValue()))
+	result := math.Tan(toRadians(e.floatValue()))
 	if math.IsNaN(result) {
 		return nil, DomainError
 	}
@@ -22,10 +22,10 @@ func (op tanOp) Evaluate(table *SymTab) (Expr, error) {
 }
 
 // NewTan creates a new tangent function expression.
-func NewTan(operand Expr) Expr {
-	return tanOp{operand}
+func NewTan(degrees Expr) Expr {
+	return tanOp{degrees}
 }
 
 func (op tanOp) String() string {
-	return fmt.Sprintf("tan(%v)", op.operand)
+	return fmt.Sprintf("tan(%v)", op.degrees)
 }

@@ -6,15 +6,15 @@ import (
 )
 
 type atanOp struct {
-	operand Expr
+	tangent Expr
 }
 
 func (op atanOp) Evaluate(table *SymTab) (Expr, error) {
-	exps, err := evaluateExprs(table, IsNumeric, op.operand)
+	e, err := evalIfArithmetic(table, op.tangent)
 	if err != nil {
 		return nil, err
 	}
-	result := toDegrees(math.Atan(exps[0].(arithmeticValue).floatValue()))
+	result := toDegrees(math.Atan(e.floatValue()))
 	if math.IsNaN(result) {
 		return nil, DomainError
 	}
@@ -22,10 +22,10 @@ func (op atanOp) Evaluate(table *SymTab) (Expr, error) {
 }
 
 // NewAtan creates a new arc tangent function expression.
-func NewAtan(operand Expr) Expr {
-	return atanOp{operand}
+func NewAtan(tangent Expr) Expr {
+	return atanOp{tangent}
 }
 
 func (op atanOp) String() string {
-	return fmt.Sprintf("arctan(%v)", op.operand)
+	return fmt.Sprintf("arctan(%v)", op.tangent)
 }

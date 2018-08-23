@@ -6,15 +6,15 @@ import (
 )
 
 type cosOp struct {
-	operand Expr
+	degrees Expr
 }
 
 func (op cosOp) Evaluate(table *SymTab) (Expr, error) {
-	exps, err := evaluateExprs(table, IsNumeric, op.operand)
+	e, err := evalIfArithmetic(table, op.degrees)
 	if err != nil {
 		return nil, err
 	}
-	result := math.Cos(toRadians(exps[0].(arithmeticValue).floatValue()))
+	result := math.Cos(toRadians(e.floatValue()))
 	if math.IsNaN(result) {
 		return nil, DomainError
 	}
@@ -22,10 +22,10 @@ func (op cosOp) Evaluate(table *SymTab) (Expr, error) {
 }
 
 // NewCos creates a new cosine function expression.
-func NewCos(operand Expr) Expr {
-	return cosOp{operand}
+func NewCos(degrees Expr) Expr {
+	return cosOp{degrees}
 }
 
 func (op cosOp) String() string {
-	return fmt.Sprintf("cos(%v)", op.operand)
+	return fmt.Sprintf("cos(%v)", op.degrees)
 }

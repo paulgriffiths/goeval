@@ -6,15 +6,15 @@ import (
 )
 
 type asinOp struct {
-	operand Expr
+	sine Expr
 }
 
 func (op asinOp) Evaluate(table *SymTab) (Expr, error) {
-	exps, err := evaluateExprs(table, IsNumeric, op.operand)
+	e, err := evalIfArithmetic(table, op.sine)
 	if err != nil {
 		return nil, err
 	}
-	result := toDegrees(math.Asin(exps[0].(arithmeticValue).floatValue()))
+	result := toDegrees(math.Asin(e.floatValue()))
 	if math.IsNaN(result) {
 		return nil, DomainError
 	}
@@ -22,10 +22,10 @@ func (op asinOp) Evaluate(table *SymTab) (Expr, error) {
 }
 
 // NewAsin creates a new arc sine function expression.
-func NewAsin(operand Expr) Expr {
-	return asinOp{operand}
+func NewAsin(sine Expr) Expr {
+	return asinOp{sine}
 }
 
 func (op asinOp) String() string {
-	return fmt.Sprintf("arcsin(%v)", op.operand)
+	return fmt.Sprintf("arcsin(%v)", op.sine)
 }

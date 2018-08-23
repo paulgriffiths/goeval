@@ -10,11 +10,11 @@ type logOp struct {
 }
 
 func (op logOp) Evaluate(table *SymTab) (Expr, error) {
-	exps, err := evaluateExprs(table, IsNumeric, op.operand)
+	e, err := evalIfArithmetic(table, op.operand)
 	if err != nil {
 		return nil, err
 	}
-	result := math.Log10(exps[0].(arithmeticValue).floatValue())
+	result := math.Log10(e.floatValue())
 	if math.IsNaN(result) {
 		return nil, DomainError
 	}

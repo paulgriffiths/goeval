@@ -7,12 +7,11 @@ type xorOp struct {
 }
 
 func (op xorOp) Evaluate(table *SymTab) (Expr, error) {
-	exps, err := evaluateExprs(table, IsBoolean, op.left, op.right)
+	l, r, err := evalPairIfBoolean(table, op.left, op.right)
 	if err != nil {
 		return nil, err
 	}
-	cmp := exps[0].(boolValue).xor(exps[1].(boolValue))
-	return cmp, nil
+	return l.xor(r), nil
 }
 
 // NewXor creates a new logical exclusive-or operator expression.

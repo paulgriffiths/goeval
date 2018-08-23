@@ -6,15 +6,15 @@ import (
 )
 
 type sinOp struct {
-	operand Expr
+	degrees Expr
 }
 
 func (op sinOp) Evaluate(table *SymTab) (Expr, error) {
-	exps, err := evaluateExprs(table, IsNumeric, op.operand)
+	e, err := evalIfArithmetic(table, op.degrees)
 	if err != nil {
 		return nil, err
 	}
-	result := math.Sin(toRadians(exps[0].(arithmeticValue).floatValue()))
+	result := math.Sin(toRadians(e.floatValue()))
 	if math.IsNaN(result) {
 		return nil, DomainError
 	}
@@ -22,10 +22,10 @@ func (op sinOp) Evaluate(table *SymTab) (Expr, error) {
 }
 
 // NewSin creates a new sine function expression.
-func NewSin(operand Expr) Expr {
-	return sinOp{operand}
+func NewSin(degrees Expr) Expr {
+	return sinOp{degrees}
 }
 
 func (op sinOp) String() string {
-	return fmt.Sprintf("sin(%v)", op.operand)
+	return fmt.Sprintf("sin(%v)", op.degrees)
 }

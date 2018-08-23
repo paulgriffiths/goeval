@@ -10,11 +10,11 @@ type sqrtOp struct {
 }
 
 func (op sqrtOp) Evaluate(table *SymTab) (Expr, error) {
-	exps, err := evaluateExprs(table, IsNumeric, op.operand)
+	e, err := evalIfArithmetic(table, op.operand)
 	if err != nil {
 		return nil, err
 	}
-	result := math.Sqrt(exps[0].(arithmeticValue).floatValue())
+	result := math.Sqrt(e.floatValue())
 	if math.IsNaN(result) {
 		return nil, DomainError
 	}

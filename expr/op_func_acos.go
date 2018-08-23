@@ -6,15 +6,15 @@ import (
 )
 
 type acosOp struct {
-	operand Expr
+	cosine Expr
 }
 
 func (op acosOp) Evaluate(table *SymTab) (Expr, error) {
-	exps, err := evaluateExprs(table, IsNumeric, op.operand)
+	e, err := evalIfArithmetic(table, op.cosine)
 	if err != nil {
 		return nil, err
 	}
-	result := toDegrees(math.Acos(exps[0].(arithmeticValue).floatValue()))
+	result := toDegrees(math.Acos(e.floatValue()))
 	if math.IsNaN(result) {
 		return nil, DomainError
 	}
@@ -22,10 +22,10 @@ func (op acosOp) Evaluate(table *SymTab) (Expr, error) {
 }
 
 // NewAcos creates a new arc cosine function expression.
-func NewAcos(operand Expr) Expr {
-	return acosOp{operand}
+func NewAcos(cosine Expr) Expr {
+	return acosOp{cosine}
 }
 
 func (op acosOp) String() string {
-	return fmt.Sprintf("arccos(%v)", op.operand)
+	return fmt.Sprintf("arccos(%v)", op.cosine)
 }

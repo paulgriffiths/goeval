@@ -13,8 +13,8 @@ func NewBool(value bool) Expr {
 	return boolValue{value}
 }
 
-func (b boolValue) equality(other boolValue) boolValue {
-	return boolValue{b.value == other.value}
+func (b boolValue) equality(other boolValue) bool {
+	return b.value == other.value
 }
 
 func (b boolValue) and(other boolValue) boolValue {
@@ -26,7 +26,7 @@ func (b boolValue) or(other boolValue) boolValue {
 }
 
 func (b boolValue) xor(other boolValue) boolValue {
-	return b.equality(other).not()
+	return boolValue{b.equality(other)}.not()
 }
 
 func (b boolValue) nor(other boolValue) boolValue {
