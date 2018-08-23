@@ -14,7 +14,7 @@ func (op concatOp) Evaluate(table *SymTab) (Expr, error) {
 	return l.concat(r), nil
 }
 
-// NewAnd creates a new logical and operator expression.
+// NewConcat creates a new string concatenation operator expression.
 func NewConcat(left, right Expr) Expr {
 	return concatOp{left, right}
 }
