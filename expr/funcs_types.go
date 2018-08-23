@@ -1,5 +1,20 @@
 package expr
 
+import "math"
+
+// AlmostEquals tests if two arithmetic (i.e. integral or real) expressions
+// differ in value by no less than the specified epsilon.
+func AlmostEquals(left, right Expr, epsilon float64, table *SymTab) bool {
+	l, r, err := evalPairIfArithmetic(nil, left, right)
+	if err != nil {
+		return false
+	}
+	if math.Abs(l.floatValue()-r.floatValue()) < epsilon {
+		return true
+	}
+	return false
+}
+
 // Equals tests if two expressions are equal in value and type.
 func Equals(left, right Expr, table *SymTab) bool {
 	exps, err := evaluateExprs(nil, isValue, left, right)
