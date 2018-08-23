@@ -18,43 +18,43 @@ func evaluateExprs(table *SymTab, testFunc func(Expr) bool,
 
 func evalIfArithmetic(table *SymTab, e Expr) (arithmeticValue, error) {
 	result, err := evaluateExprs(table, IsNumeric, e)
-    if err != nil {
-        return nil, err
-    }
+	if err != nil {
+		return nil, err
+	}
 	return result[0].(arithmeticValue), nil
 }
 
 func evalIfBoolean(table *SymTab, e Expr) (boolValue, error) {
 	result, err := evaluateExprs(table, IsBoolean, e)
-    if err != nil {
-        return boolValue{false}, err
-    }
+	if err != nil {
+		return boolValue{false}, err
+	}
 	return result[0].(boolValue), nil
 }
 
 func evalPairIfArithmetic(table *SymTab, a, b Expr) (arithmeticValue,
-    arithmeticValue, error) {
+	arithmeticValue, error) {
 	result, err := evaluateExprs(table, IsNumeric, a, b)
-    if err != nil {
-        return nil, nil, err
-    }
+	if err != nil {
+		return nil, nil, err
+	}
 	return result[0].(arithmeticValue), result[1].(arithmeticValue), nil
 }
 
 func evalPairIfBoolean(table *SymTab, a, b Expr) (boolValue,
-    boolValue, error) {
+	boolValue, error) {
 	result, err := evaluateExprs(table, IsBoolean, a, b)
-    if err != nil {
-        return boolValue{false}, boolValue{false}, err
-    }
+	if err != nil {
+		return boolValue{false}, boolValue{false}, err
+	}
 	return result[0].(boolValue), result[1].(boolValue), nil
 }
 
 func evalPairIfString(table *SymTab, a, b Expr) (stringValue,
-    stringValue, error) {
+	stringValue, error) {
 	result, err := evaluateExprs(table, IsString, a, b)
-    if err != nil {
-        return stringValue{""}, stringValue{""}, err
-    }
+	if err != nil {
+		return stringValue{""}, stringValue{""}, err
+	}
 	return result[0].(stringValue), result[1].(stringValue), nil
 }

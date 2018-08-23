@@ -24,7 +24,7 @@ func TestBoolValueEqual(t *testing.T) {
 func TestBoolValueEquality(t *testing.T) {
 	testCases := []struct {
 		left, right boolValue
-        result bool
+		result      bool
 	}{
 		{boolValue{true}, boolValue{true}, true},
 		{boolValue{true}, boolValue{false}, false},

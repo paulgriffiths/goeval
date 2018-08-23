@@ -1,25 +1,25 @@
 package expr_test
 
 import (
-    "testing"
-    "github.com/paulgriffiths/goeval/expr"
+	"github.com/paulgriffiths/goeval/expr"
+	"testing"
 )
 
 func TestEvaluateArithmeticSuccess(t *testing.T) {
-    table := expr.NewTable()
-    table.Store("i", expr.NewInt(3))
-    table.Store("j", expr.NewInt(6))
-    table.Store("x", expr.NewReal(16.0))
-    table.Store("y", expr.NewReal(4.0))
+	table := expr.NewTable()
+	table.Store("i", expr.NewInt(3))
+	table.Store("j", expr.NewInt(6))
+	table.Store("x", expr.NewReal(16.0))
+	table.Store("y", expr.NewReal(4.0))
 
-    i := expr.NewInt(3)
-    j := expr.NewInt(6)
-    x := expr.NewReal(16.0)
-    y := expr.NewReal(4.0)
-    vi := expr.NewVariable("i")
-    vj := expr.NewVariable("j")
-    vx := expr.NewVariable("x")
-    vy := expr.NewVariable("y")
+	i := expr.NewInt(3)
+	j := expr.NewInt(6)
+	x := expr.NewReal(16.0)
+	y := expr.NewReal(4.0)
+	vi := expr.NewVariable("i")
+	vj := expr.NewVariable("j")
+	vx := expr.NewVariable("x")
+	vy := expr.NewVariable("y")
 
 	testCases := []struct {
 		exp    expr.Expr
@@ -69,11 +69,11 @@ func TestEvaluateArithmeticSuccess(t *testing.T) {
 	}
 
 	for n, testCase := range testCases {
-        result, err := testCase.exp.Evaluate(table)
-        if err != nil {
-            t.Errorf("case %d, couldn't evaluate expression: %v", n+1, err)
-            continue
-        }
+		result, err := testCase.exp.Evaluate(table)
+		if err != nil {
+			t.Errorf("case %d, couldn't evaluate expression: %v", n+1, err)
+			continue
+		}
 		if !expr.Equals(result, testCase.result, table) {
 			t.Errorf("case %d, got %v, want %v", n+1,
 				result, testCase.result)
@@ -82,10 +82,10 @@ func TestEvaluateArithmeticSuccess(t *testing.T) {
 }
 
 func TestEvaluateArithmeticNoSymbolTableSuccess(t *testing.T) {
-    i := expr.NewInt(3)
-    j := expr.NewInt(6)
-    x := expr.NewReal(16.0)
-    y := expr.NewReal(4.0)
+	i := expr.NewInt(3)
+	j := expr.NewInt(6)
+	x := expr.NewReal(16.0)
+	y := expr.NewReal(4.0)
 
 	testCases := []struct {
 		exp    expr.Expr
@@ -106,11 +106,11 @@ func TestEvaluateArithmeticNoSymbolTableSuccess(t *testing.T) {
 	}
 
 	for n, testCase := range testCases {
-        result, err := testCase.exp.Evaluate(nil)
-        if err != nil {
-            t.Errorf("case %d, couldn't evaluate expression: %v", n+1, err)
-            continue
-        }
+		result, err := testCase.exp.Evaluate(nil)
+		if err != nil {
+			t.Errorf("case %d, couldn't evaluate expression: %v", n+1, err)
+			continue
+		}
 		if !expr.Equals(result, testCase.result, nil) {
 			t.Errorf("case %d, got %v, want %v", n+1,
 				result, testCase.result)
@@ -119,13 +119,13 @@ func TestEvaluateArithmeticNoSymbolTableSuccess(t *testing.T) {
 }
 
 func TestEvaluateArithmeticNoSymbolTableFailure(t *testing.T) {
-    i := expr.NewInt(3)
-    j := expr.NewInt(5)
-    vi := expr.NewVariable("i")
-    vj := expr.NewVariable("j")
+	i := expr.NewInt(3)
+	j := expr.NewInt(5)
+	vi := expr.NewVariable("i")
+	vj := expr.NewVariable("j")
 
 	testCases := []struct {
-		exp    expr.Expr
+		exp expr.Expr
 	}{
 		{expr.NewAdd(i, vj)},
 		{expr.NewAdd(vi, j)},
@@ -147,11 +147,11 @@ func TestEvaluateArithmeticNoSymbolTableFailure(t *testing.T) {
 	}
 
 	for n, testCase := range testCases {
-        _, err := testCase.exp.Evaluate(nil)
-        if err != expr.UndefinedVariableError {
-            t.Errorf("case %d, got %v, want %v", n+1, err,
-                expr.UndefinedVariableError)
-            continue
-        }
+		_, err := testCase.exp.Evaluate(nil)
+		if err != expr.UndefinedVariableError {
+			t.Errorf("case %d, got %v, want %v", n+1, err,
+				expr.UndefinedVariableError)
+			continue
+		}
 	}
 }

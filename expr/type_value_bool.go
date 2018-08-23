@@ -13,6 +13,21 @@ func NewBool(value bool) Expr {
 	return boolValue{value}
 }
 
+func (b boolValue) Evaluate(_ *SymTab) (Expr, error) {
+	return b, nil
+}
+
+func (b boolValue) Equals(other value) bool {
+	if !IsBoolean(other) {
+		return false
+	}
+	return b.value == other.(boolValue).value
+}
+
+func (b boolValue) String() string {
+	return fmt.Sprintf("%v", b.value)
+}
+
 func (b boolValue) equality(other boolValue) bool {
 	return b.value == other.value
 }
@@ -39,19 +54,4 @@ func (b boolValue) nand(other boolValue) boolValue {
 
 func (b boolValue) not() boolValue {
 	return boolValue{!b.value}
-}
-
-func (b boolValue) Evaluate(_ *SymTab) (Expr, error) {
-	return b, nil
-}
-
-func (b boolValue) Equals(other value) bool {
-	if !IsBoolean(other) {
-		return false
-	}
-	return b.value == other.(boolValue).value
-}
-
-func (b boolValue) String() string {
-	return fmt.Sprintf("%v", b.value)
 }

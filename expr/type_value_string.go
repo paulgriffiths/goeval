@@ -9,10 +9,6 @@ func NewString(value string) Expr {
 	return stringValue{value}
 }
 
-func (s stringValue) equality(other stringValue) bool {
-	return s.value == other.value
-}
-
 func (s stringValue) Evaluate(_ *SymTab) (Expr, error) {
 	return s, nil
 }
@@ -26,4 +22,8 @@ func (s stringValue) Equals(other value) bool {
 
 func (s stringValue) String() string {
 	return "\"" + s.value + "\""
+}
+
+func (s stringValue) equality(other stringValue) bool {
+	return s.value == other.value
 }

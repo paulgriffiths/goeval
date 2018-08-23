@@ -37,6 +37,11 @@ func (r realValue) almostEquals(other value, epsilon float64) bool {
 	if !IsReal(other) {
 		return false
 	}
+
+	// Note that this logic only works for float values sufficiently
+	// small so that the epsilon is within its precision. This is ok
+	// since the function is only used internally for testing.
+
 	if math.Abs(r.value-other.(realValue).value) <= epsilon {
 		return true
 	}

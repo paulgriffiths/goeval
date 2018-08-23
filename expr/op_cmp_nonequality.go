@@ -11,15 +11,15 @@ func (op nonEqualityOp) Evaluate(table *SymTab) (Expr, error) {
 	if err == nil {
 		return boolValue{!lb.equality(rb)}, nil
 	}
-    ls, rs, err := evalPairIfString(table, op.left, op.right)
+	ls, rs, err := evalPairIfString(table, op.left, op.right)
 	if err == nil {
 		return boolValue{!ls.equality(rs)}, nil
 	}
-    ln, rn, err := evalPairIfArithmetic(table, op.left, op.right)
+	ln, rn, err := evalPairIfArithmetic(table, op.left, op.right)
 	if err != nil {
-        return nil, TypeError
+		return nil, TypeError
 	}
-    return boolValue{!ln.equality(rn)}, nil
+	return boolValue{!ln.equality(rn)}, nil
 }
 
 // NewNonEquality creates a new conditional non-equality
