@@ -9,7 +9,8 @@ import (
 )
 
 func main() {
-	fmt.Printf("Enter simple mathematical expressions, 'q' to quit\n")
+	fmt.Printf("Enter simple mathematical expressions, or use keyword ")
+	fmt.Printf("'let' to set variables.\nEnter 'q' to quit\n")
 
 	input := bufio.NewScanner(os.Stdin)
 	fmt.Printf("> ")
