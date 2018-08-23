@@ -10,7 +10,7 @@ type realValue struct {
 	value float64
 }
 
-// NewReal creates a new real value
+// NewReal creates a new real value expression.
 func NewReal(value float64) Expr {
 	return realValue{value}
 }
@@ -30,7 +30,7 @@ func (r realValue) Evaluate(_ *SymTab) (Expr, error) {
 
 // String returns a string representation of a real value
 func (r realValue) String() string {
-	return fmt.Sprintf("%f", r.value)
+	return fmt.Sprintf("%g", r.value)
 }
 
 func (r realValue) almostEquals(other value, epsilon float64) bool {
@@ -39,9 +39,8 @@ func (r realValue) almostEquals(other value, epsilon float64) bool {
 	}
 	if math.Abs(r.value-other.(realValue).value) <= epsilon {
 		return true
-	} else {
-		return false
 	}
+	return false
 }
 
 func (r realValue) equality(other arithmeticValue) bool {

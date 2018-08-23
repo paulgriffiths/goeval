@@ -1,5 +1,6 @@
 package expr
 
+// Equals tests if two expressions are equal in value and type.
 func Equals(left, right Expr, table *SymTab) bool {
 	exps, err := evaluateExprs(nil, isValue, left, right)
 	if err != nil {
@@ -11,6 +12,8 @@ func Equals(left, right Expr, table *SymTab) bool {
 	return false
 }
 
+// ToInt returns the integral value of an expression if it is an
+// integral expression, and returns false otherwise.
 func ToInt(exp Expr) (int64, bool) {
 	if !IsInteger(exp) {
 		return 0, false
@@ -18,6 +21,8 @@ func ToInt(exp Expr) (int64, bool) {
 	return exp.(intValue).value, true
 }
 
+// ToFloat returns the float value of an expression if it is an
+// integral or real expression, and returns false otherwise.
 func ToFloat(exp Expr) (float64, bool) {
 	if !IsNumeric(exp) {
 		return 0.0, false
@@ -25,6 +30,8 @@ func ToFloat(exp Expr) (float64, bool) {
 	return exp.(arithmeticValue).floatValue(), true
 }
 
+// ToBool returns the boolean value of an expression if it is a
+// boolean expression, and returns false otherwise.
 func ToBool(exp Expr) (bool, bool) {
 	if !IsBoolean(exp) {
 		return false, false
@@ -32,6 +39,8 @@ func ToBool(exp Expr) (bool, bool) {
 	return exp.(boolValue).value, true
 }
 
+// ToString returns the string value of an expression if it is a
+// string expression, and returns false otherwise.
 func ToString(exp Expr) (string, bool) {
 	if !IsString(exp) {
 		return "", false
@@ -55,6 +64,7 @@ func areValue(exps ...Expr) bool {
 	return true
 }
 
+// IsInteger tests if an expression is an integral value.
 func IsInteger(exp Expr) bool {
 	if _, ok := exp.(intValue); !ok {
 		return false
@@ -62,6 +72,7 @@ func IsInteger(exp Expr) bool {
 	return true
 }
 
+// AreInteger tests if all the provided expressions are integral values.
 func AreInteger(exps ...Expr) bool {
 	for _, exp := range exps {
 		if !IsInteger(exp) {
@@ -71,6 +82,7 @@ func AreInteger(exps ...Expr) bool {
 	return true
 }
 
+// IsReal tests if an expression is a real value.
 func IsReal(exp Expr) bool {
 	if _, ok := exp.(realValue); !ok {
 		return false
@@ -78,6 +90,7 @@ func IsReal(exp Expr) bool {
 	return true
 }
 
+// AreReal tests if all the provided expressions are real values.
 func AreReal(exps ...Expr) bool {
 	for _, exp := range exps {
 		if !IsReal(exp) {
@@ -87,10 +100,13 @@ func AreReal(exps ...Expr) bool {
 	return true
 }
 
+// IsNumeric tests if an expression is an integral or a real value.
 func IsNumeric(exp Expr) bool {
 	return IsInteger(exp) || IsReal(exp)
 }
 
+// AreNumeric tests if all the provided expressions are integral or
+// real values.
 func AreNumeric(exps ...Expr) bool {
 	for _, exp := range exps {
 		if !IsNumeric(exp) {
@@ -100,6 +116,7 @@ func AreNumeric(exps ...Expr) bool {
 	return true
 }
 
+// IsBoolean tests if an expression is a boolean value.
 func IsBoolean(exp Expr) bool {
 	if _, ok := exp.(boolValue); !ok {
 		return false
@@ -107,6 +124,7 @@ func IsBoolean(exp Expr) bool {
 	return true
 }
 
+// AreBoolean tests if all the provided expressions are boolean values.
 func AreBoolean(exps ...Expr) bool {
 	for _, exp := range exps {
 		if !IsBoolean(exp) {
@@ -116,6 +134,7 @@ func AreBoolean(exps ...Expr) bool {
 	return true
 }
 
+// IsString tests if an expression is a string value.
 func IsString(exp Expr) bool {
 	if _, ok := exp.(stringValue); !ok {
 		return false
@@ -123,6 +142,7 @@ func IsString(exp Expr) bool {
 	return true
 }
 
+// AreString tests if all the provided expressions are string values.
 func AreString(exps ...Expr) bool {
 	for _, exp := range exps {
 		if !IsString(exp) {
@@ -132,6 +152,7 @@ func AreString(exps ...Expr) bool {
 	return true
 }
 
+// IsVariable tests if an expression is a variable value.
 func IsVariable(exp Expr) bool {
 	if _, ok := exp.(variableValue); !ok {
 		return false
@@ -139,6 +160,7 @@ func IsVariable(exp Expr) bool {
 	return true
 }
 
+// AreVariable tests if all the provided expressions are variable values.
 func AreVariable(exps ...Expr) bool {
 	for _, exp := range exps {
 		if !IsVariable(exp) {

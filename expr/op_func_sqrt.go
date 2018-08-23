@@ -1,15 +1,16 @@
 package expr
 
 import (
+	"fmt"
 	"math"
 )
 
 type sqrtOp struct {
-	value Expr
+	operand Expr
 }
 
 func (op sqrtOp) Evaluate(table *SymTab) (Expr, error) {
-	exps, err := evaluateExprs(table, IsNumeric, op.value)
+	exps, err := evaluateExprs(table, IsNumeric, op.operand)
 	if err != nil {
 		return nil, err
 	}
@@ -20,6 +21,11 @@ func (op sqrtOp) Evaluate(table *SymTab) (Expr, error) {
 	return realValue{result}, nil
 }
 
+// NewSqrt creates a new square root function expression.
 func NewSqrt(operand Expr) Expr {
 	return sqrtOp{operand}
+}
+
+func (op sqrtOp) String() string {
+	return fmt.Sprintf("sqrt(%v)", op.operand)
 }

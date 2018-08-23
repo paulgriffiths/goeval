@@ -1,15 +1,16 @@
 package expr
 
 import (
+	"fmt"
 	"math"
 )
 
 type asinOp struct {
-	value Expr
+	operand Expr
 }
 
 func (op asinOp) Evaluate(table *SymTab) (Expr, error) {
-	exps, err := evaluateExprs(table, IsNumeric, op.value)
+	exps, err := evaluateExprs(table, IsNumeric, op.operand)
 	if err != nil {
 		return nil, err
 	}
@@ -20,6 +21,11 @@ func (op asinOp) Evaluate(table *SymTab) (Expr, error) {
 	return realValue{result}, nil
 }
 
+// NewAsin creates a new arc sine function expression.
 func NewAsin(operand Expr) Expr {
 	return asinOp{operand}
+}
+
+func (op asinOp) String() string {
+	return fmt.Sprintf("arcsin(%v)", op.operand)
 }

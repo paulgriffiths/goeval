@@ -1,5 +1,7 @@
 package expr
 
+import "fmt"
+
 type equalityOp struct {
 	left, right Expr
 }
@@ -23,6 +25,11 @@ func (op equalityOp) Evaluate(table *SymTab) (Expr, error) {
 	return nil, TypeError
 }
 
+// NewEquality creates a new conditional equality operator expression.
 func NewEquality(left, right Expr) Expr {
 	return equalityOp{left, right}
+}
+
+func (op equalityOp) String() string {
+	return fmt.Sprintf("(%v)==(%v)", op.left, op.right)
 }

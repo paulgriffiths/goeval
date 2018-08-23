@@ -247,8 +247,8 @@ func TestBadExpressions(t *testing.T) {
 		{"1 > 2 > 3", expr.TypeError},
 		{"1 <= 2 <= 3", expr.TypeError},
 		{"1 >= 2 >= 3", expr.TypeError},
-		{"frob + 3", expr.UnknownIdentifierError},
-		{"cos(foobar)", expr.UnknownIdentifierError},
+		{"frob + 3", expr.UndefinedVariableError},
+		{"cos(foobar)", expr.UndefinedVariableError},
 	}
 
 	for _, c := range cases {

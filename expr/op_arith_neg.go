@@ -1,5 +1,7 @@
 package expr
 
+import "fmt"
+
 type negOp struct {
 	value Expr
 }
@@ -12,6 +14,11 @@ func (op negOp) Evaluate(table *SymTab) (Expr, error) {
 	return exps[0].(arithmeticValue).negate(), nil
 }
 
+// NewNeg creates a new negation operator expression.
 func NewNeg(value Expr) Expr {
 	return negOp{value}
+}
+
+func (op negOp) String() string {
+	return fmt.Sprintf("-(%v)", op.value)
 }

@@ -8,6 +8,7 @@ type boolValue struct {
 	value bool
 }
 
+// NewBool creates a new boolean value expression.
 func NewBool(value bool) Expr {
 	return boolValue{value}
 }
@@ -52,5 +53,5 @@ func (b boolValue) Equals(other value) bool {
 }
 
 func (b boolValue) String() string {
-	return fmt.Sprintf("%t", b.value)
+	return fmt.Sprintf("%v", b.value)
 }

@@ -1,14 +1,14 @@
 package expr
 
-// exprError is the internal error value type.
-type exprError int
+// Error is the error value type for expression evaluation errors.
+type Error int
 
 // Error values
 const (
-	DivideByZeroError exprError = iota
+	DivideByZeroError Error = iota
 	DomainError
 	TypeError
-	UnknownIdentifierError
+	UndefinedVariableError
 	RangeError
 )
 
@@ -17,11 +17,11 @@ var exprErrorDescs = [...]string{
 	DivideByZeroError:      "divide by zero",
 	DomainError:            "domain error",
 	TypeError:              "type error",
-	UnknownIdentifierError: "unknown identifier",
+	UndefinedVariableError: "undefined variable",
 	RangeError:             "range error",
 }
 
 // Error returns a string description of an error
-func (e exprError) Error() string {
+func (e Error) Error() string {
 	return exprErrorDescs[e]
 }

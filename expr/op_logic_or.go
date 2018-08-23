@@ -1,5 +1,7 @@
 package expr
 
+import "fmt"
+
 type orOp struct {
 	left, right Expr
 }
@@ -13,6 +15,11 @@ func (op orOp) Evaluate(table *SymTab) (Expr, error) {
 	return cmp, nil
 }
 
+// NewOr creates a new logical or operator expression.
 func NewOr(left, right Expr) Expr {
 	return orOp{left, right}
+}
+
+func (op orOp) String() string {
+	return fmt.Sprintf("or(%v,%v)", op.left, op.right)
 }

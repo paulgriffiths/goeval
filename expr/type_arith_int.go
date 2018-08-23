@@ -9,7 +9,7 @@ type intValue struct {
 	value int64
 }
 
-// NewInt creates a new integral value
+// NewInt creates a new integral value expression.
 func NewInt(value int64) Expr {
 	return intValue{value}
 }

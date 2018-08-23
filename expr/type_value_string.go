@@ -4,6 +4,7 @@ type stringValue struct {
 	value string
 }
 
+// NewString creates a new string value expression.
 func NewString(value string) Expr {
 	return stringValue{value}
 }
@@ -24,5 +25,5 @@ func (s stringValue) Equals(other value) bool {
 }
 
 func (s stringValue) String() string {
-	return s.value
+	return "\"" + s.value + "\""
 }

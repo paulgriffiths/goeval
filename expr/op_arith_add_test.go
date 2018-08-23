@@ -135,7 +135,7 @@ func TestUndefinedVariableAddOperation(t *testing.T) {
 	op := addOp{intValue{42}, variableValue{"foobar"}}
 
 	_, err := op.Evaluate(table)
-	if err != UnknownIdentifierError {
-		t.Errorf("got %v, want %v", err, UnknownIdentifierError)
+	if err != UndefinedVariableError {
+		t.Errorf("got %v, want %v", err, UndefinedVariableError)
 	}
 }

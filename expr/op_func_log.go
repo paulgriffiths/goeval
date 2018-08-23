@@ -1,15 +1,16 @@
 package expr
 
 import (
+	"fmt"
 	"math"
 )
 
 type logOp struct {
-	value Expr
+	operand Expr
 }
 
 func (op logOp) Evaluate(table *SymTab) (Expr, error) {
-	exps, err := evaluateExprs(table, IsNumeric, op.value)
+	exps, err := evaluateExprs(table, IsNumeric, op.operand)
 	if err != nil {
 		return nil, err
 	}
@@ -20,6 +21,11 @@ func (op logOp) Evaluate(table *SymTab) (Expr, error) {
 	return realValue{result}, nil
 }
 
+// NewLog creates a new base-10 logarithm function expression.
 func NewLog(operand Expr) Expr {
 	return logOp{operand}
+}
+
+func (op logOp) String() string {
+	return fmt.Sprintf("log(%v)", op.operand)
 }

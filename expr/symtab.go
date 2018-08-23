@@ -24,7 +24,7 @@ func (t *SymTab) Pop() {
 	t.tables = t.tables[:len(t.tables)-1]
 }
 
-// Stores a symbol with the specified key
+// Store stores a symbol with the specified key
 func (t *SymTab) Store(key string, exp Expr) {
 	if !isValue(exp) {
 		panic("non-value type passed to SymTab.Store")
@@ -32,7 +32,7 @@ func (t *SymTab) Store(key string, exp Expr) {
 	t.tables[len(t.tables)-1][key] = exp.(value)
 }
 
-// Retrieves the symbol for the specified key, or a dummy key and
+// Retrieve retrieves the symbol for the specified key, or a dummy key and
 // false if the key is not present in the symbol table.
 func (t *SymTab) Retrieve(key string) (Expr, bool) {
 	for i := len(t.tables) - 1; i >= 0; i-- {

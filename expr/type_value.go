@@ -7,5 +7,4 @@ package expr
 type value interface {
 	Expr
 	Equals(other value) bool
-	String() string
 }

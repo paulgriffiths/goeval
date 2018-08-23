@@ -1,15 +1,16 @@
 package expr
 
 import (
+	"fmt"
 	"math"
 )
 
 type tanOp struct {
-	value Expr
+	operand Expr
 }
 
 func (op tanOp) Evaluate(table *SymTab) (Expr, error) {
-	exps, err := evaluateExprs(table, IsNumeric, op.value)
+	exps, err := evaluateExprs(table, IsNumeric, op.operand)
 	if err != nil {
 		return nil, err
 	}
@@ -20,6 +21,11 @@ func (op tanOp) Evaluate(table *SymTab) (Expr, error) {
 	return realValue{result}, nil
 }
 
+// NewTan creates a new tangent function expression.
 func NewTan(operand Expr) Expr {
 	return tanOp{operand}
+}
+
+func (op tanOp) String() string {
+	return fmt.Sprintf("tan(%v)", op.operand)
 }
