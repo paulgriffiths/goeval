@@ -248,9 +248,9 @@ func getFactor(ltchan *tokens.LTChan) (expr.Expr, error) {
 			return nil, UnbalancedParenthesesError
 		}
 		return ex, nil
-	case ltchan.MatchType(tokens.EmptyStringToken()):
+	case ltchan.MatchString():
 		return expr.NewString(ltchan.Value()), nil
-	case ltchan.MatchType(tokens.ZeroNumberToken()):
+	case ltchan.MatchNumber():
 		nval, err := strconv.ParseInt(ltchan.Value(), 10, 64)
 		if err == nil {
 			return expr.NewInt(nval), nil
@@ -261,7 +261,7 @@ func getFactor(ltchan *tokens.LTChan) (expr.Expr, error) {
 				ltchan.Value()))
 		}
 		return expr.NewReal(rval), nil
-	case ltchan.MatchType(tokens.EmptyKeywordToken()):
+	case ltchan.MatchKeyword():
 		word := string(ltchan.Value())
 		switch word {
 		case "e":
@@ -313,10 +313,10 @@ func getFactor(ltchan *tokens.LTChan) (expr.Expr, error) {
 				return nil, UnknownFunctionError
 			}
 		}
-	case ltchan.MatchType(tokens.EmptyIdentifierToken()):
+	case ltchan.MatchIdentifier():
 		word := string(ltchan.Value())
 		return expr.NewVariable(word), nil
-	case ltchan.MatchType(tokens.EmptyIllegalToken()):
+	case ltchan.MatchIllegal():
 		return nil, SyntaxError
 	}
 	return nil, MissingFactorError

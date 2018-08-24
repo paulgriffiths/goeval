@@ -54,7 +54,7 @@ loop:
 			}
 			left = expr.NewMul(left, right)
 		case ltchan.Match(tokens.OperatorToken("/")):
-			right, err := getFactor(ltchan)
+			right, err := getSubTerm(ltchan)
 			if err != nil {
 				return nil, err
 			}
@@ -68,7 +68,7 @@ loop:
 
 func getSubTerm(ltchan *tokens.LTChan) (expr.Expr, error) {
 	var left expr.Expr
-	left, err := getFactor(ltchan)
+	left, err := getTermNegate(ltchan)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ loop:
 	for {
 		switch {
 		case ltchan.Match(tokens.OperatorToken("^")):
-			right, err := getFactor(ltchan)
+			right, err := getTermNegate(ltchan)
 			if err != nil {
 				return nil, err
 			}
@@ -92,13 +92,21 @@ loop:
 	return left, nil
 }
 
-func getFactor(ltchan *tokens.LTChan) (expr.Expr, error) {
+func getTermNegate(ltchan *tokens.LTChan) (expr.Expr, error) {
 	neg := false
 	if ltchan.Match(tokens.OperatorToken("-")) {
 		neg = true
 	}
-	var result expr.Expr
-
+	ex, err := getFactor(ltchan)
+	if err != nil {
+		return nil, err
+	}
+	if neg {
+		return expr.NewNeg(ex), nil
+	}
+	return ex, nil
+}
+func getFactor(ltchan *tokens.LTChan) (expr.Expr, error) {
 	switch {
 	case ltchan.Match(tokens.RightParenToken()):
 		return nil, UnbalancedParenthesesError
@@ -110,28 +118,25 @@ func getFactor(ltchan *tokens.LTChan) (expr.Expr, error) {
 		if !ltchan.Match(tokens.RightParenToken()) {
 			return nil, UnbalancedParenthesesError
 		}
-		result = ex
-	case ltchan.MatchType(tokens.ZeroNumberToken()):
+		return ex, nil
+	case ltchan.MatchNumber():
 		nval, err := strconv.ParseInt(ltchan.Value(), 10, 64)
 		if err == nil {
-			result = expr.NewInt(nval)
-			break
+			return expr.NewInt(nval), nil
 		}
 		rval, err := strconv.ParseFloat(ltchan.Value(), 64)
 		if err != nil {
 			panic(fmt.Sprintf("Couldn't convert to float: %s",
 				ltchan.Value()))
 		}
-		result = expr.NewReal(rval)
-	case ltchan.MatchType(tokens.EmptyWordToken()):
+		return expr.NewReal(rval), nil
+	case ltchan.MatchWord():
 		word := string(ltchan.Value())
 
 		if word == "e" {
-			result = expr.NewReal(math.E)
-			break
+			return expr.NewReal(math.E), nil
 		} else if word == "pi" {
-			result = expr.NewReal(math.Pi)
-			break
+			return expr.NewReal(math.Pi), nil
 		}
 
 		if !ltchan.Match(tokens.LeftParenToken()) {
@@ -146,38 +151,34 @@ func getFactor(ltchan *tokens.LTChan) (expr.Expr, error) {
 		}
 		switch word {
 		case "cos":
-			result = expr.NewCos(ex)
+			return expr.NewCos(ex), nil
 		case "sin":
-			result = expr.NewSin(ex)
+			return expr.NewSin(ex), nil
 		case "tan":
-			result = expr.NewTan(ex)
+			return expr.NewTan(ex), nil
 		case "acos":
-			result = expr.NewAcos(ex)
+			return expr.NewAcos(ex), nil
 		case "asin":
-			result = expr.NewAsin(ex)
+			return expr.NewAsin(ex), nil
 		case "atan":
-			result = expr.NewAtan(ex)
+			return expr.NewAtan(ex), nil
 		case "round":
-			result = expr.NewRound(ex)
+			return expr.NewRound(ex), nil
 		case "ceil":
-			result = expr.NewCeil(ex)
+			return expr.NewCeil(ex), nil
 		case "floor":
-			result = expr.NewFloor(ex)
+			return expr.NewFloor(ex), nil
 		case "sqrt":
-			result = expr.NewSqrt(ex)
+			return expr.NewSqrt(ex), nil
 		case "log":
-			result = expr.NewLog(ex)
+			return expr.NewLog(ex), nil
 		case "ln":
-			result = expr.NewLn(ex)
+			return expr.NewLn(ex), nil
 		default:
 			return nil, UnknownFunctionError
 		}
 	default:
 		return nil, MissingFactorError
 	}
-
-	if neg {
-		return expr.NewNeg(result), nil
-	}
-	return result, nil
+	panic("reached end of getFactor")
 }

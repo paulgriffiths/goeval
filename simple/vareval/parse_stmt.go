@@ -26,7 +26,7 @@ func ParseStatement(stmt string) (Stmt, error) {
 		}
 		return NewOutputStatement(exp), nil
 	case ltc.Match(tokens.KeywordToken("let")):
-		if !ltc.MatchType(tokens.EmptyIdentifierToken()) {
+		if !ltc.MatchIdentifier() {
 			return nil, SyntaxError
 		}
 		id := string(ltc.Value())

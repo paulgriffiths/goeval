@@ -67,6 +67,72 @@ func (l *LTChan) MatchType(t Token) bool {
 	return false
 }
 
+// MatchString returns true and reads the next token if the next token
+// is a string token. Otherwise it returns false and doesn't read the
+// next token.
+func (l *LTChan) MatchString() bool {
+	if l.lookahead.tokenType == stringToken {
+		l.readNext()
+		return true
+	}
+	return false
+}
+
+// MatchNumber returns true and reads the next token if the next token
+// is a number token. Otherwise it returns false and doesn't read the
+// next token.
+func (l *LTChan) MatchNumber() bool {
+	if l.lookahead.tokenType == numberToken {
+		l.readNext()
+		return true
+	}
+	return false
+}
+
+// MatchWord returns true and reads the next token if the next token
+// is a word token. Otherwise it returns false and doesn't read the
+// next token.
+func (l *LTChan) MatchWord() bool {
+	if l.lookahead.tokenType == wordToken {
+		l.readNext()
+		return true
+	}
+	return false
+}
+
+// MatchKeyword returns true and reads the next token if the next token
+// is a keyword token. Otherwise it returns false and doesn't read the
+// next token.
+func (l *LTChan) MatchKeyword() bool {
+	if l.lookahead.tokenType == keywordToken {
+		l.readNext()
+		return true
+	}
+	return false
+}
+
+// MatchIdentifier returns true and reads the next token if the next token
+// is an identifier token. Otherwise it returns false and doesn't read the
+// next token.
+func (l *LTChan) MatchIdentifier() bool {
+	if l.lookahead.tokenType == identifierToken {
+		l.readNext()
+		return true
+	}
+	return false
+}
+
+// MatchIllegal returns true and reads the next token if the next token
+// is an illegal token. Otherwise it returns false and doesn't read the
+// next token.
+func (l *LTChan) MatchIllegal() bool {
+	if l.lookahead.tokenType == illegalToken {
+		l.readNext()
+		return true
+	}
+	return false
+}
+
 // IsEmpty returns true if there are no more tokens to read in the channel.
 func (l *LTChan) IsEmpty() bool {
 	return l.lookahead == nullToken()

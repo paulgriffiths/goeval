@@ -73,6 +73,28 @@ func (r *LookaheadReader) MatchOneOf(vals ...rune) bool {
 	return false
 }
 
+// MatchAnyExcept returns true if the next character to be read is not
+// among the characters passed to the function and stores that character
+// in the result, otherwise it returns false and clears the result.
+func (r *LookaheadReader) MatchAnyExcept(vals ...rune) bool {
+
+	// TODO: Write tests for this function
+
+	r.Result.clear()
+	if r.EndOfInput() {
+		return false
+	}
+	for _, b := range vals {
+		if r.lookahead == b {
+			return false
+		}
+	}
+	r.Result.appendRune(r.lookahead)
+	r.Next()
+	r.Result.setPos(r.pos)
+	return true
+}
+
 // MatchIdentifier returns true if the next character to be read is among
 // the characters passed to the function and stores that character in
 // the result, otherwise it returns false and clears the result.
