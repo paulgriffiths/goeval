@@ -7,6 +7,10 @@ type addOp struct {
 }
 
 func (op addOp) Evaluate(table *SymTab) (Expr, error) {
+	ls, rs, err := evalPairIfString(table, op.left, op.right)
+	if err == nil {
+		return ls.concat(rs), nil
+	}
 	l, r, err := evalPairIfArithmetic(table, op.left, op.right)
 	if err != nil {
 		return nil, err

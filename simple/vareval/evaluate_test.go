@@ -183,6 +183,8 @@ func TestGoodExpressions(t *testing.T) {
 		{"2 >= 3", expr.NewBool(false), false},
 		{"2 < 3 == 5 > 4", expr.NewBool(true), false},
 		{"2 < 3 != 5 < 4", expr.NewBool(true), false},
+		{"\"foo\"", expr.NewString("foo"), false},
+		{"\"foo\"+\"bar\"", expr.NewString("foobar"), false},
 	}
 
 	for _, c := range cases {
@@ -249,6 +251,11 @@ func TestBadExpressions(t *testing.T) {
 		{"1 >= 2 >= 3", expr.TypeError},
 		{"frob + 3", expr.UndefinedVariableError},
 		{"cos(foobar)", expr.UndefinedVariableError},
+		{"\"foo\" * \"bar\"", expr.TypeError},
+		{"1 + \"foo\"", expr.TypeError},
+		{"\"foo\" + 3.0", expr.TypeError},
+		{"1 * \"foo\"", expr.TypeError},
+		{"\"foo\" * 3.0", expr.TypeError},
 	}
 
 	for _, c := range cases {

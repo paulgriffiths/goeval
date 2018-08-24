@@ -10,6 +10,7 @@ type Token struct {
 const (
 	operatorToken int = iota
 	numberToken
+	stringToken
 	wordToken
 	keywordToken
 	identifierToken
@@ -45,6 +46,13 @@ func ZeroNumberToken() Token {
 	return Token{numberToken, "0"}
 }
 
+// EmptyStringToken returns a string token containing the empty string.
+// It can be passed to a function which compares the types of tokens,
+// but which doesn't care about the values.
+func EmptyStringToken() Token {
+	return Token{stringToken, ""}
+}
+
 // EmptyWordToken returns a word token containing the empty string.
 // It can be passed to a function which compares the types of tokens,
 // but which doesn't care about the values.
@@ -66,6 +74,13 @@ func EmptyIdentifierToken() Token {
 	return Token{identifierToken, ""}
 }
 
+// EmptyIllegalToken returns an illegal token containing the
+// empty string. It can be passed to a function which compares the
+// types of tokens, but which doesn't care about the values.
+func EmptyIllegalToken() Token {
+	return Token{illegalToken, ""}
+}
+
 // OperatorToken returns an operator token with the specified value.
 func OperatorToken(value string) Token {
 	return Token{operatorToken, value}
@@ -74,6 +89,11 @@ func OperatorToken(value string) Token {
 // NumberToken returns a number token with the specified value.
 func NumberToken(value string) Token {
 	return Token{numberToken, value}
+}
+
+// StringToken returns a string token with the specified value.
+func StringToken(value string) Token {
+	return Token{stringToken, value}
 }
 
 // WordToken returns a word token with the specified value.
@@ -115,6 +135,11 @@ func (t Token) IsOperator() bool {
 // IsNumber returns true if the token is a number token.
 func (t Token) IsNumber() bool {
 	return t.tokenType == numberToken
+}
+
+// IsString returns true if the token is a string token.
+func (t Token) IsString() bool {
+	return t.tokenType == stringToken
 }
 
 // IsWord returns true if the token is a word token.

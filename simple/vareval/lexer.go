@@ -54,6 +54,16 @@ func NewLexer(input io.Reader) (chan tokens.Token, error) {
 				ch <- tokens.LeftParenToken()
 			case reader.MatchOneOf(')'):
 				ch <- tokens.RightParenToken()
+			case reader.MatchOneOf('"'):
+				sval := []rune{}
+				for !reader.MatchOneOf('"') {
+					if reader.MatchNewline() || reader.EndOfInput() {
+						ch <- tokens.IllegalToken(string(sval))
+					}
+					r, _ := reader.Next()
+					sval = append(sval, r)
+				}
+				ch <- tokens.StringToken(string(sval))
 			case reader.MatchIdentifier():
 				word := string(reader.Result.Value)
 				if _, ok := keywords[word]; ok {

@@ -38,4 +38,7 @@ Sample session:
 	> print bar
 	false
 	> q
+    > let s = "foo"
+    > print s + "bar"
+    "foobar"
 	paul@horus:~$ 
