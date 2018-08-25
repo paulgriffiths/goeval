@@ -41,17 +41,18 @@ func TestLexerTokenValues(t *testing.T) {
 	for n, c := range cases {
 		ch, err := NewLexer(strings.NewReader(c.input))
 		if err != nil {
-			t.Errorf("Couldn't create lexer: %v", err)
+			t.Errorf("couldn't create lexer: %v", err)
 		}
 
 		for _, v := range c.values {
-			if token := <-ch; token.Value() != v {
-				t.Errorf("Input '%s', got %v, want %v", c.input, c.values, v)
+			if token := <-ch; token.Value != v {
+				t.Errorf("input '%s', got %v, want %v",
+					c.input, c.values, v)
 			}
 		}
 
 		if _, ok := <-ch; ok != false {
-			t.Errorf("Case %d, end of channel not encountered when expected", n)
+			t.Errorf("case %d, end of channel not encountered", n)
 		}
 	}
 
@@ -59,51 +60,46 @@ func TestLexerTokenValues(t *testing.T) {
 
 func TestLexerTokenTypes(t *testing.T) {
 	cases := []struct {
-		input  string
-		values []func(*tokens.Token) bool
+		input string
+		value tokens.TokenType
 	}{
-		{"0", []func(*tokens.Token) bool{(*tokens.Token).IsNumber}},
-		{"1", []func(*tokens.Token) bool{(*tokens.Token).IsNumber}},
-		{"123", []func(*tokens.Token) bool{(*tokens.Token).IsNumber}},
-		{"1.23", []func(*tokens.Token) bool{(*tokens.Token).IsNumber}},
-		{"1e6", []func(*tokens.Token) bool{(*tokens.Token).IsNumber}},
-		{"1.23e6", []func(*tokens.Token) bool{(*tokens.Token).IsNumber}},
-		{"1e-6", []func(*tokens.Token) bool{(*tokens.Token).IsNumber}},
-		{"1.23e-6", []func(*tokens.Token) bool{(*tokens.Token).IsNumber}},
-		{"cos", []func(*tokens.Token) bool{(*tokens.Token).IsWord}},
-		{"+", []func(*tokens.Token) bool{(*tokens.Token).IsOperator}},
-		{"-", []func(*tokens.Token) bool{(*tokens.Token).IsOperator}},
-		{"*", []func(*tokens.Token) bool{(*tokens.Token).IsOperator}},
-		{"/", []func(*tokens.Token) bool{(*tokens.Token).IsOperator}},
-		{"^", []func(*tokens.Token) bool{(*tokens.Token).IsOperator}},
-		{"(", []func(*tokens.Token) bool{(*tokens.Token).IsLeftParen}},
-		{")", []func(*tokens.Token) bool{(*tokens.Token).IsRightParen}},
-		{"~", []func(*tokens.Token) bool{(*tokens.Token).IsIllegal}},
-		{"?", []func(*tokens.Token) bool{(*tokens.Token).IsIllegal}},
-		{"$", []func(*tokens.Token) bool{(*tokens.Token).IsIllegal}},
-		{"&", []func(*tokens.Token) bool{(*tokens.Token).IsIllegal}},
-		{"1e", []func(*tokens.Token) bool{(*tokens.Token).IsIllegal}},
-		{"1.", []func(*tokens.Token) bool{(*tokens.Token).IsIllegal}},
-		{"1e.", []func(*tokens.Token) bool{
-			(*tokens.Token).IsIllegal,
-			(*tokens.Token).IsIllegal,
-		}},
+		{"0", tokens.Number},
+		{"1", tokens.Number},
+		{"123", tokens.Number},
+		{"1.23", tokens.Number},
+		{"1e6", tokens.Number},
+		{"1.23e6", tokens.Number},
+		{"1e-6", tokens.Number},
+		{"1.23e-6", tokens.Number},
+		{"cos", tokens.Word},
+		{"foo", tokens.Word},
+		{"+", tokens.AddOperator},
+		{"-", tokens.SubOperator},
+		{"*", tokens.MulOperator},
+		{"/", tokens.DivOperator},
+		{"^", tokens.PowOperator},
+		{"(", tokens.LeftParen},
+		{")", tokens.RightParen},
+		{"~", tokens.Illegal},
+		{"?", tokens.Illegal},
+		{"$", tokens.Illegal},
+		{"&", tokens.Illegal},
+		{"1e", tokens.Illegal},
+		{"1.", tokens.Illegal},
 	}
 
 	for n, c := range cases {
 		ch, err := NewLexer(strings.NewReader(c.input))
 		if err != nil {
-			t.Errorf("Couldn't create lexer: %v", err)
+			t.Errorf("couldn't create lexer: %v", err)
 		}
 
-		for _, v := range c.values {
-			if token := <-ch; !v(&token) {
-				t.Errorf("Input '%s', unexpected type", c.input)
-			}
+		if token := <-ch; token.Type != c.value {
+			t.Errorf("Input '%s', unexpected type", c.input)
 		}
 
 		if _, ok := <-ch; ok != false {
-			t.Errorf("Case %d, end of channel not encountered when expected", n)
+			t.Errorf("case %d, end of channel not encountered", n)
 		}
 	}
 }

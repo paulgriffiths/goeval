@@ -3,12 +3,13 @@ package tokens
 import "testing"
 
 var cases = []Token{
-	WordToken("foobar"),
-	NumberToken("67.89"),
-	OperatorToken("+"),
-	LeftParenToken(),
-	RightParenToken(),
-	IllegalToken("dracula"),
+	{Word, "sausage"},
+	{Number, "2.42"},
+	{SubOperator, "-"},
+	{LeftParen, "("},
+	{RightParen, "}"},
+	{Identifier, "chips"},
+	{Illegal, "?"},
 }
 
 func makeTestChannel() chan Token {
@@ -45,7 +46,7 @@ func TestLTMatch(t *testing.T) {
 	ltc := NewLTChan(makeTestChannel())
 
 	for _, token := range cases {
-		result := ltc.Match(token)
+		result := ltc.MatchToken(token)
 		if !result {
 			t.Errorf("couldn't match %v when expected", token)
 		}
@@ -60,7 +61,7 @@ func TestLTDontMatch(t *testing.T) {
 	ltc := NewLTChan(makeTestChannel())
 
 	for _, token := range cases {
-		result := ltc.Match(nullToken())
+		result := ltc.MatchToken(nullToken())
 		if result {
 			t.Errorf("matched %v when not expected", token)
 		}
@@ -73,18 +74,19 @@ func TestLTDontMatch(t *testing.T) {
 
 func TestLTMatchType(t *testing.T) {
 	var matches = []Token{
-		WordToken("sausage"),
-		NumberToken("2.42"),
-		OperatorToken("-"),
-		LeftParenToken(),
-		RightParenToken(),
-		IllegalToken("chips"),
+		{Word, "sausage"},
+		{Number, "2.42"},
+		{SubOperator, "-"},
+		{LeftParen, "("},
+		{RightParen, "}"},
+		{Identifier, "chips"},
+		{Illegal, "?"},
 	}
 
 	ltc := NewLTChan(makeTestChannel())
 
 	for _, token := range matches {
-		result := ltc.MatchType(token)
+		result := ltc.Match(token.Type)
 		if !result {
 			t.Errorf("couldn't match %v when expected", token)
 		}
@@ -99,7 +101,7 @@ func TestLTDontMatchType(t *testing.T) {
 	ltc := NewLTChan(makeTestChannel())
 
 	for _, token := range cases {
-		result := ltc.MatchType(nullToken())
+		result := ltc.MatchToken(nullToken())
 		if result {
 			t.Errorf("matched %v when not expected", token)
 		}

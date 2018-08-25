@@ -18,13 +18,13 @@ func getExpr(ltchan *tokens.LTChan) (expr.Expr, error) {
 loop:
 	for {
 		switch {
-		case ltchan.Match(tokens.OperatorToken("+")):
+		case ltchan.Match(tokens.AddOperator):
 			right, err := getTerm(ltchan)
 			if err != nil {
 				return nil, err
 			}
 			left = expr.NewAdd(left, right)
-		case ltchan.Match(tokens.OperatorToken("-")):
+		case ltchan.Match(tokens.SubOperator):
 			right, err := getTerm(ltchan)
 			if err != nil {
 				return nil, err
@@ -47,13 +47,13 @@ func getTerm(ltchan *tokens.LTChan) (expr.Expr, error) {
 loop:
 	for {
 		switch {
-		case ltchan.Match(tokens.OperatorToken("*")):
+		case ltchan.Match(tokens.MulOperator):
 			right, err := getSubTerm(ltchan)
 			if err != nil {
 				return nil, err
 			}
 			left = expr.NewMul(left, right)
-		case ltchan.Match(tokens.OperatorToken("/")):
+		case ltchan.Match(tokens.DivOperator):
 			right, err := getSubTerm(ltchan)
 			if err != nil {
 				return nil, err
@@ -76,7 +76,7 @@ func getSubTerm(ltchan *tokens.LTChan) (expr.Expr, error) {
 loop:
 	for {
 		switch {
-		case ltchan.Match(tokens.OperatorToken("^")):
+		case ltchan.Match(tokens.PowOperator):
 			right, err := getTermNegate(ltchan)
 			if err != nil {
 				return nil, err
@@ -94,7 +94,7 @@ loop:
 
 func getTermNegate(ltchan *tokens.LTChan) (expr.Expr, error) {
 	neg := false
-	if ltchan.Match(tokens.OperatorToken("-")) {
+	if ltchan.Match(tokens.SubOperator) {
 		neg = true
 	}
 	ex, err := getFactor(ltchan)
@@ -108,18 +108,18 @@ func getTermNegate(ltchan *tokens.LTChan) (expr.Expr, error) {
 }
 func getFactor(ltchan *tokens.LTChan) (expr.Expr, error) {
 	switch {
-	case ltchan.Match(tokens.RightParenToken()):
+	case ltchan.Match(tokens.RightParen):
 		return nil, UnbalancedParenthesesError
-	case ltchan.Match(tokens.LeftParenToken()):
+	case ltchan.Match(tokens.LeftParen):
 		ex, err := getExpr(ltchan)
 		if err != nil {
 			return nil, err
 		}
-		if !ltchan.Match(tokens.RightParenToken()) {
+		if !ltchan.Match(tokens.RightParen) {
 			return nil, UnbalancedParenthesesError
 		}
 		return ex, nil
-	case ltchan.MatchNumber():
+	case ltchan.Match(tokens.Number):
 		nval, err := strconv.ParseInt(ltchan.Value(), 10, 64)
 		if err == nil {
 			return expr.NewInt(nval), nil
@@ -130,7 +130,7 @@ func getFactor(ltchan *tokens.LTChan) (expr.Expr, error) {
 				ltchan.Value()))
 		}
 		return expr.NewReal(rval), nil
-	case ltchan.MatchWord():
+	case ltchan.Match(tokens.Word):
 		word := string(ltchan.Value())
 
 		if word == "e" {
@@ -139,14 +139,14 @@ func getFactor(ltchan *tokens.LTChan) (expr.Expr, error) {
 			return expr.NewReal(math.Pi), nil
 		}
 
-		if !ltchan.Match(tokens.LeftParenToken()) {
+		if !ltchan.Match(tokens.LeftParen) {
 			return nil, MissingArgumentError
 		}
 		ex, err := getExpr(ltchan)
 		if err != nil {
 			return nil, err
 		}
-		if !ltchan.Match(tokens.RightParenToken()) {
+		if !ltchan.Match(tokens.RightParen) {
 			return nil, UnbalancedParenthesesError
 		}
 		switch word {

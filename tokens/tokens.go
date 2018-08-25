@@ -2,21 +2,48 @@ package tokens
 
 // Token contains a lexeme token type and its value.
 type Token struct {
-	tokenType int
-	value     string
+	Type  TokenType
+	Value string
 }
+
+// TokenType represents the type of a token.
+type TokenType int
 
 // Enumerated values for token types.
 const (
-	operatorToken int = iota
-	numberToken
-	stringToken
-	wordToken
-	keywordToken
-	identifierToken
-	leftParenToken
-	rightParenToken
-	illegalToken
+	Number TokenType = iota
+	String
+	Word
+	Keyword
+	Identifier
+	LeftParen
+	RightParen
+	LeftBrace
+	RightBrace
+	LeftBracket
+	RightBracket
+	AddOperator
+	SubOperator
+	MulOperator
+	DivOperator
+	PowOperator
+	NegOperator
+	AndOperator
+	OrOperator
+	XorOperator
+	NandOperator
+	NorOperator
+	NotOperator
+	AssignmentOperator
+	EqualityOperator
+	NonEqualityOperator
+	LessOperator
+	LessEqualOperator
+	GreaterOperator
+	GreaterEqualOperator
+	Newline
+	StatementSeparator
+	Illegal
 	nullTokenID
 )
 
@@ -29,157 +56,7 @@ func nullToken() Token {
 	return Token{nullTokenID, ""}
 }
 
-// LeftParenToken returns a left parenthesis token.
-func LeftParenToken() Token {
-	return Token{leftParenToken, "("}
-}
-
-// RightParenToken returns a right parenthesis token.
-func RightParenToken() Token {
-	return Token{rightParenToken, ")"}
-}
-
-// ZeroNumberToken returns a token representing the number zero.
-// It can be passed to a function which compares the types of tokens,
-// but which doesn't care about the values.
-func ZeroNumberToken() Token {
-	return Token{numberToken, "0"}
-}
-
-// EmptyStringToken returns a string token containing the empty string.
-// It can be passed to a function which compares the types of tokens,
-// but which doesn't care about the values.
-func EmptyStringToken() Token {
-	return Token{stringToken, ""}
-}
-
-// EmptyWordToken returns a word token containing the empty string.
-// It can be passed to a function which compares the types of tokens,
-// but which doesn't care about the values.
-func EmptyWordToken() Token {
-	return Token{wordToken, ""}
-}
-
-// EmptyKeywordToken returns a keyword token containing the empty string.
-// It can be passed to a function which compares the types of tokens,
-// but which doesn't care about the values.
-func EmptyKeywordToken() Token {
-	return Token{keywordToken, ""}
-}
-
-// EmptyIdentifierToken returns an identifier token containing the
-// empty string. It can be passed to a function which compares the
-// types of tokens, but which doesn't care about the values.
-func EmptyIdentifierToken() Token {
-	return Token{identifierToken, ""}
-}
-
-// EmptyIllegalToken returns an illegal token containing the
-// empty string. It can be passed to a function which compares the
-// types of tokens, but which doesn't care about the values.
-func EmptyIllegalToken() Token {
-	return Token{illegalToken, ""}
-}
-
-// OperatorToken returns an operator token with the specified value.
-func OperatorToken(value string) Token {
-	return Token{operatorToken, value}
-}
-
-// NumberToken returns a number token with the specified value.
-func NumberToken(value string) Token {
-	return Token{numberToken, value}
-}
-
-// StringToken returns a string token with the specified value.
-func StringToken(value string) Token {
-	return Token{stringToken, value}
-}
-
-// WordToken returns a word token with the specified value.
-func WordToken(value string) Token {
-	return Token{wordToken, value}
-}
-
-// KeywordToken returns a word token with the specified value.
-func KeywordToken(value string) Token {
-	return Token{keywordToken, value}
-}
-
-// IdentifierToken returns an identifier token with the specified value.
-func IdentifierToken(value string) Token {
-	return Token{identifierToken, value}
-}
-
-// IllegalToken returns an illegal token with the specified value.
-func IllegalToken(value string) Token {
-	return Token{illegalToken, value}
-}
-
-// Value returns a token's value.
-func (t Token) Value() string {
-	return t.value
-}
-
-// IsOperatorWithValue returns true if the token is an operator token
-// and its value is equal to the value specified.
-func (t Token) IsOperatorWithValue(value string) bool {
-	return t.tokenType == operatorToken && t.value == value
-}
-
-// IsOperator returns true if the token is an operator token.
-func (t Token) IsOperator() bool {
-	return t.tokenType == operatorToken
-}
-
-// IsNumber returns true if the token is a number token.
-func (t Token) IsNumber() bool {
-	return t.tokenType == numberToken
-}
-
-// IsString returns true if the token is a string token.
-func (t Token) IsString() bool {
-	return t.tokenType == stringToken
-}
-
-// IsWord returns true if the token is a word token.
-func (t Token) IsWord() bool {
-	return t.tokenType == wordToken
-}
-
-// IsKeyword returns true if the token is a keyword token.
-func (t Token) IsKeyword() bool {
-	return t.tokenType == keywordToken
-}
-
-// IsKeywordWith returns true if the token is a keyword token
-// with the specified value.
-func (t Token) IsKeywordWith(value string) bool {
-	return t.tokenType == keywordToken && t.value == value
-}
-
-// IsIdentifier returns true if the token is an identifier token.
-func (t Token) IsIdentifier() bool {
-	return t.tokenType == identifierToken
-}
-
-// IsIdentifierWith returns true if the token is an identifier token
-// with the specified value.
-func (t Token) IsIdentifierWith(value string) bool {
-	return t.tokenType == identifierToken && t.value == value
-}
-
-// IsLeftParen returns true if the token is a left parenthesis token.
-func (t Token) IsLeftParen() bool {
-	return t.tokenType == leftParenToken
-}
-
-// IsRightParen returns true if the token is a right parenthesis token.
-func (t Token) IsRightParen() bool {
-	return t.tokenType == rightParenToken
-}
-
-// IsIllegal returns true if the token is an illegal token.
-func (t Token) IsIllegal() bool {
-	return t.tokenType == illegalToken
+// New creates a new token with the specified type and value.
+func New(tokenType TokenType, value string) Token {
+	return Token{tokenType, value}
 }

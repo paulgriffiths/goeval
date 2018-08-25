@@ -16,7 +16,7 @@ func ParseStatement(stmt string) (Stmt, error) {
 	ltc := tokens.NewLTChan(ch)
 
 	switch {
-	case ltc.Match(tokens.KeywordToken("print")):
+	case ltc.MatchValue(tokens.Keyword, "print"):
 		exp, err := getExpr(ltc)
 		if err != nil {
 			return nil, err
@@ -25,15 +25,15 @@ func ParseStatement(stmt string) (Stmt, error) {
 			return nil, TrailingTokensError
 		}
 		return NewOutputStatement(exp), nil
-	case ltc.Match(tokens.KeywordToken("let")):
-		if !ltc.MatchIdentifier() {
+	case ltc.MatchValue(tokens.Keyword, "let"):
+		if !ltc.Match(tokens.Identifier) {
 			return nil, SyntaxError
 		}
 		id := string(ltc.Value())
 		if _, ok := keywords[id]; ok {
 			return nil, IllegalIdentifierError
 		}
-		if !ltc.Match(tokens.OperatorToken("=")) {
+		if !ltc.Match(tokens.AssignmentOperator) {
 			return nil, SyntaxError
 		}
 		exp, err := getExpr(ltc)
