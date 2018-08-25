@@ -8,216 +8,105 @@ import (
 	"strconv"
 )
 
+type opPair struct {
+	tokenType tokens.TokenType
+	opType    func(left, right expr.Expr) expr.Expr
+}
+
+type binaryTerm struct {
+	nextTermFunc func(ltchan *tokens.LTChan) (expr.Expr, error)
+	ops          []opPair
+}
+
+func getBinaryTerm(ltchan *tokens.LTChan, term binaryTerm) (expr.Expr, error) {
+	var left expr.Expr
+	left, err := term.nextTermFunc(ltchan)
+	if err != nil {
+		return nil, err
+	}
+
+loop:
+	for {
+		for _, pair := range term.ops {
+			if ltchan.Match(pair.tokenType) {
+				right, err := term.nextTermFunc(ltchan)
+				if err != nil {
+					return nil, err
+				}
+				left = pair.opType(left, right)
+				continue loop
+			}
+		}
+		break
+	}
+	return left, nil
+}
+
 func getExpr(ltchan *tokens.LTChan) (expr.Expr, error) {
 	return getTermEquality(ltchan)
 }
 
 func getTermEquality(ltchan *tokens.LTChan) (expr.Expr, error) {
-	var left expr.Expr
-	left, err := getTermLessThanGreaterThan(ltchan)
-	if err != nil {
-		return nil, err
+	term := binaryTerm{getTermLessThanGreaterThan,
+		[]opPair{
+			{tokens.EqualityOperator, expr.NewEquality},
+			{tokens.NonEqualityOperator, expr.NewNonEquality},
+		},
 	}
-
-loop:
-	for {
-		switch {
-		case ltchan.Match(tokens.EqualityOperator):
-			right, err := getTermLessThanGreaterThan(ltchan)
-			if err != nil {
-				return nil, err
-			}
-
-			left = expr.NewEquality(left, right)
-		case ltchan.Match(tokens.NonEqualityOperator):
-			right, err := getTermLessThanGreaterThan(ltchan)
-			if err != nil {
-				return nil, err
-			}
-
-			left = expr.NewNonEquality(left, right)
-		default:
-			break loop
-		}
-	}
-	return left, nil
+	return getBinaryTerm(ltchan, term)
 }
 
 func getTermLessThanGreaterThan(ltchan *tokens.LTChan) (expr.Expr, error) {
-	var left expr.Expr
-	left, err := getTermLogicalOr(ltchan)
-	if err != nil {
-		return nil, err
+	term := binaryTerm{getTermLogicalOr,
+		[]opPair{
+			{tokens.LessOperator, expr.NewLessThan},
+			{tokens.LessEqualOperator, expr.NewLessThanOrEqual},
+			{tokens.GreaterOperator, expr.NewGreaterThan},
+			{tokens.GreaterEqualOperator, expr.NewGreaterThanOrEqual},
+		},
 	}
-
-loop:
-	for {
-		switch {
-		case ltchan.Match(tokens.LessOperator):
-			right, err := getTermLogicalOr(ltchan)
-			if err != nil {
-				return nil, err
-			}
-
-			left = expr.NewLessThan(left, right)
-		case ltchan.Match(tokens.LessEqualOperator):
-			right, err := getTermLogicalOr(ltchan)
-			if err != nil {
-				return nil, err
-			}
-
-			left = expr.NewLessThanOrEqual(left, right)
-		case ltchan.Match(tokens.GreaterOperator):
-			right, err := getTermLogicalOr(ltchan)
-			if err != nil {
-				return nil, err
-			}
-
-			left = expr.NewGreaterThan(left, right)
-		case ltchan.Match(tokens.GreaterEqualOperator):
-			right, err := getTermLogicalOr(ltchan)
-			if err != nil {
-				return nil, err
-			}
-
-			left = expr.NewGreaterThanOrEqual(left, right)
-		default:
-			break loop
-		}
-	}
-	return left, nil
+	return getBinaryTerm(ltchan, term)
 }
 
 func getTermLogicalOr(ltchan *tokens.LTChan) (expr.Expr, error) {
-	var left expr.Expr
-	left, err := getTermLogicalAnd(ltchan)
-	if err != nil {
-		return nil, err
+	term := binaryTerm{getTermLogicalAnd,
+		[]opPair{{tokens.OrOperator, expr.NewOr}},
 	}
-
-loop:
-	for {
-		switch {
-		case ltchan.Match(tokens.OrOperator):
-			right, err := getTermLogicalAnd(ltchan)
-			if err != nil {
-				return nil, err
-			}
-
-			left = expr.NewOr(left, right)
-		default:
-			break loop
-		}
-	}
-	return left, nil
+	return getBinaryTerm(ltchan, term)
 }
 
 func getTermLogicalAnd(ltchan *tokens.LTChan) (expr.Expr, error) {
-	var left expr.Expr
-	left, err := getTermPlusMinus(ltchan)
-	if err != nil {
-		return nil, err
+	term := binaryTerm{getTermPlusMinus,
+		[]opPair{{tokens.AndOperator, expr.NewAnd}},
 	}
-
-loop:
-	for {
-		switch {
-		case ltchan.Match(tokens.AndOperator):
-			right, err := getTermPlusMinus(ltchan)
-			if err != nil {
-				return nil, err
-			}
-
-			left = expr.NewAnd(left, right)
-		default:
-			break loop
-		}
-	}
-	return left, nil
+	return getBinaryTerm(ltchan, term)
 }
 
 func getTermPlusMinus(ltchan *tokens.LTChan) (expr.Expr, error) {
-	var left expr.Expr
-	left, err := getTermMultiplyDivide(ltchan)
-	if err != nil {
-		return nil, err
+	term := binaryTerm{getTermMultiplyDivide,
+		[]opPair{
+			{tokens.AddOperator, expr.NewAdd},
+			{tokens.SubOperator, expr.NewSub},
+		},
 	}
-
-loop:
-	for {
-		switch {
-		case ltchan.Match(tokens.AddOperator):
-			right, err := getTermMultiplyDivide(ltchan)
-			if err != nil {
-				return nil, err
-			}
-			left = expr.NewAdd(left, right)
-		case ltchan.Match(tokens.SubOperator):
-			right, err := getTermMultiplyDivide(ltchan)
-			if err != nil {
-				return nil, err
-			}
-			left = expr.NewSub(left, right)
-		default:
-			break loop
-		}
-	}
-	return left, nil
+	return getBinaryTerm(ltchan, term)
 }
 
 func getTermMultiplyDivide(ltchan *tokens.LTChan) (expr.Expr, error) {
-	var left expr.Expr
-	left, err := getTermPower(ltchan)
-	if err != nil {
-		return nil, err
+	term := binaryTerm{getTermPower,
+		[]opPair{
+			{tokens.MulOperator, expr.NewMul},
+			{tokens.DivOperator, expr.NewDiv},
+		},
 	}
-
-loop:
-	for {
-		switch {
-		case ltchan.Match(tokens.MulOperator):
-			right, err := getTermPower(ltchan)
-			if err != nil {
-				return nil, err
-			}
-			left = expr.NewMul(left, right)
-		case ltchan.Match(tokens.DivOperator):
-			right, err := getTermPower(ltchan)
-			if err != nil {
-				return nil, err
-			}
-			left = expr.NewDiv(left, right)
-		default:
-			break loop
-		}
-	}
-	return left, nil
+	return getBinaryTerm(ltchan, term)
 }
 
 func getTermPower(ltchan *tokens.LTChan) (expr.Expr, error) {
-	var left expr.Expr
-	left, err := getTermNegate(ltchan)
-	if err != nil {
-		return nil, err
+	term := binaryTerm{getTermNegate,
+		[]opPair{{tokens.PowOperator, expr.NewPow}},
 	}
-
-loop:
-	for {
-		switch {
-		case ltchan.Match(tokens.PowOperator):
-			right, err := getTermNegate(ltchan)
-			if err != nil {
-				return nil, err
-			}
-
-			// Note that we make the power operator left-associative, here
-
-			left = expr.NewPow(left, right)
-		default:
-			break loop
-		}
-	}
-	return left, nil
+	return getBinaryTerm(ltchan, term)
 }
 
 func getTermNegate(ltchan *tokens.LTChan) (expr.Expr, error) {
