@@ -1,3 +1,5 @@
 *.swp
-simplecalc
-simplecalc2
+*.bak
+cmd/simplecalc/simplecalc
+cmd/simplecalc2/simplecalc2
+cmd/match/match
