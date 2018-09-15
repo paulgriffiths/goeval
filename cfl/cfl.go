@@ -1,9 +1,12 @@
 package cfl
 
-import "fmt"
+import (
+    "fmt"
+    "io"
+)
 
-// Cfl represents a context-free grammar.
-type Cfl struct {
+// Cfg represents a context-free grammar.
+type Cfg struct {
 	nonTerminals []string
 	terminals    []string
 	ntTable      map[string]int
@@ -11,8 +14,8 @@ type Cfl struct {
 	prods        [][][]BodyComp
 }
 
-// printCfl outputs a representation of the grammar.
-func (c *Cfl) printCfl() {
+// outputCfg outputs a representation of the grammar.
+func (c *Cfg) outputCfg(writer io.Writer) {
 	maxNL := -1
 	for _, nt := range c.nonTerminals {
 		if len(nt) > maxNL {
@@ -22,23 +25,27 @@ func (c *Cfl) printCfl() {
 
 	for i, prod := range c.prods {
 		for n, body := range prod {
+            var s string
 			if n == 0 {
-				fmt.Printf("%-[1]*s : ", maxNL, c.nonTerminals[i])
+                s = fmt.Sprintf("%-[1]*s :", maxNL, c.nonTerminals[i])
 			} else {
-				fmt.Printf("%-[1]*s | ", maxNL, "")
+                s = fmt.Sprintf("%-[1]*s |", maxNL, "")
 			}
+            writer.Write([]byte(s))
+
 			for _, cmp := range body {
 				if cmp.t == BodyNonTerminal {
-					fmt.Printf("%s ", c.nonTerminals[cmp.i])
+                    s = fmt.Sprintf(" %s", c.nonTerminals[cmp.i])
 				} else if cmp.t == BodyTerminal {
-					fmt.Printf("`%s` ", c.terminals[cmp.i])
+                    s = fmt.Sprintf(" `%s`", c.terminals[cmp.i])
 				} else if cmp.t == BodyEmpty {
-					fmt.Printf("e ")
+                    s = " e"
 				} else {
 					panic("unexpected body component")
 				}
+                writer.Write([]byte(s))
 			}
-			fmt.Printf("\n")
+            writer.Write([]byte("\n"))
 		}
 	}
 }

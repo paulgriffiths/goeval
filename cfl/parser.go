@@ -7,7 +7,7 @@ import (
 
 // parse parses a context-free grammar and creates a corresponding
 // data structure.
-func parse(input io.Reader) (*Cfl, error) {
+func parse(input io.Reader) (*Cfg, error) {
 	tokens, lerr := lex(input)
 	if lerr != nil {
 		return nil, lerr
@@ -24,7 +24,7 @@ func parse(input io.Reader) (*Cfl, error) {
 
 // secondPass takes a second pass through the grammar and extracts
 // the productions.
-func secondPass(c *Cfl, tokens []token) parseErr {
+func secondPass(c *Cfg, tokens []token) parseErr {
 	reader := newTokenReader(tokens)
 
 	for !reader.atEnd() {
@@ -37,7 +37,7 @@ func secondPass(c *Cfl, tokens []token) parseErr {
 }
 
 // getNextProduction extracts the next production.
-func getNextProduction(c *Cfl, reader *tokenReader) parseErr {
+func getNextProduction(c *Cfg, reader *tokenReader) parseErr {
 	if !reader.match(tokenNonTerminal) {
 		token := reader.lookahead()
 		return parseError{parseErrMissingNonTerminal, "", token.pos}
@@ -69,7 +69,7 @@ func getNextProduction(c *Cfl, reader *tokenReader) parseErr {
 }
 
 // getNextBody extracts the next production body.
-func getNextBody(c *Cfl, reader *tokenReader) ([]BodyComp, parseErr) {
+func getNextBody(c *Cfg, reader *tokenReader) ([]BodyComp, parseErr) {
 	if reader.match(tokenEmpty) {
 		if reader.peek(tokenNonTerminal) ||
 			reader.peek(tokenTerminal) ||
@@ -111,7 +111,7 @@ func getNextBody(c *Cfl, reader *tokenReader) ([]BodyComp, parseErr) {
 
 // firstPass makes a first pass through the grammar to identify
 // the terminals and non-terminals, and to set up the symbol tables.
-func firstPass(tokens []token) *Cfl {
+func firstPass(tokens []token) *Cfg {
 	nonTerminals := []string{}
 	terminals := []string{}
 	ntTable := make(map[string]int)
@@ -132,7 +132,7 @@ func firstPass(tokens []token) *Cfl {
 		}
 	}
 
-	c := Cfl{
+	c := Cfg{
 		nonTerminals: nonTerminals,
 		terminals:    terminals,
 		ntTable:      ntTable,

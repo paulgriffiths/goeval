@@ -1,6 +1,9 @@
 package cfl
 
 import (
+    "bufio"
+    "bytes"
+    _"fmt"
 	"os"
 	"testing"
 )
@@ -19,106 +22,84 @@ func stringArraysEqual(a, b []string) bool {
 	return true
 }
 
-func TestParserParseGoodGrammar(t *testing.T) {
-	testCases := []string{
-		"test_grammars/arith_lr.grammar",
-		"test_grammars/arith_nlr.grammar",
-		"test_grammars/arith_ambig.grammar",
-		"test_grammars/zero_one.grammar",
-		"test_grammars/bal_parens.grammar",
-	}
+func getAndParseFile(t *testing.T, filename string) (*Cfg, error) {
+    infile, fileErr := os.Open(filename)
+    if fileErr != nil {
+        t.Errorf("couldn't open file %q: %v", filename, fileErr)
+        return nil, fileErr
+    }
 
-	for _, tc := range testCases {
-		infile, fileErr := os.Open(tc)
-		if fileErr != nil {
-			t.Errorf("couldn't open file %q: %v", tc, fileErr)
-			continue
-		}
+    c, perr := parse(infile)
+    if perr != nil {
+        t.Errorf("couldn't get tokens for file %q: %v", filename, perr)
+        return nil, perr
+    }
 
-		_, perr := parse(infile)
-		if perr != nil {
-			t.Errorf("couldn't get tokens for file %q: %v", tc, perr)
-		}
+    infile.Close()
 
-		infile.Close()
-	}
+    return c, nil
 }
 
-func TestParserFirstPass(t *testing.T) {
+func TestParserOutput(t *testing.T) {
 	testCases := []struct {
-		filename     string
-		nonTerminals []string
-		terminals    []string
-	}{
-		{
-			"test_grammars/arith_lr.grammar",
-			[]string{"E", "T", "F", "Digits"},
-			[]string{"+", "*", "(", ")",
-				"(0|1|2|3|4|5|6|7|8|9)(0|1|2|3|4|5|6|7|8|9)*"},
-		},
-		{
-			"test_grammars/arith_nlr.grammar",
-			[]string{"E", "T", "E'", "F", "T'", "Digits"},
-			[]string{"+", "*", "(", ")",
-				"(0|1|2|3|4|5|6|7|8|9)(0|1|2|3|4|5|6|7|8|9)*"},
-		},
-		{
-			"test_grammars/arith_ambig.grammar",
-			[]string{"E", "Digits"},
-			[]string{"+", "*", "(", ")",
-				"(0|1|2|3|4|5|6|7|8|9)(0|1|2|3|4|5|6|7|8|9)*"},
-		},
-		{
-			"test_grammars/zero_one.grammar",
-			[]string{"S"},
-			[]string{"0", "1", "01"},
-		},
-		{
-			"test_grammars/bal_parens.grammar",
-			[]string{"S"},
-			[]string{"(", ")"},
-		},
+        infile, cmpfile string
+    }{
+        {
+            "test_grammars/arith_lr.grammar",
+            "test_grammars/output/arith_lr_raw.grammar",
+        },
+        {
+            "test_grammars/arith_nlr.grammar",
+            "test_grammars/output/arith_nlr_raw.grammar",
+        },
+        {
+            "test_grammars/arith_ambig.grammar",
+            "test_grammars/output/arith_ambig_raw.grammar",
+        },
+        {
+            "test_grammars/zero_one.grammar",
+            "test_grammars/output/zero_one_raw.grammar",
+        },
+        {
+            "test_grammars/bal_parens.grammar",
+            "test_grammars/output/bal_parens_raw.grammar",
+        },
 	}
 
 	for _, tc := range testCases {
-		infile, fileErr := os.Open(tc.filename)
+        c, err := getAndParseFile(t, tc.infile)
+		if err != nil {
+			t.Errorf("couldn't parse file %q: %v", tc.infile, err)
+			continue
+		}
+
+        outBuffer := bytes.NewBuffer(nil)
+        c.outputCfg(outBuffer)
+        outScanner := bufio.NewScanner(outBuffer)
+
+        infile, fileErr := os.Open(tc.cmpfile)
 		if fileErr != nil {
-			t.Errorf("couldn't open file %q: %v", tc.filename, fileErr)
+			t.Errorf("couldn't open file %q: %v", tc.infile, fileErr)
 			continue
 		}
 
-		tokens, lerr := lex(infile)
-		if lerr != nil {
-			t.Errorf("couldn't get tokens for file %q: %v",
-				tc.filename, lerr)
-			infile.Close()
-			continue
-		}
+        cmpScanner := bufio.NewScanner(infile)
 
-		infile.Close()
+        for cmpScanner.Scan() {
+            if !outScanner.Scan() {
+                t.Errorf("fewer lines than %q", tc.infile)
+                break
+            }
+            if cmpScanner.Text() != outScanner.Text() {
+                t.Errorf("%q: got %q, want %q", tc.infile,
+                    outScanner.Text(), cmpScanner.Text())
+            }
+        }
 
-		c := firstPass(tokens)
+        if outScanner.Scan() {
+            t.Errorf("more lines than %q", tc.infile)
+        }
 
-		if !stringArraysEqual(tc.nonTerminals, c.nonTerminals) {
-			t.Errorf("%s, nonterminals, got %v, want %v", tc.filename,
-				c.nonTerminals, tc.nonTerminals)
-		}
-		if !stringArraysEqual(tc.terminals, c.terminals) {
-			t.Errorf("%s, terminals, got %v, want %v", tc.filename,
-				c.terminals, tc.terminals)
-		}
-
-		for n, s := range c.nonTerminals {
-			if c.ntTable[s] != n {
-				t.Errorf("%s, got %d, want %d", tc.filename,
-					c.ntTable[s], n)
-			}
-		}
-		for n, s := range c.terminals {
-			if c.tTable[s] != n {
-				t.Errorf("%s, got %d, want %d", tc.filename,
-					c.tTable[s], n)
-			}
-		}
+        infile.Close()
 	}
 }
