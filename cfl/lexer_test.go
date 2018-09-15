@@ -8,10 +8,11 @@ import (
 
 func TestLexerSuccess(t *testing.T) {
 	infiles := []string{
-		"test_grammars/example1.grammar",
 		"test_grammars/arith_lr.grammar",
 		"test_grammars/arith_nlr.grammar",
 		"test_grammars/arith_ambig.grammar",
+		"test_grammars/bal_parens.grammar",
+		"test_grammars/zero_one.grammar",
 	}
 
 	for _, f := range infiles {
@@ -94,19 +95,19 @@ func TestLexerErrors(t *testing.T) {
 		err      lexError
 	}{
 		{
-			"test_grammars/unterminated_terminal_1.grammar",
+			"test_grammars/bad/unterminated_terminal_1.grammar",
 			lexError{lexErrUnterminatedTerminal, "", lar.FilePos{17, 3}},
 		},
 		{
-			"test_grammars/unterminated_terminal_2.grammar",
+			"test_grammars/bad/unterminated_terminal_2.grammar",
 			lexError{lexErrUnterminatedTerminal, "", lar.FilePos{19, 5}},
 		},
 		{
-			"test_grammars/illegal_character_1.grammar",
+			"test_grammars/bad/illegal_character_1.grammar",
 			lexError{lexErrIllegalCharacter, "%", lar.FilePos{16, 3}},
 		},
 		{
-			"test_grammars/illegal_character_2.grammar",
+			"test_grammars/bad/illegal_character_2.grammar",
 			lexError{lexErrIllegalCharacter, "$", lar.FilePos{1, 3}},
 		},
 	}

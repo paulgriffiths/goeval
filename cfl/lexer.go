@@ -5,6 +5,7 @@ import (
 	"io"
 )
 
+// lex extracts a list of tokens from a context-free grammar.
 func lex(input io.Reader) (tokenList, lexErr) {
 	reader, err := lar.NewLookaheadReader(input)
 	if err != nil {
@@ -12,24 +13,34 @@ func lex(input io.Reader) (tokenList, lexErr) {
 	}
 
 	tokens := []token{}
-	wasEndOfLine := true
+	startOfLine := true // True if no tokens yet on current line
 
 	for {
+
+		// Ignore leading whitespace
+
 		reader.MatchSpaces()
 		if reader.EndOfInput() {
 			break
 		}
 
-		if wasEndOfLine && reader.MatchOneOf('#') {
+		// Only return an end-of-line token for lines which
+		// have some other token on them (i.e. don't return
+		// end-of-line tokens for blank lines and comment-only
+		// lines).
+
+		if startOfLine && reader.MatchOneOf('#') {
 			for reader.MatchAnyExcept('\n') {
 			}
 		}
 
-		if wasEndOfLine && reader.MatchNewline() {
+		if startOfLine && reader.MatchNewline() {
 			continue
 		} else {
-			wasEndOfLine = false
+			startOfLine = false
 		}
+
+		// Extract the next token
 
 		switch {
 		case reader.MatchOneOf('#'):
@@ -38,7 +49,7 @@ func lex(input io.Reader) (tokenList, lexErr) {
 		case reader.MatchNewline():
 			tokens = append(tokens,
 				token{tokenEndOfLine, "", reader.Result.Pos})
-			wasEndOfLine = true
+			startOfLine = true
 		case reader.MatchOneOf(':'):
 			tokens = append(tokens,
 				token{tokenArrow, ":", reader.Result.Pos})
@@ -79,8 +90,7 @@ func lex(input io.Reader) (tokenList, lexErr) {
 		default:
 			reader.MatchAnyExcept()
 			return nil, lexError{lexErrIllegalCharacter,
-				string(reader.Result.Value[0]),
-				reader.Result.Pos}
+				string(reader.Result.Value[0]), reader.Result.Pos}
 		}
 	}
 	return tokens, nil

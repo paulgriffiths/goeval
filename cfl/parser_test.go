@@ -19,7 +19,32 @@ func stringArraysEqual(a, b []string) bool {
 	return true
 }
 
-func TestParserTerminalsNonTerminals(t *testing.T) {
+func TestParserParseGoodGrammar(t *testing.T) {
+	testCases := []string{
+		"test_grammars/arith_lr.grammar",
+		"test_grammars/arith_nlr.grammar",
+		"test_grammars/arith_ambig.grammar",
+		"test_grammars/zero_one.grammar",
+		"test_grammars/bal_parens.grammar",
+	}
+
+	for _, tc := range testCases {
+		infile, fileErr := os.Open(tc)
+		if fileErr != nil {
+			t.Errorf("couldn't open file %q: %v", tc, fileErr)
+			continue
+		}
+
+		_, perr := parse(infile)
+		if perr != nil {
+			t.Errorf("couldn't get tokens for file %q: %v", tc, perr)
+		}
+
+		infile.Close()
+	}
+}
+
+func TestParserFirstPass(t *testing.T) {
 	testCases := []struct {
 		filename     string
 		nonTerminals []string
@@ -62,12 +87,17 @@ func TestParserTerminalsNonTerminals(t *testing.T) {
 			continue
 		}
 
-		c, err := parse(infile)
-		if err != nil {
-			t.Errorf("couldn't parse file %q: %v", tc.filename, err)
+		tokens, lerr := lex(infile)
+		if lerr != nil {
+			t.Errorf("couldn't get tokens for file %q: %v",
+				tc.filename, lerr)
+			infile.Close()
+			continue
 		}
 
 		infile.Close()
+
+		c := firstPass(tokens)
 
 		if !stringArraysEqual(tc.nonTerminals, c.nonTerminals) {
 			t.Errorf("%s, nonterminals, got %v, want %v", tc.filename,
