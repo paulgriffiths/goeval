@@ -1,4 +1,4 @@
-package cfl
+package cfg
 
 // BodyCompType represents the type of a BodyComp.
 type BodyCompType int

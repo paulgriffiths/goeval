@@ -1,4 +1,4 @@
-package cfl
+package cfg
 
 import (
 	"fmt"

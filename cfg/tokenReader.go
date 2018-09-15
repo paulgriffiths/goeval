@@ -1,4 +1,4 @@
-package cfl
+package cfg
 
 // tokenReader provides lookahead and matching functionality
 // for a list of tokens.

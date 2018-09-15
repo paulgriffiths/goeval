@@ -1,4 +1,4 @@
-package cfl
+package cfg
 
 import (
 	"github.com/paulgriffiths/goeval/lar"
