@@ -8,11 +8,12 @@ import (
 
 func TestLexerSuccess(t *testing.T) {
 	infiles := []string{
-		"test_grammars/arith_lr.grammar",
-		"test_grammars/arith_nlr.grammar",
-		"test_grammars/arith_ambig.grammar",
-		"test_grammars/bal_parens.grammar",
-		"test_grammars/zero_one.grammar",
+		"test_grammars/01_arith_lr.grammar",
+		"test_grammars/02_arith_nlr.grammar",
+		"test_grammars/03_arith_ambig.grammar",
+		"test_grammars/04_bal_parens_1.grammar",
+		"test_grammars/05_bal_parens_2.grammar",
+		"test_grammars/06_zero_one.grammar",
 	}
 
 	for _, f := range infiles {
@@ -33,38 +34,38 @@ func TestLexerSuccess(t *testing.T) {
 
 func TestLexerTokenListArithLr(t *testing.T) {
 	expected := tokenList{
-		token{tokenNonTerminal, "E", lar.FilePos{0, 3}},
-		token{tokenArrow, ":", lar.FilePos{7, 3}},
-		token{tokenNonTerminal, "E", lar.FilePos{9, 3}},
-		token{tokenTerminal, "+", lar.FilePos{11, 3}},
-		token{tokenNonTerminal, "T", lar.FilePos{15, 3}},
-		token{tokenAlt, "|", lar.FilePos{17, 3}},
-		token{tokenNonTerminal, "T", lar.FilePos{19, 3}},
-		token{tokenEndOfLine, "", lar.FilePos{20, 3}},
-		token{tokenNonTerminal, "T", lar.FilePos{0, 4}},
-		token{tokenArrow, ":", lar.FilePos{7, 4}},
-		token{tokenNonTerminal, "T", lar.FilePos{9, 4}},
-		token{tokenTerminal, "*", lar.FilePos{11, 4}},
-		token{tokenNonTerminal, "F", lar.FilePos{15, 4}},
-		token{tokenAlt, "|", lar.FilePos{17, 4}},
-		token{tokenNonTerminal, "F", lar.FilePos{19, 4}},
-		token{tokenEndOfLine, "", lar.FilePos{20, 4}},
-		token{tokenNonTerminal, "F", lar.FilePos{0, 5}},
-		token{tokenArrow, ":", lar.FilePos{7, 5}},
-		token{tokenTerminal, "(", lar.FilePos{9, 5}},
-		token{tokenNonTerminal, "E", lar.FilePos{13, 5}},
-		token{tokenTerminal, ")", lar.FilePos{15, 5}},
-		token{tokenAlt, "|", lar.FilePos{19, 5}},
-		token{tokenNonTerminal, "Digits", lar.FilePos{21, 5}},
-		token{tokenEndOfLine, "", lar.FilePos{27, 5}},
-		token{tokenNonTerminal, "Digits", lar.FilePos{0, 9}},
+		token{tokenNonTerminal, "E", lar.FilePos{0, 8}},
+		token{tokenArrow, ":", lar.FilePos{7, 8}},
+		token{tokenNonTerminal, "E", lar.FilePos{9, 8}},
+		token{tokenTerminal, "\\+", lar.FilePos{11, 8}},
+		token{tokenNonTerminal, "T", lar.FilePos{16, 8}},
+		token{tokenAlt, "|", lar.FilePos{18, 8}},
+		token{tokenNonTerminal, "T", lar.FilePos{20, 8}},
+		token{tokenEndOfLine, "", lar.FilePos{21, 8}},
+		token{tokenNonTerminal, "T", lar.FilePos{0, 9}},
 		token{tokenArrow, ":", lar.FilePos{7, 9}},
-		token{tokenTerminal, "(0|1|2|3|4|5|6|7|8|9)(0|1|2|3|4|5|6|7|8|9)*",
-			lar.FilePos{9, 9}},
-		token{tokenEndOfLine, "", lar.FilePos{54, 9}},
+		token{tokenNonTerminal, "T", lar.FilePos{9, 9}},
+		token{tokenTerminal, "\\*", lar.FilePos{11, 9}},
+		token{tokenNonTerminal, "F", lar.FilePos{16, 9}},
+		token{tokenAlt, "|", lar.FilePos{18, 9}},
+		token{tokenNonTerminal, "F", lar.FilePos{20, 9}},
+		token{tokenEndOfLine, "", lar.FilePos{21, 9}},
+		token{tokenNonTerminal, "F", lar.FilePos{0, 10}},
+		token{tokenArrow, ":", lar.FilePos{7, 10}},
+		token{tokenTerminal, "\\(", lar.FilePos{9, 10}},
+		token{tokenNonTerminal, "E", lar.FilePos{14, 10}},
+		token{tokenTerminal, "\\)", lar.FilePos{16, 10}},
+		token{tokenAlt, "|", lar.FilePos{21, 10}},
+		token{tokenNonTerminal, "Digits", lar.FilePos{23, 10}},
+		token{tokenEndOfLine, "", lar.FilePos{29, 10}},
+		token{tokenNonTerminal, "Digits", lar.FilePos{0, 11}},
+		token{tokenArrow, ":", lar.FilePos{7, 11}},
+		token{tokenTerminal, "[[:digit:]]+",
+			lar.FilePos{9, 11}},
+		token{tokenEndOfLine, "", lar.FilePos{23, 11}},
 	}
 
-	infileName := "test_grammars/arith_lr.grammar"
+	infileName := "test_grammars/01_arith_lr.grammar"
 	infile, err := os.Open(infileName)
 	if err != nil {
 		t.Errorf("couldn't open file %q: %v", infileName, err)

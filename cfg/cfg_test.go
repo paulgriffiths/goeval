@@ -11,22 +11,22 @@ func TestImmediateLeftRecursive(t *testing.T) {
 		result   []bool
 	}{
 		{
-			"test_grammars/arith_lr.grammar",
+			"test_grammars/01_arith_lr.grammar",
 			[]int{0, 1, 2, 3},
 			[]bool{true, true, false, false},
 		},
 		{
-			"test_grammars/arith_nlr.grammar",
+			"test_grammars/02_arith_nlr.grammar",
 			[]int{0, 1, 2, 3, 4, 5},
 			[]bool{false, false, false, false, false, false},
 		},
 		{
-			"test_grammars/arith_ambig.grammar",
+			"test_grammars/03_arith_ambig.grammar",
 			[]int{0, 1},
 			[]bool{true, false},
 		},
 		{
-			"test_grammars/example_4_18.grammar",
+			"test_grammars/07_indirect_lr_1.grammar",
 			[]int{0, 1},
 			[]bool{false, true},
 		},
@@ -53,17 +53,19 @@ func TestIsLeftRecursive(t *testing.T) {
 		filename string
 		result   bool
 	}{
-		{"test_grammars/arith_lr.grammar", true},
-		{"test_grammars/arith_nlr.grammar", false},
-		{"test_grammars/arith_ambig.grammar", true},
-		{"test_grammars/bal_parens.grammar", true},
-		{"test_grammars/zero_one.grammar", false},
-		{"test_grammars/example_4_18.grammar", true},
-		{"test_grammars/three_level_lr_1.grammar", true},
-		{"test_grammars/three_level_lr_2.grammar", true},
-		{"test_grammars/three_level_lr_3.grammar", true},
-		{"test_grammars/four_level_nlr_1.grammar", false},
-		{"test_grammars/cycle_1.grammar", true},
+		{"test_grammars/01_arith_lr.grammar", true},
+		{"test_grammars/02_arith_nlr.grammar", false},
+		{"test_grammars/03_arith_ambig.grammar", true},
+		{"test_grammars/04_bal_parens_1.grammar", true},
+		{"test_grammars/05_bal_parens_2.grammar", false},
+		{"test_grammars/06_zero_one.grammar", false},
+		{"test_grammars/07_indirect_lr_1.grammar", true},
+		{"test_grammars/08_indirect_lr_2.grammar", true},
+		{"test_grammars/09_indirect_lr_3.grammar", true},
+		{"test_grammars/10_cycle_1.grammar", true},
+		{"test_grammars/11_cycle_2.grammar", true},
+		{"test_grammars/12_cycle_3.grammar", true},
+		{"test_grammars/13_cycle_4.grammar", true},
 	}
 
 	for n, tc := range testCases {
@@ -84,19 +86,19 @@ func TestHasCycle(t *testing.T) {
 		filename string
 		result   bool
 	}{
-		{"test_grammars/arith_lr.grammar", false},
-		{"test_grammars/arith_nlr.grammar", false},
-		{"test_grammars/arith_ambig.grammar", false},
-		{"test_grammars/bal_parens.grammar", false},
-		{"test_grammars/zero_one.grammar", false},
-		{"test_grammars/example_4_18.grammar", false},
-		{"test_grammars/three_level_lr_1.grammar", false},
-		{"test_grammars/three_level_lr_2.grammar", false},
-		{"test_grammars/three_level_lr_3.grammar", false},
-		{"test_grammars/four_level_nlr_1.grammar", false},
-		{"test_grammars/cycle_1.grammar", true},
-		{"test_grammars/cycle_2.grammar", true},
-		{"test_grammars/cycle_3.grammar", true},
+		{"test_grammars/01_arith_lr.grammar", false},
+		{"test_grammars/02_arith_nlr.grammar", false},
+		{"test_grammars/03_arith_ambig.grammar", false},
+		{"test_grammars/04_bal_parens_1.grammar", false},
+		{"test_grammars/05_bal_parens_2.grammar", false},
+		{"test_grammars/06_zero_one.grammar", false},
+		{"test_grammars/07_indirect_lr_1.grammar", false},
+		{"test_grammars/08_indirect_lr_2.grammar", false},
+		{"test_grammars/09_indirect_lr_3.grammar", false},
+		{"test_grammars/10_cycle_1.grammar", true},
+		{"test_grammars/11_cycle_2.grammar", true},
+		{"test_grammars/12_cycle_3.grammar", true},
+		{"test_grammars/13_cycle_4.grammar", true},
 	}
 
 	for n, tc := range testCases {
@@ -117,19 +119,19 @@ func TestHasEProduction(t *testing.T) {
 		filename string
 		result   bool
 	}{
-		{"test_grammars/arith_lr.grammar", false},
-		{"test_grammars/arith_nlr.grammar", true},
-		{"test_grammars/arith_ambig.grammar", false},
-		{"test_grammars/bal_parens.grammar", true},
-		{"test_grammars/zero_one.grammar", false},
-		{"test_grammars/example_4_18.grammar", true},
-		{"test_grammars/three_level_lr_1.grammar", true},
-		{"test_grammars/three_level_lr_2.grammar", true},
-		{"test_grammars/three_level_lr_3.grammar", true},
-		{"test_grammars/four_level_nlr_1.grammar", true},
-		{"test_grammars/cycle_1.grammar", false},
-		{"test_grammars/cycle_2.grammar", false},
-		{"test_grammars/cycle_3.grammar", false},
+		{"test_grammars/01_arith_lr.grammar", false},
+		{"test_grammars/02_arith_nlr.grammar", true},
+		{"test_grammars/03_arith_ambig.grammar", false},
+		{"test_grammars/04_bal_parens_1.grammar", true},
+		{"test_grammars/05_bal_parens_2.grammar", true},
+		{"test_grammars/06_zero_one.grammar", false},
+		{"test_grammars/07_indirect_lr_1.grammar", true},
+		{"test_grammars/08_indirect_lr_2.grammar", true},
+		{"test_grammars/09_indirect_lr_3.grammar", true},
+		{"test_grammars/10_cycle_1.grammar", false},
+		{"test_grammars/11_cycle_2.grammar", false},
+		{"test_grammars/12_cycle_3.grammar", false},
+		{"test_grammars/13_cycle_4.grammar", false},
 	}
 
 	for n, tc := range testCases {

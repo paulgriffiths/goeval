@@ -1,3 +1,0 @@
-# This grammar defines a language consisting of balanced parentheses.
-
-S : S `(` S `)` S | e

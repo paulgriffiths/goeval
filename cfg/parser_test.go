@@ -45,24 +45,28 @@ func TestParserOutput(t *testing.T) {
 		infile, cmpfile string
 	}{
 		{
-			"test_grammars/arith_lr.grammar",
-			"test_grammars/output/arith_lr_raw.grammar",
+			"test_grammars/01_arith_lr.grammar",
+			"test_grammars/output/01_arith_lr_raw.grammar",
 		},
 		{
-			"test_grammars/arith_nlr.grammar",
-			"test_grammars/output/arith_nlr_raw.grammar",
+			"test_grammars/02_arith_nlr.grammar",
+			"test_grammars/output/02_arith_nlr_raw.grammar",
 		},
 		{
-			"test_grammars/arith_ambig.grammar",
-			"test_grammars/output/arith_ambig_raw.grammar",
+			"test_grammars/03_arith_ambig.grammar",
+			"test_grammars/output/03_arith_ambig_raw.grammar",
 		},
 		{
-			"test_grammars/zero_one.grammar",
-			"test_grammars/output/zero_one_raw.grammar",
+			"test_grammars/04_bal_parens_1.grammar",
+			"test_grammars/output/04_bal_parens_1_raw.grammar",
 		},
 		{
-			"test_grammars/bal_parens.grammar",
-			"test_grammars/output/bal_parens_raw.grammar",
+			"test_grammars/05_bal_parens_2.grammar",
+			"test_grammars/output/05_bal_parens_2_raw.grammar",
+		},
+		{
+			"test_grammars/06_zero_one.grammar",
+			"test_grammars/output/06_zero_one_raw.grammar",
 		},
 	}
 

@@ -1,8 +1,0 @@
-# Non-left-recursive grammar for basic arithmetic.
-
-E      : T E'
-E'     : `\+` T E' | e
-T      : F T'
-T'     : `\*` F T' | e
-F      : `\(` E `\)` | Digits
-Digits : `[[:digit:]]+`

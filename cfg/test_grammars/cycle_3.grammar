@@ -1,4 +1,0 @@
-# This grammar contains a cycle on nonterminal S
-
-S : A | `a` | `b`
-A : S | `c` | `d`
