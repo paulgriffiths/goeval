@@ -1,45 +1,39 @@
 package rdp
 
 import (
+	"bytes"
 	"github.com/paulgriffiths/goeval/cfg"
 	"os"
 	"testing"
 )
 
-func TestAccepts(t *testing.T) {
+func TestParseWriteTerminals(t *testing.T) {
 	testCases := []struct {
 		filename, input string
-		match           bool
 	}{
 		{
 			"../../cfg/test_grammars/zero_one.grammar",
 			"01",
-			true,
 		},
 		{
 			"../../cfg/test_grammars/zero_one.grammar",
 			"0011",
-			true,
 		},
 		{
 			"../../cfg/test_grammars/zero_one.grammar",
 			"000111",
-			true,
 		},
 		{
 			"../../cfg/test_grammars/zero_one.grammar",
 			"00001111",
-			true,
 		},
 		{
 			"../../cfg/test_grammars/arith_nlr_alnum.grammar",
 			"3p4t5",
-			true,
 		},
 		{
 			"../../cfg/test_grammars/arith_nlr_rev.grammar",
 			"(3+4)*(5+8)",
-			true,
 		},
 	}
 
@@ -57,14 +51,23 @@ func TestAccepts(t *testing.T) {
 			continue
 		}
 
-		r := New(c)
-		if r == nil {
-			t.Errorf("couldn't create parser")
+		r, err := New(c)
+		if err != nil {
+			t.Errorf("couldn't create parser: %v", err)
 			continue
 		}
 
-		if result := r.Accepts(tc.input); result != tc.match {
-			t.Errorf("case %d, got %t, want %t", n+1, result, tc.match)
+		tree := r.Parse(tc.input)
+		if tree == nil {
+			t.Errorf("case %d, couldn't create parse tree", n+1)
+		}
+
+		outBuffer := bytes.NewBuffer(nil)
+		tree.WriteTerminals(outBuffer)
+		terms := string(outBuffer.Bytes())
+
+		if terms != tc.input {
+			t.Errorf("case %d, got %q, want %q", n+1, terms, tc.input)
 		}
 	}
 }
