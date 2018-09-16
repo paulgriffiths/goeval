@@ -38,15 +38,16 @@ func (r Rdp) parseComp(input string, comp cfg.BodyComp) (*tree.Node, int) {
 	var node *tree.Node
 	numBytes := 0
 
-	if comp.T == cfg.BodyNonTerminal {
+	switch comp.T {
+	case cfg.BodyNonTerminal:
 		node, numBytes = r.parseNT(input, comp.I)
-	} else if comp.T == cfg.BodyTerminal {
+	case cfg.BodyTerminal:
 		loc := r.regs[comp.I].FindIndex([]byte(input))
 		if loc != nil && loc[0] == 0 {
 			numBytes = loc[1] - loc[0]
 			node = tree.NewNode(comp, input[:numBytes], nil)
 		}
-	} else if comp.T == cfg.BodyEmpty {
+	case cfg.BodyEmpty:
 		node = tree.NewNode(comp, "e", nil)
 	}
 
