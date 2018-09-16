@@ -1,0 +1,9 @@
+# This grammar defines a language with depth 4 without left recursion.
+# Original example from 'Compilers', Aho, Lam, Sethi & Ullman, second edition,
+# Copyright (c) 2007 Pearson Education Inc, page 213.
+
+S : A `a` | `b`
+A : B `d` | e
+B : C `f` | e
+C : D `h` | e
+D : `i` | e

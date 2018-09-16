@@ -1,0 +1,9 @@
+# This grammar defines a language with a non-terminal S which is
+# left-recursive after 3 steps of derivation.
+# Original example from 'Compilers', Aho, Lam, Sethi & Ullman, second edition,
+# Copyright (c) 2007 Pearson Education Inc, page 213.
+
+S : A `a` | `b`
+A : B `d` | e
+B : C `f` | e
+C : S `h` | e

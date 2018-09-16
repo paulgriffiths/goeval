@@ -49,3 +49,84 @@ func (c *Cfg) outputCfg(writer io.Writer) {
 		}
 	}
 }
+
+// IsImmediateLeftRecursive checks if the specified nonterminal
+// is immediately left-recursive.
+func (c *Cfg) IsImmediateLeftRecursive(nt int) bool {
+	for _, body := range c.Prods[nt] {
+		if body[0].t == BodyNonTerminal && body[0].i == nt {
+			return true
+		}
+	}
+	return false
+}
+
+// IsLeftRecursive checks if the grammar is left-recursive.
+func (c *Cfg) IsLeftRecursive() bool {
+	for n := range c.NonTerminals {
+		if c.lrInternal(n, n, make(map[int]bool)) {
+			return true
+		}
+	}
+	return false
+}
+
+func (c *Cfg) lrInternal(nt, interNt int, checked map[int]bool) bool {
+	if checked[interNt] {
+		return false
+	}
+	checked[interNt] = true
+
+	for _, body := range c.Prods[interNt] {
+		if body[0].t == BodyNonTerminal {
+			if body[0].i == nt {
+				return true
+			} else if c.lrInternal(nt, body[0].i, checked) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// HasCycle checks if the grammar contains a cycle.
+func (c *Cfg) HasCycle() bool {
+	for n := range c.NonTerminals {
+		if c.hsInternal(n, n, make(map[int]bool)) {
+			return true
+		}
+	}
+	return false
+}
+
+func (c *Cfg) hsInternal(nt, interNt int, checked map[int]bool) bool {
+	if checked[interNt] {
+		return false
+	}
+	checked[interNt] = true
+
+	for _, body := range c.Prods[interNt] {
+		if len(body) == 1 && body[0].t == BodyNonTerminal {
+			if body[0].i == nt {
+				return true
+			} else if c.hsInternal(nt, body[0].i, checked) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// HasEProduction checks if the grammar has an e-production.
+func (c *Cfg) HasEProduction() bool {
+	for _, prod := range c.Prods {
+		for _, body := range prod {
+			for _, comp := range body {
+				if comp.t == BodyEmpty {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
