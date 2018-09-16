@@ -137,7 +137,7 @@ func firstPass(tokens []token) *Cfg {
 		Terminals:    terminals,
 		NtTable:      ntTable,
 		TTable:       tTable,
-		Prods:        make([][][]BodyComp, len(nonTerminals)),
+		Prods:        make([]BodyList, len(nonTerminals)),
 	}
 	return &c
 }

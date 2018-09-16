@@ -11,7 +11,7 @@ type Cfg struct {
 	Terminals    []string
 	NtTable      map[string]int
 	TTable       map[string]int
-	Prods        [][][]BodyComp
+	Prods        []BodyList
 }
 
 // NewCfg returns a new context-free grammer from the provided
@@ -21,14 +21,21 @@ func NewCfg(reader io.Reader) (*Cfg, error) {
 	return newCfg, err
 }
 
-// outputCfg outputs a representation of the grammar.
-func (c *Cfg) outputCfg(writer io.Writer) {
+// MaxNonTerminalNameLength returns the length of the longest
+// nonterminal name.
+func (c *Cfg) MaxNonTerminalNameLength() int {
 	maxNL := -1
 	for _, nt := range c.NonTerminals {
 		if len(nt) > maxNL {
 			maxNL = len(nt)
 		}
 	}
+	return maxNL
+}
+
+// outputCfg outputs a representation of the grammar.
+func (c *Cfg) outputCfg(writer io.Writer) {
+	maxNL := c.MaxNonTerminalNameLength()
 
 	for i, prod := range c.Prods {
 		for n, body := range prod {
@@ -41,13 +48,14 @@ func (c *Cfg) outputCfg(writer io.Writer) {
 			writer.Write([]byte(s))
 
 			for _, cmp := range body {
-				if cmp.T == BodyNonTerminal {
+				switch {
+				case cmp.IsNonTerminal():
 					s = fmt.Sprintf(" %s", c.NonTerminals[cmp.I])
-				} else if cmp.T == BodyTerminal {
+				case cmp.IsTerminal():
 					s = fmt.Sprintf(" `%s`", c.Terminals[cmp.I])
-				} else if cmp.T == BodyEmpty {
+				case cmp.IsEmpty():
 					s = " e"
-				} else {
+				default:
 					panic("unexpected body component")
 				}
 				writer.Write([]byte(s))
@@ -61,7 +69,7 @@ func (c *Cfg) outputCfg(writer io.Writer) {
 // is immediately left-recursive.
 func (c *Cfg) IsImmediateLeftRecursive(nt int) bool {
 	for _, body := range c.Prods[nt] {
-		if body[0].T == BodyNonTerminal && body[0].I == nt {
+		if body[0].IsNonTerminal() && body[0].I == nt {
 			return true
 		}
 	}
@@ -85,7 +93,7 @@ func (c *Cfg) lrInternal(nt, interNt int, checked map[int]bool) bool {
 	checked[interNt] = true
 
 	for _, body := range c.Prods[interNt] {
-		if body[0].T == BodyNonTerminal {
+		if body[0].IsNonTerminal() {
 			if body[0].I == nt {
 				return true
 			} else if c.lrInternal(nt, body[0].I, checked) {
@@ -99,26 +107,60 @@ func (c *Cfg) lrInternal(nt, interNt int, checked map[int]bool) bool {
 // HasCycle checks if the grammar contains a cycle.
 func (c *Cfg) HasCycle() bool {
 	for n := range c.NonTerminals {
-		if c.hsInternal(n, n, make(map[int]bool)) {
+		if c.hcInternal(n, n, make(map[int]bool)) {
 			return true
 		}
 	}
 	return false
 }
 
-func (c *Cfg) hsInternal(nt, interNt int, checked map[int]bool) bool {
+func (c *Cfg) hcInternal(nt, interNt int, checked map[int]bool) bool {
 	if checked[interNt] {
 		return false
 	}
 	checked[interNt] = true
 
 	for _, body := range c.Prods[interNt] {
-		if len(body) == 1 && body[0].T == BodyNonTerminal {
+		if body.IsNonTerminal() {
 			if body[0].I == nt {
 				return true
-			} else if c.hsInternal(nt, body[0].I, checked) {
+			} else if c.hcInternal(nt, body[0].I, checked) {
 				return true
 			}
+		}
+	}
+	return false
+}
+
+// IsNullable checks if a nonterminal is nullable.
+func (c *Cfg) IsNullable(nt int) bool {
+	return c.inInternal(nt, nt, make(map[int]bool))
+}
+
+func (c *Cfg) inInternal(nt, interNt int, checked map[int]bool) bool {
+	if checked[interNt] {
+		return false
+	}
+	checked[interNt] = true
+
+	if c.Prods[interNt].HasEmpty() {
+		return true
+	}
+
+	for _, body := range c.Prods[interNt] {
+		nullable := true
+		for _, comp := range body {
+			if !comp.IsNonTerminal() {
+				nullable = false
+				break
+			}
+			if !c.inInternal(nt, comp.I, checked) {
+				nullable = false
+				break
+			}
+		}
+		if nullable {
+			return true
 		}
 	}
 	return false
@@ -127,12 +169,8 @@ func (c *Cfg) hsInternal(nt, interNt int, checked map[int]bool) bool {
 // HasEProduction checks if the grammar has an e-production.
 func (c *Cfg) HasEProduction() bool {
 	for _, prod := range c.Prods {
-		for _, body := range prod {
-			for _, comp := range body {
-				if comp.T == BodyEmpty {
-					return true
-				}
-			}
+		if prod.HasEmpty() {
+			return true
 		}
 	}
 	return false

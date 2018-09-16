@@ -146,3 +146,47 @@ func TestHasEProduction(t *testing.T) {
 		}
 	}
 }
+
+func TestIsNullable(t *testing.T) {
+	testCases := []struct {
+		filename string
+		nt       []int
+		result   []bool
+	}{
+		{
+			"test_grammars/02_arith_nlr.grammar",
+			[]int{0, 1, 2, 3, 4, 5},
+			[]bool{false, false, true, false, true, false},
+		},
+		{
+			"test_grammars/14_nullable_1.grammar",
+			[]int{0, 1, 2, 3, 4, 5, 6},
+			[]bool{true, false, false, true, true, false, false},
+		},
+		{
+			"test_grammars/15_nullable_2.grammar",
+			[]int{0, 1, 2, 3, 4, 5, 6},
+			[]bool{true, false, true, true, true, false, false},
+		},
+		{
+			"test_grammars/16_nullable_3.grammar",
+			[]int{0, 1, 2, 3, 4, 5, 6, 7},
+			[]bool{true, false, true, true, true, true, false, false},
+		},
+	}
+
+	for n, tc := range testCases {
+		c, err := getAndParseFile(t, tc.filename)
+		if err != nil {
+			t.Errorf("couldn't parse file %q: %v", tc.filename, err)
+			continue
+		}
+
+		for i, nt := range tc.nt {
+			if r := c.IsNullable(nt); r != tc.result[i] {
+				t.Errorf("case %d nt %d, got %t, want %t",
+					n+1, nt, r, tc.result[i])
+			}
+		}
+	}
+}

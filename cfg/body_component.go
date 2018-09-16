@@ -18,3 +18,18 @@ type BodyComp struct {
 	T BodyCompType
 	I int
 }
+
+// IsNonTerminal checks if a body component is a nonterminal.
+func (c BodyComp) IsNonTerminal() bool {
+	return c.T == BodyNonTerminal
+}
+
+// IsTerminal checks if a body component is a terminal.
+func (c BodyComp) IsTerminal() bool {
+	return c.T == BodyTerminal
+}
+
+// IsEmpty checks if a body component is a empty component.
+func (c BodyComp) IsEmpty() bool {
+	return c.T == BodyEmpty
+}
