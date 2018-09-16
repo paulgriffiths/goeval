@@ -25,3 +25,15 @@ func (f *FilePos) incLine() {
 	f.Ch = 0
 	f.Line++
 }
+
+// Advance returns a new FilePos with the character index incremented
+// by the provided amount.
+func (f FilePos) Advance(n int) FilePos {
+	return FilePos{f.Ch + n, f.Line}
+}
+
+// LineOnly returns a new FilePos with the character index set to zero,
+// but retaining the original line number.
+func (f FilePos) LineOnly() FilePos {
+	return FilePos{0, f.Line}
+}

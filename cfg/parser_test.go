@@ -1,5 +1,7 @@
 package cfg
 
+import "github.com/paulgriffiths/goeval/lar"
+
 import (
 	"bufio"
 	"bytes"
@@ -25,13 +27,11 @@ func stringArraysEqual(a, b []string) bool {
 func getAndParseFile(t *testing.T, filename string) (*Cfg, error) {
 	infile, fileErr := os.Open(filename)
 	if fileErr != nil {
-		t.Errorf("couldn't open file %q: %v", filename, fileErr)
 		return nil, fileErr
 	}
 
 	c, perr := parse(infile)
 	if perr != nil {
-		t.Errorf("couldn't get tokens for file %q: %v", filename, perr)
 		return nil, perr
 	}
 
@@ -101,5 +101,52 @@ func TestParserOutput(t *testing.T) {
 		}
 
 		infile.Close()
+	}
+}
+
+func TestParserErrors(t *testing.T) {
+	testCases := []struct {
+		filename string
+		err      parseError
+	}{
+		{
+			"test_grammars/bad/missing_head_1.grammar",
+			parseError{parseErrMissingHead, lar.FilePos{0, 4}},
+		},
+		{
+			"test_grammars/bad/missing_body_1.grammar",
+			parseError{parseErrEmptyBody, lar.FilePos{8, 4}},
+		},
+		{
+			"test_grammars/bad/missing_body_2.grammar",
+			parseError{parseErrEmptyBody, lar.FilePos{18, 4}},
+		},
+		{
+			"test_grammars/bad/missing_body_3.grammar",
+			parseError{parseErrEmptyBody, lar.FilePos{8, 4}},
+		},
+		{
+			"test_grammars/bad/missing_body_4.grammar",
+			parseError{parseErrEmptyBody, lar.FilePos{8, 5}},
+		},
+		{
+			"test_grammars/bad/e_not_alone_1.grammar",
+			parseError{parseErrEmptyNotAlone, lar.FilePos{24, 4}},
+		},
+		{
+			"test_grammars/bad/e_not_alone_2.grammar",
+			parseError{parseErrEmptyNotAlone, lar.FilePos{26, 4}},
+		},
+		{
+			"test_grammars/bad/missing_arrow_1.grammar",
+			parseError{parseErrMissingArrow, lar.FilePos{1, 4}},
+		},
+	}
+
+	for n, tc := range testCases {
+		_, err := getAndParseFile(t, tc.filename)
+		if err != tc.err {
+			t.Errorf("case %d, got %v, want %v", n+1, err, tc.err)
+		}
 	}
 }

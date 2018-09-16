@@ -7,27 +7,27 @@ import (
 
 // Cfg represents a context-free grammar.
 type Cfg struct {
-	nonTerminals []string
-	terminals    []string
-	ntTable      map[string]int
-	tTable       map[string]int
-	prods        [][][]BodyComp
+	NonTerminals []string
+	Terminals    []string
+	NtTable      map[string]int
+	TTable       map[string]int
+	Prods        [][][]BodyComp
 }
 
 // outputCfg outputs a representation of the grammar.
 func (c *Cfg) outputCfg(writer io.Writer) {
 	maxNL := -1
-	for _, nt := range c.nonTerminals {
+	for _, nt := range c.NonTerminals {
 		if len(nt) > maxNL {
 			maxNL = len(nt)
 		}
 	}
 
-	for i, prod := range c.prods {
+	for i, prod := range c.Prods {
 		for n, body := range prod {
 			var s string
 			if n == 0 {
-				s = fmt.Sprintf("%-[1]*s :", maxNL, c.nonTerminals[i])
+				s = fmt.Sprintf("%-[1]*s :", maxNL, c.NonTerminals[i])
 			} else {
 				s = fmt.Sprintf("%-[1]*s |", maxNL, "")
 			}
@@ -35,9 +35,9 @@ func (c *Cfg) outputCfg(writer io.Writer) {
 
 			for _, cmp := range body {
 				if cmp.t == BodyNonTerminal {
-					s = fmt.Sprintf(" %s", c.nonTerminals[cmp.i])
+					s = fmt.Sprintf(" %s", c.NonTerminals[cmp.i])
 				} else if cmp.t == BodyTerminal {
-					s = fmt.Sprintf(" `%s`", c.terminals[cmp.i])
+					s = fmt.Sprintf(" `%s`", c.Terminals[cmp.i])
 				} else if cmp.t == BodyEmpty {
 					s = " e"
 				} else {

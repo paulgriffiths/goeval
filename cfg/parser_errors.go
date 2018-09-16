@@ -14,6 +14,7 @@ const (
 	parseErrEmptyBody
 	parseErrEmptyNotAlone
 	parseErrMissingNonTerminal
+	parseErrMissingHead
 )
 
 // parseErr is an interface for parser errors. It is provided so that
@@ -26,17 +27,17 @@ type parseErr interface {
 // parseError is a concrete parser error type.
 type parseError struct {
 	t   parseErrorType
-	i   string
 	pos lar.FilePos
 }
 
 // parseErrorNames associate parser error type values with descriptive
 // strings.
 var parseErrorNames = []string{
-	parseErrMissingArrow:       "missng arrow",
+	parseErrMissingArrow:       "missing arrow",
 	parseErrEmptyBody:          "empty body",
 	parseErrEmptyNotAlone:      "empty body not alone",
 	parseErrMissingNonTerminal: "missing nonterminal",
+	parseErrMissingHead:        "missing head",
 }
 
 // implementsParseError is a dummy method to satisfy the interface.
