@@ -15,6 +15,6 @@ const (
 // BodyComp represents a terminal, nonterminal, or empty
 // body in a production body string.
 type BodyComp struct {
-	t BodyCompType
-	i int
+	T BodyCompType
+	I int
 }

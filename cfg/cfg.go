@@ -14,6 +14,13 @@ type Cfg struct {
 	Prods        [][][]BodyComp
 }
 
+// NewCfg returns a new context-free grammer from the provided
+// description.
+func NewCfg(reader io.Reader) (*Cfg, error) {
+	newCfg, err := parse(reader)
+	return newCfg, err
+}
+
 // outputCfg outputs a representation of the grammar.
 func (c *Cfg) outputCfg(writer io.Writer) {
 	maxNL := -1
@@ -34,11 +41,11 @@ func (c *Cfg) outputCfg(writer io.Writer) {
 			writer.Write([]byte(s))
 
 			for _, cmp := range body {
-				if cmp.t == BodyNonTerminal {
-					s = fmt.Sprintf(" %s", c.NonTerminals[cmp.i])
-				} else if cmp.t == BodyTerminal {
-					s = fmt.Sprintf(" `%s`", c.Terminals[cmp.i])
-				} else if cmp.t == BodyEmpty {
+				if cmp.T == BodyNonTerminal {
+					s = fmt.Sprintf(" %s", c.NonTerminals[cmp.I])
+				} else if cmp.T == BodyTerminal {
+					s = fmt.Sprintf(" `%s`", c.Terminals[cmp.I])
+				} else if cmp.T == BodyEmpty {
 					s = " e"
 				} else {
 					panic("unexpected body component")
@@ -54,7 +61,7 @@ func (c *Cfg) outputCfg(writer io.Writer) {
 // is immediately left-recursive.
 func (c *Cfg) IsImmediateLeftRecursive(nt int) bool {
 	for _, body := range c.Prods[nt] {
-		if body[0].t == BodyNonTerminal && body[0].i == nt {
+		if body[0].T == BodyNonTerminal && body[0].I == nt {
 			return true
 		}
 	}
@@ -78,10 +85,10 @@ func (c *Cfg) lrInternal(nt, interNt int, checked map[int]bool) bool {
 	checked[interNt] = true
 
 	for _, body := range c.Prods[interNt] {
-		if body[0].t == BodyNonTerminal {
-			if body[0].i == nt {
+		if body[0].T == BodyNonTerminal {
+			if body[0].I == nt {
 				return true
-			} else if c.lrInternal(nt, body[0].i, checked) {
+			} else if c.lrInternal(nt, body[0].I, checked) {
 				return true
 			}
 		}
@@ -106,10 +113,10 @@ func (c *Cfg) hsInternal(nt, interNt int, checked map[int]bool) bool {
 	checked[interNt] = true
 
 	for _, body := range c.Prods[interNt] {
-		if len(body) == 1 && body[0].t == BodyNonTerminal {
-			if body[0].i == nt {
+		if len(body) == 1 && body[0].T == BodyNonTerminal {
+			if body[0].I == nt {
 				return true
-			} else if c.hsInternal(nt, body[0].i, checked) {
+			} else if c.hsInternal(nt, body[0].I, checked) {
 				return true
 			}
 		}
@@ -122,7 +129,7 @@ func (c *Cfg) HasEProduction() bool {
 	for _, prod := range c.Prods {
 		for _, body := range prod {
 			for _, comp := range body {
-				if comp.t == BodyEmpty {
+				if comp.T == BodyEmpty {
 					return true
 				}
 			}
