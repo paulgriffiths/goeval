@@ -6,5 +6,5 @@ B : E | F | e
 C : E | B
 D : F | e
 E : `a`
-F : `a`
+F : `b`
 G : E | F | S

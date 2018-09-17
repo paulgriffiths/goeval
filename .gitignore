@@ -1,5 +1,8 @@
 *.swp
 *.bak
+*~
 cmd/simplecalc/simplecalc
 cmd/simplecalc2/simplecalc2
 cmd/match/match
+cmd/grammar_info/grammar_info
+cmd/grammar_info/*.grammar

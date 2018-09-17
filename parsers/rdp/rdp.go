@@ -29,8 +29,11 @@ func New(c *cfg.Cfg) (*Rdp, error) {
 // Parse parses input against a grammar and returns a parse tree,
 // or nil on failure.
 func (r Rdp) Parse(input string) *tree.Node {
-	node, _ := r.parseNT(input, 0)
-	return node
+	node, n := r.parseNT(input, 0)
+	if n == len(input) {
+		return node
+	}
+	return nil
 }
 
 // parseComp parses a production body component.

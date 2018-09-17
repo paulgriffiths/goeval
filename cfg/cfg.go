@@ -33,6 +33,15 @@ func (c *Cfg) MaxNonTerminalNameLength() int {
 	return maxNL
 }
 
+// NumProductions returns the number of productions in the grammar.
+func (c *Cfg) NumProductions() int {
+	n := 0
+	for _, body := range c.Prods {
+		n += len(body)
+	}
+	return n
+}
+
 // outputCfg outputs a representation of the grammar.
 func (c *Cfg) outputCfg(writer io.Writer) {
 	maxNL := c.MaxNonTerminalNameLength()
@@ -104,6 +113,18 @@ func (c *Cfg) lrInternal(nt, interNt int, checked map[int]bool) bool {
 	return false
 }
 
+// NonTerminalsWithCycles returns a list of nonterminals which
+// have cycles.
+func (c *Cfg) NonTerminalsWithCycles() []int {
+	list := []int{}
+	for n := range c.NonTerminals {
+		if c.hcInternal(n, n, make(map[int]bool)) {
+			list = append(list, n)
+		}
+	}
+	return list
+}
+
 // HasCycle checks if the grammar contains a cycle.
 func (c *Cfg) HasCycle() bool {
 	for n := range c.NonTerminals {
@@ -130,6 +151,18 @@ func (c *Cfg) hcInternal(nt, interNt int, checked map[int]bool) bool {
 		}
 	}
 	return false
+}
+
+// NonTerminalsNullable returns a list of nonterminals which
+// are nullable.
+func (c *Cfg) NonTerminalsNullable() []int {
+	list := []int{}
+	for n := range c.Prods {
+		if c.inInternal(n, n, make(map[int]bool)) {
+			list = append(list, n)
+		}
+	}
+	return list
 }
 
 // IsNullable checks if a nonterminal is nullable.
@@ -174,4 +207,16 @@ func (c *Cfg) HasEProduction() bool {
 		}
 	}
 	return false
+}
+
+// NonTerminalsWithEProductions returns a list of nonterminals which
+// have e-productions.
+func (c *Cfg) NonTerminalsWithEProductions() []int {
+	list := []int{}
+	for n, prod := range c.Prods {
+		if prod.HasEmpty() {
+			list = append(list, n)
+		}
+	}
+	return list
 }
