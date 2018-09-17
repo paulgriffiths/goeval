@@ -6,34 +6,68 @@ import (
 
 func TestCfgFirst(t *testing.T) {
 	testCases := []struct {
-		filename string
-		nt       string
-		result   []string
+		filename   string
+		nt, result []string
 	}{
 		{
 			"test_grammars/02_arith_nlr.grammar",
-			"F",
+			[]string{"F"},
 			[]string{"\\(", "[[:digit:]]+"},
 		},
 		{
 			"test_grammars/02_arith_nlr.grammar",
-			"T",
+			[]string{"T"},
 			[]string{"\\(", "[[:digit:]]+"},
 		},
 		{
 			"test_grammars/02_arith_nlr.grammar",
-			"E",
+			[]string{"E"},
 			[]string{"\\(", "[[:digit:]]+"},
 		},
 		{
 			"test_grammars/02_arith_nlr.grammar",
-			"E'",
+			[]string{"E'"},
 			[]string{"\\+", ""},
 		},
 		{
 			"test_grammars/02_arith_nlr.grammar",
-			"T'",
+			[]string{"T'"},
 			[]string{"\\*", ""},
+		},
+		{
+			"test_grammars/02_arith_nlr.grammar",
+			[]string{"F", "T"},
+			[]string{"\\(", "[[:digit:]]+"},
+		},
+		{
+			"test_grammars/02_arith_nlr.grammar",
+			[]string{"T", "E"},
+			[]string{"\\(", "[[:digit:]]+"},
+		},
+		{
+			"test_grammars/02_arith_nlr.grammar",
+			[]string{"E", "F"},
+			[]string{"\\(", "[[:digit:]]+"},
+		},
+		{
+			"test_grammars/02_arith_nlr.grammar",
+			[]string{"E'", "T'"},
+			[]string{"\\*", "\\+", ""},
+		},
+		{
+			"test_grammars/02_arith_nlr.grammar",
+			[]string{"E'", "F"},
+			[]string{"\\+", "\\(", "[[:digit:]]+"},
+		},
+		{
+			"test_grammars/02_arith_nlr.grammar",
+			[]string{"F", "E'"},
+			[]string{"\\(", "[[:digit:]]+"},
+		},
+		{
+			"test_grammars/02_arith_nlr.grammar",
+			[]string{"E'", "T'", "F"},
+			[]string{"\\*", "\\+", "\\(", "[[:digit:]]+"},
 		},
 	}
 
@@ -44,7 +78,11 @@ func TestCfgFirst(t *testing.T) {
 			continue
 		}
 
-		resultSet := c.First(c.NonTerminalComp(tc.nt))
+		components := []BodyComp{}
+		for _, nt := range tc.nt {
+			components = append(components, c.NonTerminalComp(nt))
+		}
+		resultSet := c.First(components...)
 		cmpSet := NewSetBodyComp()
 
 		for _, s := range tc.result {

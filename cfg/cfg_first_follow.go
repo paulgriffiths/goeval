@@ -2,8 +2,18 @@ package cfg
 
 // First returns the set of terminals that begin strings derived
 // from the provided component.
-func (c *Cfg) First(comp BodyComp) SetBodyComp {
-	return c.firstInternal(comp, make(map[BodyComp]bool))
+func (c *Cfg) First(comp ...BodyComp) SetBodyComp {
+	set := NewSetBodyComp()
+	for _, cm := range comp {
+		f := c.firstInternal(cm, make(map[BodyComp]bool))
+		set = set.Union(f)
+		if !f.ContainsEmpty() {
+			set.DeleteEmpty()
+			break
+		}
+	}
+
+	return set
 }
 
 func (c *Cfg) firstInternal(comp BodyComp,

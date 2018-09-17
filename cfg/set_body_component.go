@@ -45,9 +45,8 @@ func (s SetBodyComp) Contains(n BodyComp) bool {
 	return s[n]
 }
 
-// ContainsEmpty returns true if the set contains the specified
-// empty component
-func (s SetBodyComp) ContainsEmpty(n BodyComp) bool {
+// ContainsEmpty returns true if the set contains an empty body component.
+func (s SetBodyComp) ContainsEmpty() bool {
 	return s[BodyComp{BodyEmpty, 0}]
 }
 
@@ -57,10 +56,20 @@ func (s *SetBodyComp) Insert(n BodyComp) {
 	(*s)[n] = true
 }
 
-// InsertEmpty inserts an empty body into a set if it isn't already
-// in the set.
+// InsertEmpty inserts an empty body component into a set if it
+// isn't already in the set.
 func (s *SetBodyComp) InsertEmpty() {
 	(*s)[BodyComp{BodyEmpty, 0}] = true
+}
+
+// Delete deletes an body component from a set.
+func (s *SetBodyComp) Delete(n BodyComp) {
+	delete(*s, n)
+}
+
+// DeleteEmpty deletes an empty body component from a set.
+func (s *SetBodyComp) DeleteEmpty() {
+	delete(*s, BodyComp{BodyEmpty, 0})
 }
 
 // Intersection returns the intersection of two sets.
