@@ -11,6 +11,8 @@ func main() {
 	fileName := flag.String("f", "", "grammar file name")
 	recog := flag.String("r", "", "show if the grammar recognizes "+
 		"the provided string")
+	ptree := flag.String("p", "", "show a parse tree for the provided "+
+		"string, if the grammar recognizes it")
 	showFile := flag.Bool("g", true, "show grammar representation")
 	listAttribs := flag.Bool("s", true, "show grammar statistics")
 	listTerms := flag.Bool("t", false, "list terminals and nonterminals")
@@ -65,6 +67,14 @@ func main() {
 				"left-recursive grammars.\n")
 		} else {
 			recognizeRdpString(grammar, *recog)
+		}
+	}
+	if *ptree != "" {
+		if grammar.IsLeftRecursive() {
+			fmt.Printf("Parsing currently only implemented for non-" +
+				"left-recursive grammars.\n")
+		} else {
+			parseRdpString(grammar, *ptree)
 		}
 	}
 }
