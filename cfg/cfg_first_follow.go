@@ -1,7 +1,7 @@
 package cfg
 
 // First returns the set of terminals that begin strings derived
-// from the provided component.
+// from the provided string of components.
 func (c *Cfg) First(comp ...BodyComp) SetBodyComp {
 	set := NewSetBodyComp()
 	for _, cm := range comp {
