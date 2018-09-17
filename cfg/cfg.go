@@ -17,3 +17,15 @@ func NewCfg(reader io.Reader) (*Cfg, error) {
 	newCfg, err := parse(reader)
 	return newCfg, err
 }
+
+// NonTerminalComp returns a body component for the nonterminal
+// named in the provided string.
+func (c *Cfg) NonTerminalComp(nt string) BodyComp {
+	return BodyComp{BodyNonTerminal, c.NtTable[nt]}
+}
+
+// TerminalComp returns a body component for the terminal
+// named in the provided string.
+func (c *Cfg) TerminalComp(nt string) BodyComp {
+	return BodyComp{BodyTerminal, c.TTable[nt]}
+}
