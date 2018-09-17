@@ -12,7 +12,7 @@ func TestParseWriteBracketed(t *testing.T) {
 		output          string
 	}{
 		{
-			"../../cfg/test_grammars/02_arith_nlr.grammar",
+			tgArithNlr,
 			"(3+4)*5",
 			[]string{"", "[", "]"},
 			"[E [T [F ( [E [T [F [Digits 3]] [T' e]] [E' + " +
@@ -20,13 +20,13 @@ func TestParseWriteBracketed(t *testing.T) {
 				"[Digits 5]] [T' e]]] [E' e]]",
 		},
 		{
-			"../../cfg/test_grammars/05_bal_parens_2.grammar",
+			tgBalParens2,
 			"((()))",
 			[]string{"", "[", "]"},
 			"[S ( [S ( [S ( [S e] ) [S e]] ) [S e]] ) [S e]]",
 		},
 		{
-			"../../cfg/test_grammars/06_zero_one.grammar",
+			tgZeroOne,
 			"00001111",
 			[]string{},
 			"(S 0 (S 0 (S 0 (S 01) 1) 1) 1)",

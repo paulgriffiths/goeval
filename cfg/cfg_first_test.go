@@ -10,62 +10,62 @@ func TestCfgFirst(t *testing.T) {
 		nt, result []string
 	}{
 		{
-			"test_grammars/02_arith_nlr.grammar",
+			tgArithNlr,
 			[]string{"F"},
 			[]string{"\\(", "[[:digit:]]+"},
 		},
 		{
-			"test_grammars/02_arith_nlr.grammar",
+			tgArithNlr,
 			[]string{"T"},
 			[]string{"\\(", "[[:digit:]]+"},
 		},
 		{
-			"test_grammars/02_arith_nlr.grammar",
+			tgArithNlr,
 			[]string{"E"},
 			[]string{"\\(", "[[:digit:]]+"},
 		},
 		{
-			"test_grammars/02_arith_nlr.grammar",
+			tgArithNlr,
 			[]string{"E'"},
 			[]string{"\\+", ""},
 		},
 		{
-			"test_grammars/02_arith_nlr.grammar",
+			tgArithNlr,
 			[]string{"T'"},
 			[]string{"\\*", ""},
 		},
 		{
-			"test_grammars/02_arith_nlr.grammar",
+			tgArithNlr,
 			[]string{"F", "T"},
 			[]string{"\\(", "[[:digit:]]+"},
 		},
 		{
-			"test_grammars/02_arith_nlr.grammar",
+			tgArithNlr,
 			[]string{"T", "E"},
 			[]string{"\\(", "[[:digit:]]+"},
 		},
 		{
-			"test_grammars/02_arith_nlr.grammar",
+			tgArithNlr,
 			[]string{"E", "F"},
 			[]string{"\\(", "[[:digit:]]+"},
 		},
 		{
-			"test_grammars/02_arith_nlr.grammar",
+			tgArithNlr,
 			[]string{"E'", "T'"},
 			[]string{"\\*", "\\+", ""},
 		},
 		{
-			"test_grammars/02_arith_nlr.grammar",
+			tgArithNlr,
 			[]string{"E'", "F"},
 			[]string{"\\+", "\\(", "[[:digit:]]+"},
 		},
 		{
-			"test_grammars/02_arith_nlr.grammar",
+			tgArithNlr,
 			[]string{"F", "E'"},
 			[]string{"\\(", "[[:digit:]]+"},
 		},
 		{
-			"test_grammars/02_arith_nlr.grammar",
+			tgArithNlr,
 			[]string{"E'", "T'", "F"},
 			[]string{"\\*", "\\+", "\\(", "[[:digit:]]+"},
 		},

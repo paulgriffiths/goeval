@@ -8,12 +8,12 @@ import (
 
 func TestLexerSuccess(t *testing.T) {
 	infiles := []string{
-		"test_grammars/01_arith_lr.grammar",
-		"test_grammars/02_arith_nlr.grammar",
-		"test_grammars/03_arith_ambig.grammar",
-		"test_grammars/04_bal_parens_1.grammar",
-		"test_grammars/05_bal_parens_2.grammar",
-		"test_grammars/06_zero_one.grammar",
+		tgArithLr,
+		tgArithNlr,
+		tgArithAmbig,
+		tgBalParens1,
+		tgBalParens2,
+		tgZeroOne,
 	}
 
 	for _, f := range infiles {
@@ -65,8 +65,8 @@ func TestLexerTokenListArithLr(t *testing.T) {
 		token{tokenEndOfLine, "", lar.FilePos{23, 11}},
 	}
 
-	infileName := "test_grammars/01_arith_lr.grammar"
-	infile, err := os.Open(infileName)
+	infileName := tgArithLr
+	infile, err := os.Open(tgArithLr)
 	if err != nil {
 		t.Errorf("couldn't open file %q: %v", infileName, err)
 		return
@@ -96,19 +96,19 @@ func TestLexerErrors(t *testing.T) {
 		err      lexError
 	}{
 		{
-			"test_grammars/bad/unterminated_terminal_1.grammar",
+			tgBadUnterminatedTerminal1,
 			lexError{lexErrUnterminatedTerminal, "", lar.FilePos{17, 3}},
 		},
 		{
-			"test_grammars/bad/unterminated_terminal_2.grammar",
+			tgBadUnterminatedTerminal2,
 			lexError{lexErrUnterminatedTerminal, "", lar.FilePos{19, 5}},
 		},
 		{
-			"test_grammars/bad/illegal_character_1.grammar",
+			tgBadIllegalCharacter1,
 			lexError{lexErrIllegalCharacter, "%", lar.FilePos{16, 3}},
 		},
 		{
-			"test_grammars/bad/illegal_character_2.grammar",
+			tgBadIllegalCharacter2,
 			lexError{lexErrIllegalCharacter, "$", lar.FilePos{1, 3}},
 		},
 	}

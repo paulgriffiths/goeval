@@ -5,69 +5,20 @@ import "github.com/paulgriffiths/goeval/lar"
 import (
 	"bufio"
 	"bytes"
-	_ "fmt"
 	"os"
 	"testing"
 )
-
-func stringArraysEqual(a, b []string) bool {
-	if len(a) != len(b) {
-		return false
-	}
-
-	for n, s := range a {
-		if s != b[n] {
-			return false
-		}
-	}
-
-	return true
-}
-
-func getAndParseFile(t *testing.T, filename string) (*Cfg, error) {
-	infile, fileErr := os.Open(filename)
-	if fileErr != nil {
-		return nil, fileErr
-	}
-
-	c, perr := parse(infile)
-	if perr != nil {
-		return nil, perr
-	}
-
-	infile.Close()
-
-	return c, nil
-}
 
 func TestParserOutput(t *testing.T) {
 	testCases := []struct {
 		infile, cmpfile string
 	}{
-		{
-			"test_grammars/01_arith_lr.grammar",
-			"test_grammars/output/01_arith_lr_raw.grammar",
-		},
-		{
-			"test_grammars/02_arith_nlr.grammar",
-			"test_grammars/output/02_arith_nlr_raw.grammar",
-		},
-		{
-			"test_grammars/03_arith_ambig.grammar",
-			"test_grammars/output/03_arith_ambig_raw.grammar",
-		},
-		{
-			"test_grammars/04_bal_parens_1.grammar",
-			"test_grammars/output/04_bal_parens_1_raw.grammar",
-		},
-		{
-			"test_grammars/05_bal_parens_2.grammar",
-			"test_grammars/output/05_bal_parens_2_raw.grammar",
-		},
-		{
-			"test_grammars/06_zero_one.grammar",
-			"test_grammars/output/06_zero_one_raw.grammar",
-		},
+		{tgArithLr, tgOutArithLrRaw},
+		{tgArithNlr, tgOutArithNlrRaw},
+		{tgArithAmbig, tgOutArithAmbigRaw},
+		{tgBalParens1, tgOutBalParens1Raw},
+		{tgBalParens2, tgOutBalParens2Raw},
+		{tgZeroOne, tgOutZeroOneRaw},
 	}
 
 	for _, tc := range testCases {
@@ -114,35 +65,35 @@ func TestParserErrors(t *testing.T) {
 		err      parseError
 	}{
 		{
-			"test_grammars/bad/missing_head_1.grammar",
+			tgBadMissingHead1,
 			parseError{parseErrMissingHead, lar.FilePos{0, 4}},
 		},
 		{
-			"test_grammars/bad/missing_body_1.grammar",
+			tgBadMissingBody1,
 			parseError{parseErrEmptyBody, lar.FilePos{8, 4}},
 		},
 		{
-			"test_grammars/bad/missing_body_2.grammar",
+			tgBadMissingBody2,
 			parseError{parseErrEmptyBody, lar.FilePos{18, 4}},
 		},
 		{
-			"test_grammars/bad/missing_body_3.grammar",
+			tgBadMissingBody3,
 			parseError{parseErrEmptyBody, lar.FilePos{8, 4}},
 		},
 		{
-			"test_grammars/bad/missing_body_4.grammar",
+			tgBadMissingBody4,
 			parseError{parseErrEmptyBody, lar.FilePos{8, 5}},
 		},
 		{
-			"test_grammars/bad/e_not_alone_1.grammar",
+			tgBadENotAlone1,
 			parseError{parseErrEmptyNotAlone, lar.FilePos{24, 4}},
 		},
 		{
-			"test_grammars/bad/e_not_alone_2.grammar",
+			tgBadENotAlone2,
 			parseError{parseErrEmptyNotAlone, lar.FilePos{26, 4}},
 		},
 		{
-			"test_grammars/bad/missing_arrow_1.grammar",
+			tgBadMissingArrow1,
 			parseError{parseErrMissingArrow, lar.FilePos{1, 4}},
 		},
 	}
