@@ -82,6 +82,8 @@ A sample session:
 	The grammar is not left-recursive.
 	The grammar has 6 nonterminals, 5 terminals, and 9 productions
 	Grammar recognizes string '(3+4)*5'.
+	paul@horus:grammar_info$ ./grammar_info -f 2.grammar -g=false -s=false -r '(3+4)/5'
+	Grammar does not recognize string '(3+4)/5'.
 	paul@horus:grammar_info$ cat 11.grammar
 	S : `0` S `1` | `01`
 	paul@horus:grammar_info$ ./grammar_info -f 11.grammar -p '000111'
