@@ -16,6 +16,8 @@ func main() {
 	showFile := flag.Bool("g", true, "show grammar representation")
 	listAttribs := flag.Bool("s", true, "show grammar statistics")
 	listTerms := flag.Bool("t", false, "list terminals and nonterminals")
+	listFirst := flag.Bool("w", false, "list First and Follow for all "+
+		"nonterminals")
 	listCycles := flag.Bool("c", false, "list nonterminals with cycles")
 	listE := flag.Bool("e", false, "list nonterminals with e-productions")
 	listNull := flag.Bool("n", false, "list nonterminals which are nullable")
@@ -60,6 +62,9 @@ func main() {
 	}
 	if *listNull || *listAll {
 		outputNullable(grammar)
+	}
+	if *listFirst || *listAll {
+		outputFirst(grammar)
 	}
 	if *recog != "" {
 		if grammar.IsLeftRecursive() {

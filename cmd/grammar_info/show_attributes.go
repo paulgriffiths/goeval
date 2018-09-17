@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/paulgriffiths/goeval/cfg"
+	"sort"
 )
 
 func outputAttribs(grammar *cfg.Cfg) {
@@ -60,5 +61,35 @@ func outputNonTerminalList(grammar *cfg.Cfg, list []int,
 		fmt.Printf(" %s.\n", singular)
 	} else {
 		fmt.Printf(" %s.\n", plural)
+	}
+}
+
+func outputFirst(grammar *cfg.Cfg) {
+	for _, nt := range grammar.NonTerminals {
+		f := grammar.First(grammar.NonTerminalComp(nt)).Elements()
+
+		terminals := []string{}
+		hasEmpty := false
+		for _, terminal := range f {
+			if terminal.IsEmpty() {
+				hasEmpty = true
+			} else {
+				t := fmt.Sprintf("`%s`", grammar.Terminals[terminal.I])
+				terminals = append(terminals, t)
+			}
+		}
+		sort.Sort(sort.StringSlice(terminals))
+		if hasEmpty {
+			terminals = append(terminals, "e")
+		}
+
+		fmt.Printf("First(%s) = { ", nt)
+		for n, terminal := range terminals {
+			if n != 0 {
+				fmt.Printf(", ")
+			}
+			fmt.Printf("%s", terminal)
+		}
+		fmt.Printf(" }\n")
 	}
 }
