@@ -1,107 +1,128 @@
 package cfg
 
-import "github.com/paulgriffiths/goeval/lar"
+import "testing"
 
-import (
-	"bufio"
-	"bytes"
-	"os"
-	"testing"
-)
-
-func TestParserOutput(t *testing.T) {
-	testCases := []struct {
-		infile, cmpfile string
-	}{
-		{tgArithLr, tgOutArithLrRaw},
-		{tgArithNlr, tgOutArithNlrRaw},
-		{tgArithAmbig, tgOutArithAmbigRaw},
-		{tgBalParens1, tgOutBalParens1Raw},
-		{tgBalParens2, tgOutBalParens2Raw},
-		{tgZeroOne, tgOutZeroOneRaw},
-	}
-
-	for _, tc := range testCases {
-		c, err := getAndParseFile(t, tc.infile)
+func TestCfgParseNumNonTerminals(t *testing.T) {
+	for _, tc := range grammarTestCases {
+		c, err := getAndParseFile(t, tc.filename)
 		if err != nil {
-			t.Errorf("couldn't parse file %q: %v", tc.infile, err)
+			t.Errorf("couldn't parse grammar file %q: %v", tc.filename, err)
 			continue
 		}
 
-		outBuffer := bytes.NewBuffer(nil)
-		c.outputCfg(outBuffer)
-		outScanner := bufio.NewScanner(outBuffer)
-
-		infile, fileErr := os.Open(tc.cmpfile)
-		if fileErr != nil {
-			t.Errorf("couldn't open file %q: %v", tc.infile, fileErr)
-			continue
+		if len(c.NonTerminals) != tc.numNonTerminals {
+			t.Errorf("case %s, got %d, want %d", tc.filename,
+				len(c.NonTerminals), tc.numNonTerminals)
 		}
-
-		cmpScanner := bufio.NewScanner(infile)
-
-		for cmpScanner.Scan() {
-			if !outScanner.Scan() {
-				t.Errorf("fewer lines than %q", tc.infile)
-				break
-			}
-			if cmpScanner.Text() != outScanner.Text() {
-				t.Errorf("%q: got %q, want %q", tc.infile,
-					outScanner.Text(), cmpScanner.Text())
-			}
-		}
-
-		if outScanner.Scan() {
-			t.Errorf("more lines than %q", tc.infile)
-		}
-
-		infile.Close()
 	}
 }
 
-func TestParserErrors(t *testing.T) {
-	testCases := []struct {
-		filename string
-		err      parseError
-	}{
-		{
-			tgBadMissingHead1,
-			parseError{parseErrMissingHead, lar.FilePos{0, 4}},
-		},
-		{
-			tgBadMissingBody1,
-			parseError{parseErrEmptyBody, lar.FilePos{8, 4}},
-		},
-		{
-			tgBadMissingBody2,
-			parseError{parseErrEmptyBody, lar.FilePos{18, 4}},
-		},
-		{
-			tgBadMissingBody3,
-			parseError{parseErrEmptyBody, lar.FilePos{8, 4}},
-		},
-		{
-			tgBadMissingBody4,
-			parseError{parseErrEmptyBody, lar.FilePos{8, 5}},
-		},
-		{
-			tgBadENotAlone1,
-			parseError{parseErrEmptyNotAlone, lar.FilePos{24, 4}},
-		},
-		{
-			tgBadENotAlone2,
-			parseError{parseErrEmptyNotAlone, lar.FilePos{26, 4}},
-		},
-		{
-			tgBadMissingArrow1,
-			parseError{parseErrMissingArrow, lar.FilePos{1, 4}},
-		},
-	}
+func TestCfgParseNumTerminals(t *testing.T) {
+	for _, tc := range grammarTestCases {
+		c, err := getAndParseFile(t, tc.filename)
+		if err != nil {
+			t.Errorf("couldn't parse grammar file %q: %v", tc.filename, err)
+			continue
+		}
 
-	for n, tc := range testCases {
-		_, err := getAndParseFile(t, tc.filename)
-		if err != tc.err {
-			t.Errorf("case %d, got %v, want %v", n+1, err, tc.err)
+		if len(c.Terminals) != tc.numTerminals {
+			t.Errorf("case %s, got %d, want %d", tc.filename,
+				len(c.Terminals), tc.numTerminals)
+		}
+	}
+}
+
+func TestCfgParseNumProductions(t *testing.T) {
+	for _, tc := range grammarTestCases {
+		c, err := getAndParseFile(t, tc.filename)
+		if err != nil {
+			t.Errorf("couldn't parse grammar file %q: %v", tc.filename, err)
+			continue
+		}
+
+		if c.NumProductions() != tc.numProductions {
+			t.Errorf("case %s, got %d, want %d", tc.filename,
+				c.NumProductions(), tc.numProductions)
+		}
+	}
+}
+
+func TestCfgParseNonTerminalNames(t *testing.T) {
+	for _, tc := range grammarTestCases {
+		c, err := getAndParseFile(t, tc.filename)
+		if err != nil {
+			t.Errorf("couldn't parse grammar file %q: %v", tc.filename, err)
+			continue
+		}
+
+		if len(c.NonTerminals) != len(tc.nonTerminalNames) {
+			t.Errorf("case %s, got %d, want %d", tc.filename,
+				len(tc.nonTerminalNames), len(c.NonTerminals))
+			continue
+		}
+
+		for n, ntName := range c.NonTerminals {
+			if ntName != tc.nonTerminalNames[n] {
+				t.Errorf("case %s, nonterminal %d, got %s, want %s",
+					tc.filename, n, tc.nonTerminalNames[n], ntName)
+			}
+		}
+	}
+}
+
+func TestCfgParseTerminalNames(t *testing.T) {
+	for _, tc := range grammarTestCases {
+		c, err := getAndParseFile(t, tc.filename)
+		if err != nil {
+			t.Errorf("couldn't parse grammar file %q: %v", tc.filename, err)
+			continue
+		}
+
+		if len(c.Terminals) != len(tc.terminalNames) {
+			t.Errorf("case %s, got %d, want %d", tc.filename,
+				len(tc.terminalNames), len(c.Terminals))
+			continue
+		}
+
+		for n, tName := range c.Terminals {
+			if tName != tc.terminalNames[n] {
+				t.Errorf("case %s, terminal %d, got %s, want %s",
+					tc.filename, n, tc.terminalNames[n], tName)
+			}
+		}
+	}
+}
+
+func TestCfgParseNonTerminalTable(t *testing.T) {
+	for _, tc := range grammarTestCases {
+		c, err := getAndParseFile(t, tc.filename)
+		if err != nil {
+			t.Errorf("couldn't parse grammar file %q: %v", tc.filename, err)
+			continue
+		}
+
+		for n, ntName := range c.NonTerminals {
+			if r := c.NtTable[ntName]; r != n {
+				t.Errorf("case %s, nonterminal %s, got %d, want %d",
+					tc.filename, ntName, r, n)
+			}
+		}
+	}
+}
+
+func TestCfgParseTerminalTable(t *testing.T) {
+	for _, tc := range grammarTestCases {
+		c, err := getAndParseFile(t, tc.filename)
+		if err != nil {
+			t.Errorf("couldn't parse grammar file %q: %v", tc.filename, err)
+			continue
+		}
+
+		for n, tName := range c.Terminals {
+			if r := c.TTable[tName]; r != n {
+				t.Errorf("case %s, terminal %s, got %d, want %d",
+					tc.filename, tName, r, n)
+			}
 		}
 	}
 }
