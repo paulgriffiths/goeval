@@ -14,8 +14,7 @@ type Cfg struct {
 // NewCfg returns a new context-free grammer from the provided
 // description.
 func NewCfg(reader io.Reader) (*Cfg, error) {
-	newCfg, err := parse(reader)
-	return newCfg, err
+	return parse(reader)
 }
 
 // NonTerminalComp returns a body component for the nonterminal
