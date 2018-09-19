@@ -10,6 +10,8 @@ const (
 	BodyTerminal
 	// BodyEmpty represents an empty production body.
 	BodyEmpty
+	// BodyInputEnd represents the end of input.
+	BodyInputEnd
 )
 
 // BodyComp represents a terminal, nonterminal, or empty
@@ -32,4 +34,9 @@ func (c BodyComp) IsTerminal() bool {
 // IsEmpty checks if a body component is a empty component.
 func (c BodyComp) IsEmpty() bool {
 	return c.T == BodyEmpty
+}
+
+// IsInputEnd checks if a body component is the end of input marker.
+func (c BodyComp) IsInputEnd() bool {
+	return c.T == BodyInputEnd
 }
