@@ -29,7 +29,7 @@ func (c *Cfg) firstInternal(comp BodyComp,
 	} else if comp.IsEmpty() {
 		return set
 	} else if !comp.IsNonTerminal() {
-		panic("symbol passed to First neither terminal nor nonterminal")
+		panic("unexpected symbol passed to First")
 	}
 
 	for _, body := range c.Prods[comp.I] {
@@ -38,7 +38,7 @@ func (c *Cfg) firstInternal(comp BodyComp,
 			continue
 		}
 		for _, component := range body {
-			set = set.Union(c.firstInternal(component, checked))
+			set.Merge(c.firstInternal(component, checked))
 			if !(component.IsNonTerminal() && c.IsNullable(component.I)) {
 				break
 			}
@@ -46,4 +46,55 @@ func (c *Cfg) firstInternal(comp BodyComp,
 	}
 
 	return set
+}
+
+// Follow returns an array of sets, where each set contains the set
+// of terminals, or the end-of-input marker, which can follow the
+// nonterminal corresponding to the element of the array.
+func (c *Cfg) Follow() []SetBodyComp {
+	followSets := make([]SetBodyComp, len(c.NonTerminals))
+	lengths := make([]int, len(c.NonTerminals))
+	for i := 0; i < len(c.NonTerminals); i++ {
+		followSets[i] = NewSetBodyComp()
+		lengths[i] = -1
+	}
+
+	setsChanged := true
+	followSets[0].Insert(NewBodyInputEnd())
+
+	for setsChanged {
+		for head, prod := range c.Prods {
+			for _, body := range prod {
+				for i, comp := range body {
+					if !comp.IsNonTerminal() {
+						continue
+					}
+
+					firstContainsEmpty := false
+					if !body.IsLast(i) {
+						first := c.First(body[i+1:]...)
+						if first.ContainsEmpty() {
+							firstContainsEmpty = true
+							first.DeleteEmpty()
+						}
+						followSets[comp.I].Merge(first)
+					}
+
+					if body.IsLast(i) || firstContainsEmpty {
+						followSets[comp.I].Merge(followSets[head])
+					}
+				}
+			}
+		}
+
+		setsChanged = false
+		for i, set := range followSets {
+			if lengths[i] != set.Length() {
+				setsChanged = true
+			}
+			lengths[i] = set.Length()
+		}
+	}
+
+	return followSets
 }

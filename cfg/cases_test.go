@@ -13,6 +13,7 @@ type grammarTestCase struct {
 	haveCycles               []string
 	haveEProds               []string
 	areNullable              []string
+	follows                  map[string][]string
 }
 
 var grammarTestCases = []grammarTestCase{
@@ -22,6 +23,12 @@ var grammarTestCases = []grammarTestCase{
 		[]string{"\\+", "\\*", "\\(", "\\)", "[[:digit:]]+"},
 		[]string{"E", "T"}, []string{"E", "T"},
 		[]string{}, []string{}, []string{},
+		map[string][]string{
+			"F":      []string{"\\+", "\\*", "\\)", "$"},
+			"T":      []string{"\\+", "\\*", "\\)", "$"},
+			"E":      []string{"\\+", "\\)", "$"},
+			"Digits": []string{"\\*", "\\+", "\\)", "$"},
+		},
 	},
 	{
 		tgArithNlr, false, 6, 5, 9,
@@ -29,6 +36,14 @@ var grammarTestCases = []grammarTestCase{
 		[]string{"\\+", "\\*", "\\(", "\\)", "[[:digit:]]+"},
 		[]string{}, []string{},
 		[]string{}, []string{"E'", "T'"}, []string{"E'", "T'"},
+		map[string][]string{
+			"F":      []string{"\\+", "\\*", "\\)", "$"},
+			"T":      []string{"\\+", "\\)", "$"},
+			"E":      []string{"\\)", "$"},
+			"E'":     []string{"\\)", "$"},
+			"T'":     []string{"\\+", "\\)", "$"},
+			"Digits": []string{"\\*", "\\+", "\\)", "$"},
+		},
 	},
 	{
 		tgArithAmbig, true, 2, 5, 5,
@@ -36,6 +51,10 @@ var grammarTestCases = []grammarTestCase{
 		[]string{"\\+", "\\*", "\\(", "\\)", "[[:digit:]]+"},
 		[]string{"E"}, []string{"E"},
 		[]string{}, []string{}, []string{},
+		map[string][]string{
+			"E":      []string{"\\*", "\\+", "\\)", "$"},
+			"Digits": []string{"\\*", "\\+", "\\)", "$"},
+		},
 	},
 	{
 		tgBalParens1, true, 1, 2, 2,
@@ -43,6 +62,9 @@ var grammarTestCases = []grammarTestCase{
 		[]string{"\\(", "\\)"},
 		[]string{"S"}, []string{"S"},
 		[]string{}, []string{"S"}, []string{"S"},
+		map[string][]string{
+			"S": []string{"\\(", "\\)", "$"},
+		},
 	},
 	{
 		tgBalParens2, false, 1, 2, 2,
@@ -50,6 +72,9 @@ var grammarTestCases = []grammarTestCase{
 		[]string{"\\(", "\\)"},
 		[]string{}, []string{},
 		[]string{}, []string{"S"}, []string{"S"},
+		map[string][]string{
+			"S": []string{"\\)", "$"},
+		},
 	},
 	{
 		tgZeroOne, false, 1, 3, 2,
@@ -57,6 +82,9 @@ var grammarTestCases = []grammarTestCase{
 		[]string{"0", "1", "01"},
 		[]string{}, []string{},
 		[]string{}, []string{}, []string{},
+		map[string][]string{
+			"S": []string{"1", "$"},
+		},
 	},
 	{
 		tgIndirectLr1, true, 2, 4, 5,
@@ -64,6 +92,10 @@ var grammarTestCases = []grammarTestCase{
 		[]string{"a", "b", "c", "d"},
 		[]string{"S", "A"}, []string{"A"},
 		[]string{}, []string{"A"}, []string{"A"},
+		map[string][]string{
+			"S": []string{"d", "$"},
+			"A": []string{"a", "c"},
+		},
 	},
 	{
 		tgIndirectLr2, true, 4, 5, 8,
@@ -71,6 +103,12 @@ var grammarTestCases = []grammarTestCase{
 		[]string{"a", "b", "c", "d", "e"},
 		[]string{"S", "A", "B", "C"}, []string{},
 		[]string{}, []string{"A", "B", "C"}, []string{"A", "B", "C"},
+		map[string][]string{
+			"S": []string{"e", "$"},
+			"A": []string{"a"},
+			"B": []string{"c"},
+			"C": []string{"d"},
+		},
 	},
 	{
 		tgIndirectLr3, true, 5, 6, 10,
@@ -79,6 +117,13 @@ var grammarTestCases = []grammarTestCase{
 		[]string{"A", "B", "C", "D"}, []string{},
 		[]string{},
 		[]string{"A", "B", "C", "D"}, []string{"A", "B", "C", "D"},
+		map[string][]string{
+			"S": []string{"$"},
+			"A": []string{"a", "f"},
+			"B": []string{"c"},
+			"C": []string{"d"},
+			"D": []string{"e"},
+		},
 	},
 	{
 		tgCycle1, true, 1, 2, 3,
@@ -86,6 +131,9 @@ var grammarTestCases = []grammarTestCase{
 		[]string{"a", "b"},
 		[]string{"S"}, []string{"S"},
 		[]string{"S"}, []string{}, []string{},
+		map[string][]string{
+			"S": []string{"$"},
+		},
 	},
 	{
 		tgCycle2, true, 2, 4, 6,
@@ -93,6 +141,10 @@ var grammarTestCases = []grammarTestCase{
 		[]string{"a", "b", "c", "d"},
 		[]string{"A"}, []string{"A"},
 		[]string{"A"}, []string{}, []string{},
+		map[string][]string{
+			"S": []string{"$"},
+			"A": []string{"$"},
+		},
 	},
 	{
 		tgCycle3, true, 2, 4, 6,
@@ -100,6 +152,10 @@ var grammarTestCases = []grammarTestCase{
 		[]string{"a", "b", "c", "d"},
 		[]string{"S", "A"}, []string{},
 		[]string{"S", "A"}, []string{}, []string{},
+		map[string][]string{
+			"S": []string{"$"},
+			"A": []string{"$"},
+		},
 	},
 	{
 		tgCycle4, true, 3, 6, 9,
@@ -107,6 +163,11 @@ var grammarTestCases = []grammarTestCase{
 		[]string{"a", "b", "c", "d", "e", "f"},
 		[]string{"S", "A", "B"}, []string{},
 		[]string{"S", "A", "B"}, []string{}, []string{},
+		map[string][]string{
+			"S": []string{"$"},
+			"A": []string{"$"},
+			"B": []string{"$"},
+		},
 	},
 	{
 		tgNullable1, false, 7, 2, 10,
@@ -114,6 +175,15 @@ var grammarTestCases = []grammarTestCase{
 		[]string{"a", "b"},
 		[]string{}, []string{},
 		[]string{}, []string{"C", "D"}, []string{"S", "C", "D"},
+		map[string][]string{
+			"S": []string{"$"},
+			"A": []string{"b"},
+			"B": []string{"$"},
+			"C": []string{"b", "$"},
+			"D": []string{"$"},
+			"E": []string{"b", "$"},
+			"F": []string{"$"},
+		},
 	},
 	{
 		tgNullable2, false, 7, 2, 12,
@@ -121,6 +191,15 @@ var grammarTestCases = []grammarTestCase{
 		[]string{"a", "b"},
 		[]string{}, []string{},
 		[]string{}, []string{"B", "D"}, []string{"S", "B", "C", "D"},
+		map[string][]string{
+			"S": []string{"$"},
+			"A": []string{"a", "b", "$"},
+			"B": []string{"b", "$"},
+			"C": []string{"b", "$"},
+			"D": []string{"$"},
+			"E": []string{"b", "$"},
+			"F": []string{"a", "b", "$"},
+		},
 	},
 	{
 		tgNullable3, true, 8, 2, 16,
@@ -129,5 +208,15 @@ var grammarTestCases = []grammarTestCase{
 		[]string{"S", "G"}, []string{},
 		[]string{"S", "G"}, []string{"B", "D"},
 		[]string{"S", "B", "G", "C", "D"},
+		map[string][]string{
+			"S": []string{"$"},
+			"A": []string{"a", "b", "$"},
+			"B": []string{"b", "$"},
+			"C": []string{"b", "$"},
+			"D": []string{"$"},
+			"E": []string{"b", "$"},
+			"F": []string{"a", "b", "$"},
+			"G": []string{"$"},
+		},
 	},
 }

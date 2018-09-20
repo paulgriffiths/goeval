@@ -40,3 +40,13 @@ func (c BodyComp) IsEmpty() bool {
 func (c BodyComp) IsInputEnd() bool {
 	return c.T == BodyInputEnd
 }
+
+// NewBodyEmpty returns a new empty body component.
+func NewBodyEmpty() BodyComp {
+	return BodyComp{BodyEmpty, 0}
+}
+
+// NewBodyInputEnd returns a new end of input marker.
+func NewBodyInputEnd() BodyComp {
+	return BodyComp{BodyInputEnd, -1}
+}

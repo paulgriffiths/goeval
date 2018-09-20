@@ -37,3 +37,9 @@ func (b Body) HasOnlyTerminals() bool {
 	}
 	return true
 }
+
+// IsLast returns true if the provided index refers to the last
+// element of the list.
+func (b Body) IsLast(n int) bool {
+	return n == len(b)-1
+}

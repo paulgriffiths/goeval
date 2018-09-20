@@ -62,6 +62,15 @@ func (s *SetBodyComp) InsertEmpty() {
 	(*s)[BodyComp{BodyEmpty, 0}] = true
 }
 
+// Merge inserts into a set the elements from another set.
+func (s *SetBodyComp) Merge(other SetBodyComp) {
+	for key, value := range other {
+		if value {
+			(*s)[key] = true
+		}
+	}
+}
+
 // Delete deletes an body component from a set.
 func (s *SetBodyComp) Delete(n BodyComp) {
 	delete(*s, n)
