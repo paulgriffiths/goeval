@@ -21,6 +21,7 @@ func main() {
 	listCycles := flag.Bool("c", false, "list nonterminals with cycles")
 	listE := flag.Bool("e", false, "list nonterminals with e-productions")
 	listNull := flag.Bool("n", false, "list nonterminals which are nullable")
+	listUseless := flag.Bool("u", false, "list useless rules")
 	listAll := flag.Bool("a", false, "list all grammar information "+
 		"(equivalent to -stcen)")
 	flag.Parse()
@@ -63,8 +64,12 @@ func main() {
 	if *listNull || *listAll {
 		outputNullable(grammar)
 	}
+	if *listUseless || *listAll {
+		outputUseless(grammar)
+	}
 	if *listFirst || *listAll {
 		outputFirst(grammar)
+		outputFollows(grammar)
 	}
 	if *recog != "" {
 		if grammar.IsLeftRecursive() {

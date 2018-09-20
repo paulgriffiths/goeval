@@ -14,6 +14,7 @@ type grammarTestCase struct {
 	haveEProds               []string
 	areNullable              []string
 	unreachable              []string
+	unproductive             []string
 	follows                  map[string][]string
 }
 
@@ -24,6 +25,7 @@ var grammarTestCases = []grammarTestCase{
 		[]string{"\\+", "\\*", "\\(", "\\)", "[[:digit:]]+"},
 		[]string{"E", "T"}, []string{"E", "T"},
 		[]string{}, []string{}, []string{},
+		[]string{},
 		[]string{},
 		map[string][]string{
 			"F":      []string{"\\+", "\\*", "\\)", "$"},
@@ -38,6 +40,7 @@ var grammarTestCases = []grammarTestCase{
 		[]string{"\\+", "\\*", "\\(", "\\)", "[[:digit:]]+"},
 		[]string{}, []string{},
 		[]string{}, []string{"E'", "T'"}, []string{"E'", "T'"},
+		[]string{},
 		[]string{},
 		map[string][]string{
 			"F":      []string{"\\+", "\\*", "\\)", "$"},
@@ -55,6 +58,7 @@ var grammarTestCases = []grammarTestCase{
 		[]string{"E"}, []string{"E"},
 		[]string{}, []string{}, []string{},
 		[]string{},
+		[]string{},
 		map[string][]string{
 			"E":      []string{"\\*", "\\+", "\\)", "$"},
 			"Digits": []string{"\\*", "\\+", "\\)", "$"},
@@ -67,6 +71,7 @@ var grammarTestCases = []grammarTestCase{
 		[]string{"S"}, []string{"S"},
 		[]string{}, []string{"S"}, []string{"S"},
 		[]string{},
+		[]string{},
 		map[string][]string{
 			"S": []string{"\\(", "\\)", "$"},
 		},
@@ -77,6 +82,7 @@ var grammarTestCases = []grammarTestCase{
 		[]string{"\\(", "\\)"},
 		[]string{}, []string{},
 		[]string{}, []string{"S"}, []string{"S"},
+		[]string{},
 		[]string{},
 		map[string][]string{
 			"S": []string{"\\)", "$"},
@@ -89,6 +95,7 @@ var grammarTestCases = []grammarTestCase{
 		[]string{}, []string{},
 		[]string{}, []string{}, []string{},
 		[]string{},
+		[]string{},
 		map[string][]string{
 			"S": []string{"1", "$"},
 		},
@@ -99,6 +106,7 @@ var grammarTestCases = []grammarTestCase{
 		[]string{"a", "b", "c", "d"},
 		[]string{"S", "A"}, []string{"A"},
 		[]string{}, []string{"A"}, []string{"A"},
+		[]string{},
 		[]string{},
 		map[string][]string{
 			"S": []string{"d", "$"},
@@ -111,6 +119,7 @@ var grammarTestCases = []grammarTestCase{
 		[]string{"a", "b", "c", "d", "e"},
 		[]string{"S", "A", "B", "C"}, []string{},
 		[]string{}, []string{"A", "B", "C"}, []string{"A", "B", "C"},
+		[]string{},
 		[]string{},
 		map[string][]string{
 			"S": []string{"e", "$"},
@@ -127,6 +136,7 @@ var grammarTestCases = []grammarTestCase{
 		[]string{},
 		[]string{"A", "B", "C", "D"}, []string{"A", "B", "C", "D"},
 		[]string{},
+		[]string{},
 		map[string][]string{
 			"S": []string{"$"},
 			"A": []string{"a", "f"},
@@ -142,6 +152,7 @@ var grammarTestCases = []grammarTestCase{
 		[]string{"S"}, []string{"S"},
 		[]string{"S"}, []string{}, []string{},
 		[]string{},
+		[]string{},
 		map[string][]string{
 			"S": []string{"$"},
 		},
@@ -152,6 +163,7 @@ var grammarTestCases = []grammarTestCase{
 		[]string{"a", "b", "c", "d"},
 		[]string{"A"}, []string{"A"},
 		[]string{"A"}, []string{}, []string{},
+		[]string{},
 		[]string{},
 		map[string][]string{
 			"S": []string{"$"},
@@ -165,6 +177,7 @@ var grammarTestCases = []grammarTestCase{
 		[]string{"S", "A"}, []string{},
 		[]string{"S", "A"}, []string{}, []string{},
 		[]string{},
+		[]string{},
 		map[string][]string{
 			"S": []string{"$"},
 			"A": []string{"$"},
@@ -176,6 +189,7 @@ var grammarTestCases = []grammarTestCase{
 		[]string{"a", "b", "c", "d", "e", "f"},
 		[]string{"S", "A", "B"}, []string{},
 		[]string{"S", "A", "B"}, []string{}, []string{},
+		[]string{},
 		[]string{},
 		map[string][]string{
 			"S": []string{"$"},
@@ -189,6 +203,7 @@ var grammarTestCases = []grammarTestCase{
 		[]string{"a", "b"},
 		[]string{}, []string{},
 		[]string{}, []string{"C", "D"}, []string{"S", "C", "D"},
+		[]string{},
 		[]string{},
 		map[string][]string{
 			"S": []string{"$"},
@@ -206,6 +221,7 @@ var grammarTestCases = []grammarTestCase{
 		[]string{"a", "b"},
 		[]string{}, []string{},
 		[]string{}, []string{"B", "D"}, []string{"S", "B", "C", "D"},
+		[]string{},
 		[]string{},
 		map[string][]string{
 			"S": []string{"$"},
@@ -225,6 +241,7 @@ var grammarTestCases = []grammarTestCase{
 		[]string{"S", "G"}, []string{"B", "D"},
 		[]string{"S", "B", "G", "C", "D"},
 		[]string{},
+		[]string{},
 		map[string][]string{
 			"S": []string{"$"},
 			"A": []string{"a", "b", "$"},
@@ -243,6 +260,7 @@ var grammarTestCases = []grammarTestCase{
 		[]string{"E", "T"}, []string{"E", "T"},
 		[]string{}, []string{}, []string{},
 		[]string{"U"},
+		[]string{},
 		map[string][]string{
 			"F":      []string{"\\+", "\\*", "\\)", "$"},
 			"T":      []string{"\\+", "\\*", "\\)", "$"},
@@ -258,6 +276,7 @@ var grammarTestCases = []grammarTestCase{
 		[]string{"E", "T", "W"}, []string{"E", "T", "W"},
 		[]string{"W"}, []string{"W"}, []string{"W"},
 		[]string{"U", "V", "W"},
+		[]string{},
 		map[string][]string{
 			"F":      []string{"\\+", "\\*", "\\)", "$"},
 			"T":      []string{"\\+", "\\*", "\\)", "$"},
@@ -266,6 +285,41 @@ var grammarTestCases = []grammarTestCase{
 			"U":      []string{},
 			"V":      []string{},
 			"W":      []string{},
+		},
+	},
+	{
+		tgUnproductive1, true, 5, 6, 8,
+		[]string{"E", "T", "F", "Digits", "U"},
+		[]string{"\\+", "\\*", "\\(", "\\)", "[[:digit:]]+", "u"},
+		[]string{"E", "T", "U"}, []string{"E", "T", "U"},
+		[]string{}, []string{}, []string{},
+		[]string{"U"},
+		[]string{"U"},
+		map[string][]string{
+			"F":      []string{"\\+", "\\*", "\\)", "$"},
+			"T":      []string{"\\+", "\\*", "\\)", "$"},
+			"E":      []string{"\\+", "\\)", "$"},
+			"Digits": []string{"\\*", "\\+", "\\)", "$"},
+			"U":      []string{"u"},
+		},
+	},
+	{
+		tgUnproductive2, true, 7, 7, 11,
+		[]string{"E", "T", "F", "Digits", "W", "U", "V"},
+		[]string{"\\+", "\\*", "\\(", "\\)", "[[:digit:]]+", "u", "w"},
+		[]string{"E", "T", "W", "U", "V"},
+		[]string{"E", "T", "W", "U", "V"},
+		[]string{"V"}, []string{}, []string{},
+		[]string{"U", "V"},
+		[]string{"W", "U", "V"},
+		map[string][]string{
+			"F":      []string{"\\+", "\\*", "\\)", "$"},
+			"T":      []string{"\\+", "\\*", "\\)", "$"},
+			"E":      []string{"\\+", "\\)", "$"},
+			"Digits": []string{"\\*", "\\+", "\\)", "$"},
+			"U":      []string{"u"},
+			"V":      []string{},
+			"W":      []string{"\\*", "\\+", "\\)", "w", "$"},
 		},
 	},
 }

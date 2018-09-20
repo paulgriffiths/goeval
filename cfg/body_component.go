@@ -41,6 +41,16 @@ func (c BodyComp) IsInputEnd() bool {
 	return c.T == BodyInputEnd
 }
 
+// NewNonTerminal returns a new nonterminal body component.
+func NewNonTerminal(n int) BodyComp {
+	return BodyComp{BodyNonTerminal, n}
+}
+
+// NewTerminal returns a new terminal body component.
+func NewTerminal(n int) BodyComp {
+	return BodyComp{BodyTerminal, n}
+}
+
 // NewBodyEmpty returns a new empty body component.
 func NewBodyEmpty() BodyComp {
 	return BodyComp{BodyEmpty, 0}

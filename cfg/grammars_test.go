@@ -20,6 +20,8 @@ var tgNullable2 = tgFilePrefix + "15_nullable_2.grammar"
 var tgNullable3 = tgFilePrefix + "16_nullable_3.grammar"
 var tgUnreachable1 = tgFilePrefix + "17_unreachable_1.grammar"
 var tgUnreachable2 = tgFilePrefix + "18_unreachable_2.grammar"
+var tgUnproductive1 = tgFilePrefix + "19_unproductive_1.grammar"
+var tgUnproductive2 = tgFilePrefix + "20_unproductive_2.grammar"
 
 var tgOutArithLrRaw = tgFilePrefix + "output/01_arith_lr_raw.grammar"
 var tgOutArithNlrRaw = tgFilePrefix + "output/02_arith_nlr_raw.grammar"

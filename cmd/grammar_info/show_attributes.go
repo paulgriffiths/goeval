@@ -49,6 +49,13 @@ func outputNullable(grammar *cfg.Cfg) {
 		"is nullable", "are nullable")
 }
 
+func outputUseless(grammar *cfg.Cfg) {
+	outputNonTerminalList(grammar, grammar.Unreachable(),
+		"is unreachable", "are unreachable")
+	outputNonTerminalList(grammar, grammar.Unproductive(),
+		"is unproductive", "are unproductive")
+}
+
 func outputNonTerminalList(grammar *cfg.Cfg, list []int,
 	singular, plural string) {
 	if len(list) == 0 {
@@ -84,6 +91,43 @@ func outputFirst(grammar *cfg.Cfg) {
 		}
 
 		fmt.Printf("First(%s) = { ", nt)
+		for n, terminal := range terminals {
+			if n != 0 {
+				fmt.Printf(", ")
+			}
+			fmt.Printf("%s", terminal)
+		}
+		fmt.Printf(" }\n")
+	}
+}
+
+func outputFollows(grammar *cfg.Cfg) {
+	follows := grammar.Follow()
+	for nt, set := range follows {
+		f := set.Elements()
+
+		terminals := []string{}
+		hasEmpty := false
+		hasEnd := false
+		for _, terminal := range f {
+			if terminal.IsEmpty() {
+				hasEmpty = true
+			} else if terminal.IsInputEnd() {
+				hasEnd = true
+			} else {
+				t := fmt.Sprintf("`%s`", grammar.Terminals[terminal.I])
+				terminals = append(terminals, t)
+			}
+		}
+		sort.Sort(sort.StringSlice(terminals))
+		if hasEmpty {
+			terminals = append(terminals, "e")
+		}
+		if hasEnd {
+			terminals = append(terminals, "$")
+		}
+
+		fmt.Printf("Follow(%s) = { ", grammar.NonTerminals[nt])
 		for n, terminal := range terminals {
 			if n != 0 {
 				fmt.Printf(", ")
