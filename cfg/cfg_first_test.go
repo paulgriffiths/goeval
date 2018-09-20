@@ -101,22 +101,22 @@ func TestCfgFirst(t *testing.T) {
 
 func TestCfgFollows(t *testing.T) {
 	/*
-		testCases := []struct {
-			filename   string
-			result map[string][]string
-		}{
-			{
-				tgArithNlr,
-	            map[string][]string {
-	                "F": []string{"\\+", "\\*", "\\)", "$"},
-	                "T": []string{"\\+", "\\)", "$"},
-	                "E": []string{"\\)", "$"},
-	                "E'": []string{"\\)", "$"},
-	                "T'": []string{"\\+", "\\)", "$"},
-	                "Digits": []string{"\\*", "\\+", "\\)", "$"},
-	            },
-			},
-		}
+			testCases := []struct {
+				filename   string
+				result map[string][]string
+			}{
+				{
+					tgArithNlr,
+		            map[string][]string {
+		                "F": []string{"\\+", "\\*", "\\)", "$"},
+		                "T": []string{"\\+", "\\)", "$"},
+		                "E": []string{"\\)", "$"},
+		                "E'": []string{"\\)", "$"},
+		                "T'": []string{"\\+", "\\)", "$"},
+		                "Digits": []string{"\\*", "\\+", "\\)", "$"},
+		            },
+				},
+			}
 	*/
 
 	for n, tc := range grammarTestCases {
