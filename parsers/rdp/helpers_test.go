@@ -7,6 +7,26 @@ import (
 	"testing"
 )
 
+func getParserFromFile(t *testing.T, filename string) (*Rdp, error) {
+	infile, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	grammar, err := cfg.NewCfg(infile)
+	infile.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	parser, err := New(grammar)
+	if err != nil {
+		return nil, err
+	}
+
+	return parser, nil
+}
+
 func getParseTreeFromFile(t *testing.T, filename,
 	input string) (*tree.Node, error) {
 	infile, err := os.Open(filename)

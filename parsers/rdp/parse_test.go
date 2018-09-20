@@ -5,6 +5,42 @@ import (
 	"testing"
 )
 
+func TestParserAccepts(t *testing.T) {
+	for _, tc := range parserTestCases {
+		parser, err := getParserFromFile(t, tc.filename)
+		if err != nil {
+			t.Errorf("couldn't get parser tree for file %q: %v",
+				tc.filename, err)
+			continue
+		}
+
+		for _, input := range tc.accepts {
+			if parser.Parse(input) == nil {
+				t.Errorf("grammar %s, string %s, improperly accepted",
+					tc.filename, input)
+			}
+		}
+	}
+}
+
+func TestParserRejects(t *testing.T) {
+	for _, tc := range parserTestCases {
+		parser, err := getParserFromFile(t, tc.filename)
+		if err != nil {
+			t.Errorf("couldn't get parser tree for file %q: %v",
+				tc.filename, err)
+			continue
+		}
+
+		for _, input := range tc.rejects {
+			if parser.Parse(input) != nil {
+				t.Errorf("grammar %s, string %s, improperly accepted",
+					tc.filename, input)
+			}
+		}
+	}
+}
+
 func TestParseWriteBracketed(t *testing.T) {
 	testCases := []struct {
 		filename, input string
