@@ -4,6 +4,43 @@ import (
 	"testing"
 )
 
+func TestCfgFirstNlr(t *testing.T) {
+	testCases := [][]string{
+		[]string{"\\(", "[[:digit:]]+"},
+		[]string{"\\(", "[[:digit:]]+"},
+		[]string{"\\+", ""},
+		[]string{"\\(", "[[:digit:]]+"},
+		[]string{"\\*", ""},
+		[]string{"[[:digit:]]+"},
+	}
+
+	c, err := getAndParseFile(t, tgArithNlr)
+	if err != nil {
+		t.Errorf("couldn't parse file %q: %v", tgArithNlr, err)
+		return
+	}
+
+	comparisonSet := make([]SetBodyComp, len(c.NonTerminals))
+
+	for n, tc := range testCases {
+		comparisonSet[n] = NewSetBodyComp()
+		for _, s := range tc {
+			if s == "" {
+				comparisonSet[n].Insert(NewBodyEmpty())
+				continue
+			}
+			comparisonSet[n].Insert(c.TerminalComp(s))
+		}
+	}
+
+	for n := range c.NonTerminals {
+		if !c.Firsts[n].Equals(comparisonSet[n]) {
+			t.Errorf("case %d, got %v, want %v", n+1,
+				c.Firsts[n].Elements(), comparisonSet[n].Elements())
+		}
+	}
+}
+
 func TestCfgFirst(t *testing.T) {
 	testCases := []struct {
 		filename   string
@@ -100,25 +137,6 @@ func TestCfgFirst(t *testing.T) {
 }
 
 func TestCfgFollows(t *testing.T) {
-	/*
-			testCases := []struct {
-				filename   string
-				result map[string][]string
-			}{
-				{
-					tgArithNlr,
-		            map[string][]string {
-		                "F": []string{"\\+", "\\*", "\\)", "$"},
-		                "T": []string{"\\+", "\\)", "$"},
-		                "E": []string{"\\)", "$"},
-		                "E'": []string{"\\)", "$"},
-		                "T'": []string{"\\+", "\\)", "$"},
-		                "Digits": []string{"\\*", "\\+", "\\)", "$"},
-		            },
-				},
-			}
-	*/
-
 	for n, tc := range grammarTestCases {
 		if tc.follows == nil {
 			continue
@@ -130,7 +148,6 @@ func TestCfgFollows(t *testing.T) {
 			continue
 		}
 
-		resultSets := c.Follow()
 		cmpSet := make([]SetBodyComp, len(c.NonTerminals))
 		for i := 0; i < len(c.NonTerminals); i++ {
 			cmpSet[i] = NewSetBodyComp()
@@ -148,11 +165,10 @@ func TestCfgFollows(t *testing.T) {
 		}
 
 		for i := 0; i < len(c.NonTerminals); i++ {
-			if !resultSets[i].Equals(cmpSet[i]) {
+			if !c.Follows[i].Equals(cmpSet[i]) {
 				t.Errorf("case %d, nonterminal %s, got %v, want %v",
-					n+1, c.NonTerminals[i], resultSets[i].Elements(),
+					n+1, c.NonTerminals[i], c.Follows[i].Elements(),
 					cmpSet[i].Elements())
-
 			}
 		}
 	}

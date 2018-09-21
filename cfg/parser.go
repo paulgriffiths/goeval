@@ -18,6 +18,9 @@ func parse(input io.Reader) (*Cfg, error) {
 		return nil, perr
 	}
 
+	c.calcFirsts()
+	c.calcFollows()
+
 	return c, nil
 }
 
@@ -138,6 +141,8 @@ func firstPass(tokens []token) *Cfg {
 		NtTable:      ntTable,
 		TTable:       tTable,
 		Prods:        make([]BodyList, len(nonTerminals)),
+		Firsts:       nil,
+		Follows:      nil,
 	}
 	return &c
 }

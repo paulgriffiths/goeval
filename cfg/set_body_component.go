@@ -71,6 +71,15 @@ func (s *SetBodyComp) Merge(other SetBodyComp) {
 	}
 }
 
+// Copy returns a copy of the set.
+func (s SetBodyComp) Copy() SetBodyComp {
+	c := NewSetBodyComp()
+	for key := range s {
+		c[key] = true
+	}
+	return c
+}
+
 // Delete deletes an body component from a set.
 func (s *SetBodyComp) Delete(n BodyComp) {
 	delete(*s, n)
