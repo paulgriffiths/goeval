@@ -139,10 +139,6 @@ func TestCfgFirst(t *testing.T) {
 
 func TestCfgFollows(t *testing.T) {
 	for n, tc := range grammarTestCases {
-		if tc.follows == nil {
-			continue
-		}
-
 		c, err := getAndParseFile(t, tc.filename)
 		if err != nil {
 			t.Errorf("couldn't parse file %q: %v", tc.filename, err)
@@ -169,6 +165,41 @@ func TestCfgFollows(t *testing.T) {
 			if !c.Follow(i).Equals(cmpSet[i]) {
 				t.Errorf("case %d, nonterminal %s, got %v, want %v",
 					n+1, c.NonTerminals[i], c.Follow(i).Elements(),
+					cmpSet[i].Elements())
+			}
+		}
+	}
+}
+
+func TestCfgFirsts(t *testing.T) {
+	for n, tc := range grammarTestCases {
+		c, err := getAndParseFile(t, tc.filename)
+		if err != nil {
+			t.Errorf("couldn't parse file %q: %v", tc.filename, err)
+			continue
+		}
+
+		cmpSet := make([]SetBodyComp, len(c.NonTerminals))
+		for i := 0; i < len(c.NonTerminals); i++ {
+			cmpSet[i] = NewSetBodyComp()
+		}
+
+		for nonTerm, terminals := range tc.firsts {
+			n := c.NtTable[nonTerm]
+			for _, term := range terminals {
+				if term == "" {
+					cmpSet[n].Insert(NewBodyEmpty())
+					continue
+				}
+				cmpSet[n].Insert(c.TerminalComp(term))
+			}
+		}
+
+		for i := 0; i < len(c.NonTerminals); i++ {
+			if !c.First(NewNonTerminal(i)).Equals(cmpSet[i]) {
+				t.Errorf("case %d, nonterminal %s, got %v, want %v",
+					n+1, c.NonTerminals[i],
+					c.First(NewNonTerminal(i)).Elements(),
 					cmpSet[i].Elements())
 			}
 		}

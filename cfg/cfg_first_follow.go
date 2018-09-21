@@ -1,9 +1,5 @@
 package cfg
 
-// BUG: First() returns {`a`, `b`, `c`, 𝜀} for nonterminal 𝑆 in
-// test case 07_indirect_lr_1.grammar, when it should be
-// {`a`, `b`, `c`}.
-
 // First returns the set of terminals that begin strings derived
 // from the provided string of components.
 func (c *Cfg) First(comp ...BodyComp) SetBodyComp {
@@ -116,6 +112,7 @@ func (c *Cfg) firstInternal(comp BodyComp,
 		for _, component := range body {
 			set.Merge(c.firstInternal(component, checked))
 			if !(component.IsNonTerminal() && c.IsNullable(component.I)) {
+				set.DeleteEmpty()
 				break
 			}
 		}
