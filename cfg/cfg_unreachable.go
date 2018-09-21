@@ -5,7 +5,8 @@ import (
 	"sort"
 )
 
-// Unreachable returns a list of unreachable nonterminals.
+// Unreachable returns a list all nonterminals which are not reachable
+// from the start symbol.
 func (c *Cfg) Unreachable() []int {
 
 	// Begin search from start symbol 𝑆, which is always reachable.
@@ -13,7 +14,7 @@ func (c *Cfg) Unreachable() []int {
 	reachable := sets.NewSetInt(0)
 	visitNext := sets.NewSetInt(0)
 
-	for {
+	for !visitNext.IsEmpty() {
 
 		// Loop through all productions of all nonterminals reached
 		// on the last loop iteration, and aggregate any nonterminals
@@ -31,16 +32,12 @@ func (c *Cfg) Unreachable() []int {
 			}
 		}
 
-		// If we didn't reach any nonterminals which had not already
-		// been reached, then no additional loop iterations will
-		// reach any more, so terminate loop.
-
-		if reached.IsEmpty() {
-			break
-		}
-
-		// Otherwise add the newly-reached nonterminals to the
-		// reachable set and loop again.
+		// Add any newly-reached nonterminals to the reachable set
+		// and assign the set of nonterminals reached on this loop
+		// iteration to visitNext. If we didn't reach any nonterminals
+		// which had not already been reached, then no additional loop
+		// iterations will reach any more. In this case, visitSet
+		// will be the empty set and the loop will terminate.
 
 		reachable.Merge(reached)
 		visitNext = reached
