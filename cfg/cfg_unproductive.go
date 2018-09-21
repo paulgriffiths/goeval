@@ -4,11 +4,13 @@ package cfg
 func (c *Cfg) Unproductive() []int {
 	list := []int{}
 
-	for i := 0; i < len(c.NonTerminals); i++ {
-		first := c.First(NewNonTerminal(i))
-		if first.Length() == 0 {
+	// A nonterminal 𝐴 is unproductive if First(𝐴) yields the empty set.
+
+	for i := range c.NonTerminals {
+		if c.First(NewNonTerminal(i)).IsEmpty() {
 			list = append(list, i)
 		}
 	}
+
 	return list
 }

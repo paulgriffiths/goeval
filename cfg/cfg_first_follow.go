@@ -120,7 +120,7 @@ func (c *Cfg) firstInternal(comp BodyComp,
 	return set
 }
 
-// Follows calculates the Follow set for the given nonterminal, where
+// Follow calculates the Follow set for the given nonterminal, where
 // the Follow set contains the set of terminals, or the end-of-input
 // marker, which can follow that nonterminal.
 func (c *Cfg) Follow(n int) SetBodyComp {

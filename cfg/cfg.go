@@ -1,6 +1,9 @@
 package cfg
 
-import "io"
+import (
+	"github.com/paulgriffiths/gods/sets"
+	"io"
+)
 
 // Cfg represents a context-free grammar.
 type Cfg struct {
@@ -29,4 +32,16 @@ func (c *Cfg) NonTerminalComp(nt string) BodyComp {
 // named in the provided string.
 func (c *Cfg) TerminalComp(nt string) BodyComp {
 	return BodyComp{BodyTerminal, c.TTable[nt]}
+}
+
+// NonTerminalsSet returns an integer set containing the elements
+// 0...𝑛-1, where 𝑛 is the number of nonterminals.
+func (c *Cfg) NonTerminalsSet() sets.SetInt {
+	return sets.NewSetInt(intRange(len(c.NonTerminals))...)
+}
+
+// TerminalsSet returns an integer set containing the elements
+// 0...𝑛-1, where 𝑛 is the number of terminals.
+func (c *Cfg) TerminalsSet() sets.SetInt {
+	return sets.NewSetInt(intRange(len(c.Terminals))...)
 }
