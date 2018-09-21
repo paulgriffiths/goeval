@@ -4,8 +4,8 @@ package cfg
 // are nullable.
 func (c *Cfg) NonTerminalsNullable() []int {
 	list := []int{}
-	for n := range c.Prods {
-		if c.inInternal(n, n, make(map[int]bool)) {
+	for n := range c.NonTerminals {
+		if c.IsNullable(n) {
 			list = append(list, n)
 		}
 	}
@@ -14,6 +14,7 @@ func (c *Cfg) NonTerminalsNullable() []int {
 
 // IsNullable checks if a nonterminal is nullable.
 func (c *Cfg) IsNullable(nt int) bool {
+	//return c.First(NewNonTerminal(nt)).ContainsEmpty()
 	return c.inInternal(nt, nt, make(map[int]bool))
 }
 

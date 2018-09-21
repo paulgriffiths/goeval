@@ -2,12 +2,7 @@ package cfg
 
 // HasEProduction checks if the grammar has an e-production.
 func (c *Cfg) HasEProduction() bool {
-	for _, prod := range c.Prods {
-		if prod.HasEmpty() {
-			return true
-		}
-	}
-	return false
+	return len(c.NonTerminalsWithEProductions()) != 0
 }
 
 // NonTerminalsWithEProductions returns a list of nonterminals which
