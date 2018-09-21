@@ -50,7 +50,7 @@ func (c *Cfg) calcFirsts() {
 
 	for setsChanged {
 
-		// Calculate first sets for each nonterminal.
+		// Complete one First set calculation cycle for each nonterminal.
 
 		for n := range c.NonTerminals {
 			component := NewNonTerminal(n)
@@ -59,8 +59,8 @@ func (c *Cfg) calcFirsts() {
 		}
 
 		// We need to apply the rules until nothing can be added to
-		// any follow set, which will be the case if we've applied
-		// the rules to every production and none of the follow sets
+		// any First set, which will be the case if we've applied
+		// the rules to every production and none of the First sets
 		// have changed since we started.
 
 		setsChanged = false
@@ -73,7 +73,7 @@ func (c *Cfg) calcFirsts() {
 	}
 }
 
-// firstInternal performs one complete cycle of first set
+// firstInternal performs one complete cycle of First set
 // computation rules for a given symbol.
 func (c *Cfg) firstInternal(comp BodyComp,
 	checked map[BodyComp]bool) SetBodyComp {
@@ -93,7 +93,7 @@ func (c *Cfg) firstInternal(comp BodyComp,
 
 	if checked[comp] {
 
-		// We already calculated first for this nonterminal,
+		// We already calculated First for this nonterminal,
 		// so return the empty set and avoid an infinite loop.
 
 		return set
@@ -141,7 +141,7 @@ func (c *Cfg) calcFollows() {
 
 					if !comp.IsNonTerminal() {
 
-						// We're only calculating follow for
+						// We're only calculating Follow for
 						// nonterminals, so skip anything else.
 
 						continue
@@ -150,14 +150,14 @@ func (c *Cfg) calcFollows() {
 					if !body.IsLast(i) {
 
 						// If 𝛢→𝛼𝛣𝛽, then everything in first(𝛽)
-						// is in follow(𝛣) except 𝜀, since it's not a
+						// is in Follow(𝛣) except 𝜀, since it's not a
 						// terminal.
 
 						first := c.First(body[i+1:]...).Copy()
 
 						if first.ContainsEmpty() {
 
-							// If first(𝛽) derives 𝜀, then 𝛣 can appear
+							// If First(𝛽) derives 𝜀, then 𝛣 can appear
 							// at the end of an 𝛢 production, therefore
 							// anything that follows 𝛢 can also follow 𝛣.
 
@@ -184,8 +184,8 @@ func (c *Cfg) calcFollows() {
 		}
 
 		// We need to apply the rules until nothing can be added to
-		// any follow set, which will be the case if we've applied
-		// the rules to every production and none of the follow sets
+		// any Follow set, which will be the case if we've applied
+		// the rules to every production and none of the Follow sets
 		// have changed since we started.
 
 		setsChanged = false
