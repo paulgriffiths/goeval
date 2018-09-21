@@ -73,7 +73,7 @@ func outputNonTerminalList(grammar *cfg.Cfg, list []int,
 
 func outputFirst(grammar *cfg.Cfg) {
 	for n, nt := range grammar.NonTerminals {
-		f := grammar.Firsts[n].Elements()
+		f := grammar.First(cfg.NewNonTerminal(n)).Elements()
 
 		terminals := []string{}
 		hasEmpty := false
@@ -102,7 +102,8 @@ func outputFirst(grammar *cfg.Cfg) {
 }
 
 func outputFollows(grammar *cfg.Cfg) {
-	for nt, set := range grammar.Follows {
+	for nt := range grammar.NonTerminals {
+		set := grammar.Follow(nt)
 		f := set.Elements()
 
 		terminals := []string{}

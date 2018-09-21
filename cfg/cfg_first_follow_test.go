@@ -34,9 +34,10 @@ func TestCfgFirstNlr(t *testing.T) {
 	}
 
 	for n := range c.NonTerminals {
-		if !c.Firsts[n].Equals(comparisonSet[n]) {
+		comp := NewNonTerminal(n)
+		if !c.First(comp).Equals(comparisonSet[n]) {
 			t.Errorf("case %d, got %v, want %v", n+1,
-				c.Firsts[n].Elements(), comparisonSet[n].Elements())
+				c.First(comp).Elements(), comparisonSet[n].Elements())
 		}
 	}
 }
@@ -165,9 +166,9 @@ func TestCfgFollows(t *testing.T) {
 		}
 
 		for i := 0; i < len(c.NonTerminals); i++ {
-			if !c.Follows[i].Equals(cmpSet[i]) {
+			if !c.Follow(i).Equals(cmpSet[i]) {
 				t.Errorf("case %d, nonterminal %s, got %v, want %v",
-					n+1, c.NonTerminals[i], c.Follows[i].Elements(),
+					n+1, c.NonTerminals[i], c.Follow(i).Elements(),
 					cmpSet[i].Elements())
 			}
 		}

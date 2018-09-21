@@ -9,8 +9,8 @@ type Cfg struct {
 	NtTable      map[string]int
 	TTable       map[string]int
 	Prods        []BodyList
-	Firsts       []SetBodyComp
-	Follows      []SetBodyComp
+	firsts       []SetBodyComp
+	follows      []SetBodyComp
 }
 
 // NewCfg returns a new context-free grammer from the provided

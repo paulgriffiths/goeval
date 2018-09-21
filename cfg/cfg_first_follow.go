@@ -3,6 +3,9 @@ package cfg
 // First returns the set of terminals that begin strings derived
 // from the provided string of components.
 func (c *Cfg) First(comp ...BodyComp) SetBodyComp {
+	if c.firsts == nil {
+		c.calcFirsts()
+	}
 
 	// First(𝒶𝛽) is simply 𝒶, and 𝜀 obviously has no content so
 	// return an empty set. For a single nonterminal, return the
@@ -16,7 +19,7 @@ func (c *Cfg) First(comp ...BodyComp) SetBodyComp {
 		if comp[0].IsEmpty() {
 			return NewSetBodyComp()
 		} else if comp[0].IsNonTerminal() {
-			return c.Firsts[comp[0].I]
+			return c.firsts[comp[0].I]
 		}
 		panic("unexpected symbol passed to First")
 	}
@@ -39,10 +42,10 @@ func (c *Cfg) First(comp ...BodyComp) SetBodyComp {
 
 // calcFirsts calculates the First sets for each nonterminal.
 func (c *Cfg) calcFirsts() {
-	c.Firsts = make([]SetBodyComp, len(c.NonTerminals))
+	c.firsts = make([]SetBodyComp, len(c.NonTerminals))
 	lengths := make([]int, len(c.NonTerminals))
 	for i := 0; i < len(c.NonTerminals); i++ {
-		c.Firsts[i] = NewSetBodyComp()
+		c.firsts[i] = NewSetBodyComp()
 		lengths[i] = -1
 	}
 
@@ -55,7 +58,7 @@ func (c *Cfg) calcFirsts() {
 		for n := range c.NonTerminals {
 			component := NewNonTerminal(n)
 			f := c.firstInternal(component, make(map[BodyComp]bool))
-			c.Firsts[n].Merge(f)
+			c.firsts[n].Merge(f)
 		}
 
 		// We need to apply the rules until nothing can be added to
@@ -64,7 +67,7 @@ func (c *Cfg) calcFirsts() {
 		// have changed since we started.
 
 		setsChanged = false
-		for i, set := range c.Firsts {
+		for i, set := range c.firsts {
 			if lengths[i] != set.Length() {
 				setsChanged = true
 			}
@@ -117,14 +120,22 @@ func (c *Cfg) firstInternal(comp BodyComp,
 	return set
 }
 
-// calcFollows calculates the Follow set for each nonterminal, where
+// Follows calculates the Follow set for the given nonterminal, where
 // the Follow set contains the set of terminals, or the end-of-input
 // marker, which can follow that nonterminal.
+func (c *Cfg) Follow(n int) SetBodyComp {
+	if c.follows == nil {
+		c.calcFollows()
+	}
+	return c.follows[n]
+}
+
+// calcFollows calculates the Follow set for each nonterminal.
 func (c *Cfg) calcFollows() {
-	c.Follows = make([]SetBodyComp, len(c.NonTerminals))
+	c.follows = make([]SetBodyComp, len(c.NonTerminals))
 	lengths := make([]int, len(c.NonTerminals))
 	for i := 0; i < len(c.NonTerminals); i++ {
-		c.Follows[i] = NewSetBodyComp()
+		c.follows[i] = NewSetBodyComp()
 		lengths[i] = -1
 	}
 
@@ -132,7 +143,7 @@ func (c *Cfg) calcFollows() {
 
 	// End of input can always follow the start symbol.
 
-	c.Follows[0].Insert(NewBodyInputEnd())
+	c.follows[0].Insert(NewBodyInputEnd())
 
 	for setsChanged {
 		for head, prod := range c.Prods {
@@ -161,7 +172,7 @@ func (c *Cfg) calcFollows() {
 							// at the end of an 𝛢 production, therefore
 							// anything that follows 𝛢 can also follow 𝛣.
 
-							c.Follows[comp.I].Merge(c.Follows[head])
+							c.follows[comp.I].Merge(c.follows[head])
 
 							// 𝜀 itself can't follow 𝛣, since it's not a
 							// terminal, so remove it if it's present.
@@ -169,7 +180,7 @@ func (c *Cfg) calcFollows() {
 							first.DeleteEmpty()
 						}
 
-						c.Follows[comp.I].Merge(first)
+						c.follows[comp.I].Merge(first)
 
 					} else if body.IsLast(i) {
 
@@ -177,7 +188,7 @@ func (c *Cfg) calcFollows() {
 						// 𝛢 production, therefore anything that follows
 						// 𝛢 can also follow 𝛣.
 
-						c.Follows[comp.I].Merge(c.Follows[head])
+						c.follows[comp.I].Merge(c.follows[head])
 					}
 				}
 			}
@@ -189,7 +200,7 @@ func (c *Cfg) calcFollows() {
 		// have changed since we started.
 
 		setsChanged = false
-		for i, set := range c.Follows {
+		for i, set := range c.follows {
 			if lengths[i] != set.Length() {
 				setsChanged = true
 			}
