@@ -14,35 +14,5 @@ func (c *Cfg) NonTerminalsNullable() []int {
 
 // IsNullable checks if a nonterminal is nullable.
 func (c *Cfg) IsNullable(nt int) bool {
-	//return c.First(NewNonTerminal(nt)).ContainsEmpty()
-	return c.inInternal(nt, nt, make(map[int]bool))
-}
-
-func (c *Cfg) inInternal(nt, interNt int, checked map[int]bool) bool {
-	if checked[interNt] {
-		return false
-	}
-	checked[interNt] = true
-
-	if c.Prods[interNt].HasEmpty() {
-		return true
-	}
-
-	for _, body := range c.Prods[interNt] {
-		nullable := true
-		for _, comp := range body {
-			if !comp.IsNonTerminal() {
-				nullable = false
-				break
-			}
-			if !c.inInternal(nt, comp.I, checked) {
-				nullable = false
-				break
-			}
-		}
-		if nullable {
-			return true
-		}
-	}
-	return false
+	return c.First(NewNonTerminal(nt)).ContainsEmpty()
 }

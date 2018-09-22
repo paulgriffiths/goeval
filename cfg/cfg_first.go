@@ -1,5 +1,7 @@
 package cfg
 
+import "github.com/paulgriffiths/gods/sets"
+
 // First returns the set of terminals that begin strings derived
 // from the provided string of components.
 func (c *Cfg) First(comp ...BodyComp) SetBodyComp {
@@ -42,6 +44,7 @@ func (c *Cfg) First(comp ...BodyComp) SetBodyComp {
 
 // calcFirsts calculates the First sets for each nonterminal.
 func (c *Cfg) calcFirsts() {
+	nullables := c.calcNullables()
 	c.firsts = make([]SetBodyComp, len(c.NonTerminals))
 	lengths := make([]int, len(c.NonTerminals))
 	for i := 0; i < len(c.NonTerminals); i++ {
@@ -57,7 +60,8 @@ func (c *Cfg) calcFirsts() {
 
 		for n := range c.NonTerminals {
 			component := NewNonTerminal(n)
-			f := c.firstInternal(component, make(map[BodyComp]bool))
+			f := c.firstInternal(component, nullables,
+				make(map[BodyComp]bool))
 			c.firsts[n].Merge(f)
 		}
 
@@ -78,7 +82,7 @@ func (c *Cfg) calcFirsts() {
 
 // firstInternal performs one complete cycle of First set
 // computation rules for a given symbol.
-func (c *Cfg) firstInternal(comp BodyComp,
+func (c *Cfg) firstInternal(comp BodyComp, nullables sets.SetInt,
 	checked map[BodyComp]bool) SetBodyComp {
 
 	set := NewSetBodyComp()
@@ -109,9 +113,9 @@ func (c *Cfg) firstInternal(comp BodyComp,
 			continue
 		}
 
-		for _, component := range body {
-			set.Merge(c.firstInternal(component, checked))
-			if !(component.IsNonTerminal() && c.IsNullable(component.I)) {
+		for _, comp := range body {
+			set.Merge(c.firstInternal(comp, nullables, checked))
+			if !(comp.IsNonTerminal() && nullables.Contains(comp.I)) {
 				set.DeleteEmpty()
 				break
 			}
@@ -121,91 +125,64 @@ func (c *Cfg) firstInternal(comp BodyComp,
 	return set
 }
 
-// Follow calculates the Follow set for the given nonterminal, where
-// the Follow set contains the set of terminals, or the end-of-input
-// marker, which can follow that nonterminal.
-func (c *Cfg) Follow(n int) SetBodyComp {
-	if c.follows == nil {
-		c.calcFollows()
-	}
-	return c.follows[n]
-}
+// calcNullables returns the set of nonterminals which can derive 𝜀.
+func (c *Cfg) calcNullables() sets.SetInt {
+	nullable := sets.NewSetInt()
+	newNulls := sets.NewSetInt()
 
-// calcFollows calculates the Follow set for each nonterminal.
-func (c *Cfg) calcFollows() {
-	c.follows = make([]SetBodyComp, len(c.NonTerminals))
-	lengths := make([]int, len(c.NonTerminals))
-	for i := 0; i < len(c.NonTerminals); i++ {
-		c.follows[i] = NewSetBodyComp()
-		lengths[i] = -1
+	// Add to set any nonterminal 𝐴 where 𝐴 → 𝜀 is a production.
+
+	for n, prod := range c.Prods {
+		if prod.HasEmpty() {
+			nullable.Insert(n)
+		}
 	}
 
-	setsChanged := true
+	// Identify any remaining indirectly nullable nonterminals.
 
-	// End of input can always follow the start symbol.
+	for !nullable.Equals(newNulls) {
+		newNulls.Merge(nullable)
+		nullable.Merge(newNulls)
 
-	c.follows[0].Insert(NewBodyInputEnd())
+		for n, prod := range c.Prods {
 
-	for setsChanged {
-		for head, prod := range c.Prods {
+			// If this nonterminal is already in the set, don't
+			// waste time checking it again.
+
+			if newNulls.Contains(n) {
+				continue
+			}
+
 			for _, body := range prod {
-				for i, comp := range body {
 
-					if !comp.IsNonTerminal() {
+				// If the production body contains a terminal, it
+				// can't be nullable, so continue to the next. We
+				// already identified any 𝐴 → 𝜀 productions.
 
-						// We're only calculating Follow for
-						// nonterminals, so skip anything else.
+				if !body.HasOnlyNonTerminals() {
+					continue
+				}
 
-						continue
+				// The production derives 𝜀 if and only if each
+				// nonterminal in the production derives 𝜀. If the
+				// production derives 𝜀, the whole nonterminal can
+				// derive 𝜀 and there's no need to check further.
+
+				derivesEmpty := true
+				for _, comp := range body {
+					if !newNulls.Contains(comp.I) {
+						derivesEmpty = false
+						break
 					}
+				}
 
-					if !body.IsLast(i) {
-
-						// If 𝛢→𝛼𝛣𝛽, then everything in first(𝛽)
-						// is in Follow(𝛣) except 𝜀, since it's not a
-						// terminal.
-
-						first := c.First(body[i+1:]...).Copy()
-
-						if first.ContainsEmpty() {
-
-							// If First(𝛽) derives 𝜀, then 𝛣 can appear
-							// at the end of an 𝛢 production, therefore
-							// anything that follows 𝛢 can also follow 𝛣.
-
-							c.follows[comp.I].Merge(c.follows[head])
-
-							// 𝜀 itself can't follow 𝛣, since it's not a
-							// terminal, so remove it if it's present.
-
-							first.DeleteEmpty()
-						}
-
-						c.follows[comp.I].Merge(first)
-
-					} else if body.IsLast(i) {
-
-						// If 𝛢→𝛼𝛣, then 𝛣 can appear at the end of an
-						// 𝛢 production, therefore anything that follows
-						// 𝛢 can also follow 𝛣.
-
-						c.follows[comp.I].Merge(c.follows[head])
-					}
+				if derivesEmpty {
+					newNulls.Insert(n)
+					break
 				}
 			}
 		}
-
-		// We need to apply the rules until nothing can be added to
-		// any Follow set, which will be the case if we've applied
-		// the rules to every production and none of the Follow sets
-		// have changed since we started.
-
-		setsChanged = false
-		for i, set := range c.follows {
-			if lengths[i] != set.Length() {
-				setsChanged = true
-			}
-			lengths[i] = set.Length()
-		}
 	}
+
+	return nullable
 }
