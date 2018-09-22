@@ -72,6 +72,8 @@ func outputNonTerminalList(grammar *cfg.Cfg, list []int,
 }
 
 func outputFirst(grammar *cfg.Cfg) {
+	ml := grammar.MaxNonTerminalNameLength()
+	fmt.Printf("First sets:\n")
 	for n, nt := range grammar.NonTerminals {
 		f := grammar.First(cfg.NewNonTerminal(n)).Elements()
 
@@ -90,7 +92,11 @@ func outputFirst(grammar *cfg.Cfg) {
 			terminals = append(terminals, "e")
 		}
 
-		fmt.Printf("First(%s) = { ", nt)
+		fmt.Printf("First(%s)", nt)
+		for i := 0; i <= (ml - len(nt) + 1); i++ {
+			fmt.Printf(" ")
+		}
+		fmt.Printf(": { ")
 		for n, terminal := range terminals {
 			if n != 0 {
 				fmt.Printf(", ")
@@ -102,6 +108,8 @@ func outputFirst(grammar *cfg.Cfg) {
 }
 
 func outputFollows(grammar *cfg.Cfg) {
+	fmt.Printf("Follow sets:\n")
+	ml := grammar.MaxNonTerminalNameLength()
 	for nt := range grammar.NonTerminals {
 		set := grammar.Follow(nt)
 		f := set.Elements()
@@ -127,7 +135,11 @@ func outputFollows(grammar *cfg.Cfg) {
 			terminals = append(terminals, "$")
 		}
 
-		fmt.Printf("Follow(%s) = { ", grammar.NonTerminals[nt])
+		fmt.Printf("Follow(%s)", grammar.NonTerminals[nt])
+		for i := 0; i <= (ml - len(grammar.NonTerminals[nt])); i++ {
+			fmt.Printf(" ")
+		}
+		fmt.Printf(": { ")
 		for n, terminal := range terminals {
 			if n != 0 {
 				fmt.Printf(", ")
