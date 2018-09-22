@@ -61,4 +61,8 @@ var testGrammars = []string{
 	tgNullable1,
 	tgNullable2,
 	tgNullable3,
+	tgUnreachable1,
+	tgUnreachable2,
+	tgUnproductive1,
+	tgUnproductive2,
 }
