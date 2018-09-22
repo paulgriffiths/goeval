@@ -108,7 +108,7 @@ func (c *Cfg) firstInternal(comp BodyComp, nullables sets.SetInt,
 	checked[comp] = true
 
 	for _, body := range c.Prods[comp.I] {
-		if body.IsEmpty() {
+		if body.IsEmptyBody() {
 			set.InsertEmpty()
 			continue
 		}

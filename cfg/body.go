@@ -3,8 +3,13 @@ package cfg
 // Body represents a production body.
 type Body []BodyComp
 
-// IsEmpty checks if a body contains only a single empty component.
+// IsEmpty checks if a body has no components.
 func (b Body) IsEmpty() bool {
+	return len(b) == 0
+}
+
+// IsEmptyBody checks if a body contains only a single empty component.
+func (b Body) IsEmptyBody() bool {
 	return len(b) == 1 && b[0].T == BodyEmpty
 }
 

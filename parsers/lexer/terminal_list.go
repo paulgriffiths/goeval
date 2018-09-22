@@ -3,6 +3,11 @@ package lexer
 // TerminalList implements a list of terminals found by the lexer.
 type TerminalList []Terminal
 
+// IsEmpty checks if a terminal list is empty.
+func (l TerminalList) IsEmpty() bool {
+	return len(l) == 0
+}
+
 // Len returns the length of the terminal list.
 func (l TerminalList) Len() int {
 	return len(l)

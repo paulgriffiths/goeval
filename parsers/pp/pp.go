@@ -4,28 +4,30 @@ import (
 	"github.com/paulgriffiths/goeval/cfg"
 )
 
-type ppTable [][][]cfg.Body
+type ppTable [][]cfg.BodyList
 
 func makePPTable(grammar *cfg.Cfg) ppTable {
 	numTerms := len(grammar.Terminals) + 1 // +1 for end of input marker
 	numNonTerms := len(grammar.NonTerminals)
 
-	newTable := make([][][]cfg.Body, numNonTerms)
+	newTable := make([][]cfg.BodyList, numNonTerms)
 	for i := 0; i < numNonTerms; i++ {
-		newTable[i] = make([][]cfg.Body, numTerms)
+		newTable[i] = make([]cfg.BodyList, numTerms)
 		for j := 0; j < numTerms; j++ {
-			newTable[i][j] = []cfg.Body{}
+			newTable[i][j] = cfg.BodyList{}
 		}
 	}
 
 	return newTable
 }
 
+// Pp represents a predictive parser.
 type Pp struct {
 	g     *cfg.Cfg
 	table ppTable
 }
 
+// NewPp constructs a new predictive parser for a context-free grammar.
 func NewPp(grammar *cfg.Cfg) *Pp {
 	table := makePPTable(grammar)
 	newParser := Pp{grammar, table}
@@ -56,7 +58,7 @@ func buildTable(g *cfg.Cfg, m ppTable) {
 			// to m[𝛢,$], too.
 
 			follow := g.Follow(nt)
-			if first.ContainsEmpty() || body.IsEmpty() {
+			if first.ContainsEmpty() || body.IsEmptyBody() {
 				for _, c := range follow.Elements() {
 					if c.IsTerminal() {
 						m[nt][c.I] = append(m[nt][c.I], body)
