@@ -23,7 +23,7 @@ func (c *Cfg) calcFollows() {
 
 	// End of input can always follow the start symbol.
 
-	c.follows[0].Insert(NewBodyInputEnd())
+	c.follows[0].InsertEndOfInput()
 
 	for setsChanged {
 		for head, prod := range c.Prods {

@@ -50,6 +50,12 @@ func (s SetBodyComp) ContainsEmpty() bool {
 	return s[BodyComp{BodyEmpty, 0}]
 }
 
+// ContainsEndOfInput returns true if the set contains an end of
+// input body marker.
+func (s SetBodyComp) ContainsEndOfInput() bool {
+	return s[BodyComp{BodyInputEnd, -1}]
+}
+
 // Insert inserts an body component into a set if it isn't already
 // in the set.
 func (s *SetBodyComp) Insert(n BodyComp) {
@@ -60,6 +66,12 @@ func (s *SetBodyComp) Insert(n BodyComp) {
 // isn't already in the set.
 func (s *SetBodyComp) InsertEmpty() {
 	(*s)[BodyComp{BodyEmpty, 0}] = true
+}
+
+// InsertEndOfInput inserts an end-of-input marker into a set if it
+// isn't already in the set.
+func (s *SetBodyComp) InsertEndOfInput() {
+	(*s)[BodyComp{BodyInputEnd, -1}] = true
 }
 
 // Merge inserts into a set the elements from another set.

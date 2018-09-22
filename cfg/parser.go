@@ -1,5 +1,7 @@
 package cfg
 
+// BUG: Doesn't throw error if undefined nonterminal is present.
+
 import (
 	"io"
 )
