@@ -2,74 +2,11 @@ package cfg
 
 import "testing"
 
-func TestCfgFirstNlr(t *testing.T) {
-	testCases := [][]string{
-		[]string{"\\(", "[[:digit:]]+"},
-		[]string{"\\(", "[[:digit:]]+"},
-		[]string{"\\+", ""},
-		[]string{"\\(", "[[:digit:]]+"},
-		[]string{"\\*", ""},
-		[]string{"[[:digit:]]+"},
-	}
-
-	c, err := getAndParseFile(t, tgArithNlr)
-	if err != nil {
-		t.Errorf("couldn't parse file %q: %v", tgArithNlr, err)
-		return
-	}
-
-	comparisonSet := make([]SetBodyComp, len(c.NonTerminals))
-
-	for n, tc := range testCases {
-		comparisonSet[n] = NewSetBodyComp()
-		for _, s := range tc {
-			if s == "" {
-				comparisonSet[n].Insert(NewBodyEmpty())
-				continue
-			}
-			comparisonSet[n].Insert(c.TerminalComp(s))
-		}
-	}
-
-	for n := range c.NonTerminals {
-		comp := NewNonTerminal(n)
-		if !c.First(comp).Equals(comparisonSet[n]) {
-			t.Errorf("case %d, got %v, want %v", n+1,
-				c.First(comp).Elements(), comparisonSet[n].Elements())
-		}
-	}
-}
-
-func TestCfgFirst(t *testing.T) {
+func TestCfgFirstStrings(t *testing.T) {
 	testCases := []struct {
 		filename   string
 		nt, result []string
 	}{
-		{
-			tgArithNlr,
-			[]string{"F"},
-			[]string{"\\(", "[[:digit:]]+"},
-		},
-		{
-			tgArithNlr,
-			[]string{"T"},
-			[]string{"\\(", "[[:digit:]]+"},
-		},
-		{
-			tgArithNlr,
-			[]string{"E"},
-			[]string{"\\(", "[[:digit:]]+"},
-		},
-		{
-			tgArithNlr,
-			[]string{"E'"},
-			[]string{"\\+", ""},
-		},
-		{
-			tgArithNlr,
-			[]string{"T'"},
-			[]string{"\\*", ""},
-		},
 		{
 			tgArithNlr,
 			[]string{"F", "T"},
@@ -135,7 +72,7 @@ func TestCfgFirst(t *testing.T) {
 	}
 }
 
-func TestCfgFirsts(t *testing.T) {
+func TestCfgFirst(t *testing.T) {
 	for n, tc := range grammarTestCases {
 		c, err := getAndParseFile(t, tc.filename)
 		if err != nil {
