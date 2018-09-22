@@ -1,6 +1,6 @@
 package cfg
 
-var tgFilePrefix = "../test_data/grammars/"
+var tgFilePrefix = "../testdata/grammars/"
 
 var tgArithLr = tgFilePrefix + "01_arith_lr.grammar"
 var tgArithNlr = tgFilePrefix + "02_arith_nlr.grammar"
