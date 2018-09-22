@@ -22,6 +22,7 @@ var tgUnreachable1 = tgFilePrefix + "17_unreachable_1.grammar"
 var tgUnreachable2 = tgFilePrefix + "18_unreachable_2.grammar"
 var tgUnproductive1 = tgFilePrefix + "19_unproductive_1.grammar"
 var tgUnproductive2 = tgFilePrefix + "20_unproductive_2.grammar"
+var tgAdventure = tgFilePrefix + "21_adventure.grammar"
 
 var tgOutArithLrRaw = tgFilePrefix + "output/01_arith_lr_raw.grammar"
 var tgOutArithNlrRaw = tgFilePrefix + "output/02_arith_nlr_raw.grammar"
@@ -65,4 +66,5 @@ var testGrammars = []string{
 	tgUnreachable2,
 	tgUnproductive1,
 	tgUnproductive2,
+	tgAdventure,
 }

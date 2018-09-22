@@ -16,7 +16,7 @@ func TestParserAccepts(t *testing.T) {
 
 		for _, input := range tc.accepts {
 			if parser.Parse(input) == nil {
-				t.Errorf("grammar %s, string %s, improperly accepted",
+				t.Errorf("grammar %s, string %s, improperly rejected",
 					tc.filename, input)
 			}
 		}
