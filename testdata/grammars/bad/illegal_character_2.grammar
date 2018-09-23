@@ -1,3 +1,0 @@
-# This grammar has an illegal character in the nonterminal name.
-
-S$ : `(` S$ `)` S$ % e

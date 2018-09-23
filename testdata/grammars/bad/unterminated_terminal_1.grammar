@@ -1,3 +1,0 @@
-# This grammar is missing a closing ` for the terminal ')'
-
-S : `(` S `) S | e

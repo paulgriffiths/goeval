@@ -1,3 +1,0 @@
-# This grammar has an illegal % character
-
-S : `(` S `)` S % e

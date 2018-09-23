@@ -1,9 +1,0 @@
-E      : T E'
-T      : F T'
-E'     : `\+` T E'
-       | e
-F      : `\(` E `\)`
-       | Digits
-T'     : `\*` F T'
-       | e
-Digits : `[[:digit:]]+`
