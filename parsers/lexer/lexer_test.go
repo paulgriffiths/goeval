@@ -1,6 +1,7 @@
 package lexer
 
 import (
+	"github.com/paulgriffiths/goeval/cfg"
 	"testing"
 )
 
@@ -35,13 +36,19 @@ func TestLexerMatch(t *testing.T) {
 	}
 
 	for n, tc := range testCases {
-		grammar, err := getAndParseFile(t, tc.filename)
+		grammar, err := cfg.GrammarFromFile(tc.filename)
 		if err != nil {
 			t.Errorf("couldn't parse file: %v", err)
 			continue
 		}
 
-		terminals, err := Lex(grammar, tc.input)
+		lexer, err := New(grammar)
+		if err != nil {
+			t.Errorf("case %d, failed to lex: %v", n+1, err)
+			continue
+		}
+
+		terminals, err := lexer.Lex(tc.input)
 		if err != nil {
 			t.Errorf("case %d, failed to lex: %v", n+1, err)
 			continue
@@ -75,13 +82,19 @@ func TestLexerNonMatch(t *testing.T) {
 	}
 
 	for n, tc := range testCases {
-		grammar, perr := getAndParseFile(t, tc.filename)
+		grammar, perr := cfg.GrammarFromFile(tc.filename)
 		if perr != nil {
 			t.Errorf("couldn't parse file: %v", perr)
 			continue
 		}
 
-		if _, lerr := Lex(grammar, tc.input); lerr == nil {
+		lexer, err := New(grammar)
+		if err != nil {
+			t.Errorf("case %d, failed to lex: %v", n+1, err)
+			continue
+		}
+
+		if _, lerr := lexer.Lex(tc.input); lerr == nil {
 			t.Errorf("case %d, lex unexpectedly succeeded", n+1)
 		}
 	}

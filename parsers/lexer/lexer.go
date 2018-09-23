@@ -8,37 +8,16 @@ import (
 	"unicode"
 )
 
-type lexer struct {
+// Lexer implements a lexer for a context-free grammar.
+type Lexer struct {
 	terminals TerminalList   // List of terminals to search for
-	r         *regexp.Regexp // Compiled regular expression
+	regexps   *regexp.Regexp // Compiled regular expression
 	input     string         // The input string
 	n         int            // Current position in the input
 }
 
-// Lex returns a list of terminals of the provided grammar extracted
-// from the provided input.
-func Lex(grammar *cfg.Cfg, input string) (TerminalList, error) {
-	list := TerminalList{}
-	lexer, err := newLexer(grammar, input)
-	if err != nil {
-		return nil, err
-	}
-
-	for {
-		terminal, err := lexer.getNextTerminal()
-		if err != nil {
-			if err.(lexError).t == lexErrEndOfInput {
-				break
-			}
-			return nil, err
-		}
-		list = append(list, terminal)
-	}
-
-	return list, nil
-}
-
-func newLexer(grammar *cfg.Cfg, input string) (*lexer, lexErr) {
+// New creates and returns a new lexer from the provided grammar.
+func New(grammar *cfg.Cfg) (*Lexer, error) {
 
 	// Retrieve terminals from grammar and sort in reverse order.
 	// Sorting in reverse order is done in an attempt to avoid
@@ -58,46 +37,65 @@ func newLexer(grammar *cfg.Cfg, input string) (*lexer, lexErr) {
 	// Build a single regular expression of the form
 	// (^term1)|(^term2)|...|(^termn). Go's regular expression package
 	// will prefer leftmost submatches, and this is why we sorted them
-	// in reverse order. The parenthesized expressions will enable us
-	// to identify which terminal was matched.
+	// in reverse order, so that the longest matches which we ought to
+	// check first are at the left. The parenthesized expressions will
+	// enable us to identify which terminal was matched.
 
-	rstring := ""
+	regexpString := ""
 	for i, t := range terminals {
 		if i != 0 {
-			rstring += "|"
+			regexpString += "|"
 		}
-		rstring += fmt.Sprintf("(^%s)", t.S)
+		regexpString += fmt.Sprintf("(^%s)", t.S)
 	}
 
-	r, err := regexp.Compile(rstring)
+	r, err := regexp.Compile(regexpString)
 	if err != nil {
-		fmt.Printf("failed to compile regex\n")
 		return nil, lexError{lexErrBadRegexp}
 	}
 
 	// Build lexer and return it.
 
-	l := lexer{terminals, r, input, 0}
+	l := Lexer{terminals, r, "", 0}
 	return &l, nil
 }
 
-func (l *lexer) skipWhitespace() {
-	for l.n < len(l.input) && unicode.IsSpace(rune(l.input[l.n])) {
-		l.n++
+// Lex returns a list of terminals of the provided grammar extracted
+// from the provided input.
+func (l Lexer) Lex(input string) (TerminalList, error) {
+	list := TerminalList{}
+	l.input = input
+	l.n = 0
+
+	for {
+		terminal, err := l.getNextTerminal()
+		if err != nil {
+			if err.(lexError).t == lexErrEndOfInput {
+				break
+			}
+			return nil, err
+		}
+		list = append(list, terminal)
 	}
+
+	return list, nil
 }
 
-func (l *lexer) endOfInput() bool {
-	return l.n >= len(l.input)
-}
+// getNextTerminal attempts to match the input from the current
+// input index against one of the terminal regular expressions.
+func (l *Lexer) getNextTerminal() (Terminal, lexErr) {
 
-func (l *lexer) getNextTerminal() (Terminal, lexErr) {
+	// Skip leading whitespace and test for end of input.
+
 	l.skipWhitespace()
 	if l.endOfInput() {
 		return Terminal{}, lexError{lexErrEndOfInput}
 	}
 
-	result := l.r.FindAllStringSubmatchIndex(l.input[l.n:], 1)
+	// Test the input at the current position for a match with
+	// any of our terminals, returning an error if there's no match.
+
+	result := l.regexps.FindAllStringSubmatchIndex(l.input[l.n:], 1)
 	if len(result) == 0 {
 		return Terminal{}, lexError{lexErrMatchFailed}
 	}
@@ -109,15 +107,30 @@ func (l *lexer) getNextTerminal() (Terminal, lexErr) {
 	// Find out which subexpression matched, and build and
 	// return a terminal accordingly, and advance the input index.
 
-	for i := range l.terminals {
+	for i, t := range l.terminals {
 		beg, end := matches[2*(i+1)], matches[2*(i+1)+1]
 		if beg == -1 {
 			continue
 		}
-		t := Terminal{l.terminals[i].N, l.input[l.n : l.n+end-beg]}
+		term := Terminal{t.N, l.input[l.n : l.n+end-beg]}
 		l.n += end - beg
-		return t, nil
+		return term, nil
 	}
 
+	// If we get here we found a match, but then didn't find it.
+
 	panic("failed to find regexp match index")
+}
+
+// skipWhitespace advances the current input index past any
+// whitespace characters.
+func (l *Lexer) skipWhitespace() {
+	for l.n < len(l.input) && unicode.IsSpace(rune(l.input[l.n])) {
+		l.n++
+	}
+}
+
+// endOfInput checks if the input index is at the end of the input.
+func (l *Lexer) endOfInput() bool {
+	return l.n >= len(l.input)
 }

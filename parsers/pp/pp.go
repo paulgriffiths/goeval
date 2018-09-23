@@ -2,74 +2,115 @@ package pp
 
 import (
 	"github.com/paulgriffiths/goeval/cfg"
+	"github.com/paulgriffiths/goeval/parsers/lexer"
+	"github.com/paulgriffiths/goeval/parsers/tree"
 )
-
-type ppTable [][]cfg.BodyList
-
-func makePPTable(grammar *cfg.Cfg) ppTable {
-	numTerms := len(grammar.Terminals) + 1 // +1 for end of input marker
-	numNonTerms := len(grammar.NonTerminals)
-
-	newTable := make([][]cfg.BodyList, numNonTerms)
-	for i := 0; i < numNonTerms; i++ {
-		newTable[i] = make([]cfg.BodyList, numTerms)
-		for j := 0; j < numTerms; j++ {
-			newTable[i][j] = cfg.BodyList{}
-		}
-	}
-
-	return newTable
-}
 
 // Pp represents a predictive parser.
 type Pp struct {
 	g     *cfg.Cfg
 	table ppTable
+	lexer *lexer.Lexer
 }
 
 // NewPp constructs a new predictive parser for a context-free grammar.
 func NewPp(grammar *cfg.Cfg) *Pp {
 	table := makePPTable(grammar)
-	newParser := Pp{grammar, table}
-	buildTable(grammar, table)
+	l, err := lexer.New(grammar)
+	if err != nil {
+		return nil
+	}
+	newParser := Pp{grammar, table, l}
 	return &newParser
 }
 
-func buildTable(g *cfg.Cfg, m ppTable) {
-
-	// Loop through all grammar productions 𝛢 → 𝛼
-
-	for nt, prod := range g.Prods {
-		for _, body := range prod {
-			first := g.First(body...)
-
-			// For each terminal 𝑎 in First(𝛼), add 𝛢 → 𝛼 to m[𝛢,𝑎]
-
-			for _, c := range first.Elements() {
-				if c.IsTerminal() {
-					m[nt][c.I] = append(m[nt][c.I], body)
-				}
-			}
-
-			// If First(𝛼) contains 𝜀 (or if 𝛼 = 𝜀) then for each
-			// terminal 𝑏 in Follow(𝛢), add 𝛢 → 𝛼 to m[𝛢,b]. If
-			// First(𝛼) contains 𝜀 (or if 𝛼 = 𝜀) and Follow(𝛢)
-			// contains the end-of-input marker, then add 𝛢 → 𝛼
-			// to m[𝛢,$], too.
-
-			follow := g.Follow(nt)
-			if first.ContainsEmpty() || body.IsEmptyBody() {
-				for _, c := range follow.Elements() {
-					if c.IsTerminal() {
-						m[nt][c.I] = append(m[nt][c.I], body)
-					}
-				}
-
-				if follow.ContainsEndOfInput() {
-					eoi := len(g.Terminals)
-					m[nt][eoi] = append(m[nt][eoi], body)
-				}
-			}
-		}
+// Parse parses input against a grammar and returns a parse tree,
+// or nil on failure.
+func (p Pp) Parse(input string) *tree.Node {
+	terminals, err := p.lexer.Lex(input)
+	if err != nil {
+		return nil
 	}
+
+	node, n := p.parseNT(terminals, 0)
+	if n == terminals.Len() {
+		return node
+	}
+	return nil
+}
+
+// parseComp parses a production body component.
+func (p Pp) parseComp(t lexer.TerminalList, comp cfg.BodyComp) (*tree.Node, int) {
+	var node *tree.Node
+	numTerms := 0
+
+	switch comp.T {
+	case cfg.BodyNonTerminal:
+		node, numTerms = p.parseNT(t, comp.I)
+	case cfg.BodyTerminal:
+		if !t.IsEmpty() && t[0].N == comp.I {
+			node, numTerms = tree.NewNode(comp, t[0].S, nil), 1
+		}
+	case cfg.BodyEmpty:
+		node = tree.NewNode(comp, "e", nil)
+	}
+
+	return node, numTerms
+}
+
+// parseNT parses a non-terminal.
+func (p Pp) parseNT(t lexer.TerminalList, nt int) (*tree.Node, int) {
+
+	// If there are no more terminals in the list, check whether
+	// the current nonterminal can be followed by end-of-input.
+
+	if t.IsEmpty() {
+		body := p.table[nt][len(p.g.Terminals)]
+		if body.IsEmpty() {
+			return nil, 0
+		}
+		if body[0].IsEmptyBody() {
+			em := tree.NewNode(cfg.NewBodyEmpty(), "e", nil)
+			term := tree.NewNode(cfg.NewNonTerminal(nt),
+				p.g.NonTerminals[nt], []*tree.Node{em})
+			return term, 0
+		}
+		panic("unexpected terminal condition")
+	}
+
+	// Get the body for this nonterminal with the next terminal,
+	// returning an error if the predictive parsing table doesn't
+	// contain an entry.
+
+	body := p.table[nt][t[0].N]
+	if body.IsEmpty() {
+		return nil, 0
+	}
+
+	if children, numTerms := p.parseBody(t, body[0]); children != nil {
+		return tree.NewNode(
+			cfg.BodyComp{cfg.BodyNonTerminal, nt},
+			p.g.NonTerminals[nt],
+			children,
+		), numTerms
+	}
+
+	return nil, 0
+}
+
+// parseBody parses a production body.
+func (p Pp) parseBody(t lexer.TerminalList, body []cfg.BodyComp) ([]*tree.Node, int) {
+	var children []*tree.Node
+	matchLength := 0
+
+	for _, component := range body {
+		node, numTerms := p.parseComp(t[matchLength:], component)
+		if node == nil {
+			return nil, 0
+		}
+		children = append(children, node)
+		matchLength += numTerms
+	}
+
+	return children, matchLength
 }

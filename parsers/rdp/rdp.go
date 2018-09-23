@@ -8,19 +8,24 @@ import (
 
 // Rdp implements a recursive descent parser.
 type Rdp struct {
-	c *cfg.Cfg
+	c     *cfg.Cfg
+	lexer *lexer.Lexer
 }
 
 // New creates a new recursive descent parser.
 func New(c *cfg.Cfg) (*Rdp, error) {
-	r := Rdp{c}
+	l, err := lexer.New(c)
+	if err != nil {
+		return nil, err
+	}
+	r := Rdp{c, l}
 	return &r, nil
 }
 
 // Parse parses input against a grammar and returns a parse tree,
 // or nil on failure.
 func (r Rdp) Parse(input string) *tree.Node {
-	terminals, err := lexer.Lex(r.c, input)
+	terminals, err := r.lexer.Lex(input)
 	if err != nil {
 		return nil
 	}
